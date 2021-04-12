@@ -5,12 +5,13 @@ import sqlite3
 
 class productos:
 
-    nombre_DB = 'pruebaBD.db'
+    nombre_BD = 'pruebaBD.db'
 
     def __init__(self, ventana):
         self.wind = ventana
         self.wind.title("primera prueba")
         self.wind.geometry("400x250")
+        self.wind.config(bg= "red")
     
         #----------crear un contenedor frame-----------------   
         frame= LabelFrame(self.wind,text='Registrar nuevo producto')
@@ -39,7 +40,7 @@ class productos:
         self.get_productos()
 
     def run_query(self, query, parameters = ()):
-        with sqlite3.connect(self.nombre_DB)  as conn:
+        with sqlite3.connect(self.nombre_BD)  as conn:
             cursor = conn.cursor()
             resultado = cursor.execute(query, parameters)
             conn.commit()
@@ -47,8 +48,8 @@ class productos:
     
     def get_productos(self):
         query ='SELECT * FROM productos ORDER BY nombre DESC'
-        fila_DB= self.run_query(query)
-        print(fila_DB)
+        fila_BD= self.run_query(query)
+        print(fila_BD)  
         
 
 if __name__ == '__main__':
