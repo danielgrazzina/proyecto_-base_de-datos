@@ -71,11 +71,31 @@ class product:
         self.bsearch = Button(self.wind, width = 35, height = 35, command = self.wind2)
         self.bsearch.config(image = self.img)
         self.bsearch.place(x = 15, y = 15)
+        Hovertip(self.bsearch, text = "Buscar", hover_delay = 100)
 
         self.img1=PhotoImage(file='clientes.png')
         self.bclientes= Button(self.wind,width=35,height=35,command=self.windclientes)
         self.bclientes.config(image=self.img1)
         self.bclientes.place(x=15,y=65)
+        Hovertip(self.bclientes, text = "Clientes", hover_delay = 100)
+
+        "Acabo de agregar el boton MAS"
+        self.img2 = PhotoImage(file = 'mas.png')
+        self.bmas = Button(self.wind, width = 15, height = 15, command = self.suma_inventario)
+        self.bmas.config(image = self.img2)
+        self.bmas.place(x = 590, y = 130)
+
+        "Acabo de agregar el boton MENOS"
+        self.img3 = PhotoImage(file = 'menos.png')
+        self.bmenos = Button(self.wind, width = 15, height = 15, command = self.resta_inventario)
+        self.bmenos.config(image = self.img3)
+        self.bmenos.place(x = 615, y = 130)
+
+        "Acabo de agregar el boton actualizar"
+        self.img4 = PhotoImage(file = 'actualizar.png')
+        self.bactualizar = Button(self.wind, width = 18, height = 18, command = self.obt_productos)
+        self.bactualizar.configure(image = self.img4)
+        self.bactualizar.place(x = 590, y = 160)
 
         self.menuvar = Menu(self.wind)
         self.menuDB = Menu(self.menuvar, tearoff = 0)
@@ -133,8 +153,74 @@ class product:
         #self.wind.iconify() 
         self.windclientes = Toplevel()
         self.windclientes.resizable(width=0,height=0)
-        self.windclientes.geometry("900x500+200+50")
+        self.windclientes.geometry("900x550+200+50")
         self.windclientes.iconbitmap('archivo.ico')
+        self.windclientes.title("Clientes")
+
+        self.tree = ttk.Treeview(self.windclientes)
+        self.tree['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO ", "TELEFONO","DIRECCION", "DEUDA")
+        self.tree.place(x = 0, y = 270)
+        self.tree.bind("<Double-Button-1>", self.seleccionar1_click)
+        self.tree.column('#0', width = 0, stretch = NO)
+        self.tree.column('#1', minwidth = 150, width=150,  anchor = CENTER)
+        self.tree.column('#2', minwidth = 150, width=150, anchor = CENTER)
+        self.tree.column('#3', minwidth = 150, width=150, anchor = CENTER)
+        self.tree.column('#4', minwidth = 150, width=150, anchor = CENTER)
+        self.tree.column('#5', minwidth = 150, width=150, anchor = CENTER)
+        self.tree.column('#6', minwidth = 150, width=150, anchor = CENTER)
+        self.tree.heading('#1', text = 'CI_CLIENTE', anchor = CENTER)
+        self.tree.heading('#2', text = 'NOMBRE', anchor = CENTER)
+        self.tree.heading('#3', text = 'APELLIDO', anchor = CENTER)
+        self.tree.heading('#4', text = 'TELEFONO', anchor = CENTER)
+        self.tree.heading('#5', text = 'DIRECCION', anchor = CENTER)
+        self.tree.heading('#6', text = 'DEUDA', anchor = CENTER)
+        #self.obt_productos()
+
+        self.l_title = Label(self.windclientes, text = "Agregue un cliente")
+        self.l_title.place(x = (self.xe), y = self.ye)
+
+        self.l_ci_cedula = Label(self.windclientes, text = "Cedula: ")
+        self.l_ci_cedula.place(x = 376, y = 40)
+        self.ci_cedula = Entry(self.windclientes, width = 30)
+        self.ci_cedula.focus()
+        self.ci_cedula.place(x = (self.xe + 60), y = (self.ye + 25))
+
+        self.l_nombre = Label(self.windclientes, text = "nombre: ")
+        self.l_nombre.place(x = 370, y = 70)
+        self.nombre = Entry(self.windclientes, width = 30)
+        self.nombre.place(x = (self.xe + 60), y = (self.ye + 55))
+
+        self.l_apellido = Label(self.windclientes, text = "apellido: ")
+        self.l_apellido.place(x = 370, y = 100)
+        self.apellido = Entry(self.windclientes, width = 30)
+        self.apellido.place(x = (self.xe + 60), y = (self.ye + 85))
+
+        self.l_telefono = Label(self.windclientes, text = "telefono: ")
+        self.l_telefono.place(x = 370, y = 130)
+        self.telefono = Entry(self.windclientes, width = 30)
+        self.telefono.place(x = (self.xe + 60), y = (self.ye + 115))
+
+        self.l_direccion = Label(self.windclientes, text = "direccion: ")
+        self.l_direccion.place(x = 366, y = 160)
+        self.direccion = Entry(self.windclientes, width = 30)
+        self.direccion.place(x = (self.xe + 60), y = (self.ye + 145))
+
+        self.l_deuda = Label(self.windclientes, text = "deuda: ")
+        self.l_deuda.place(x = 382, y = 190)
+        self.deuda = Entry(self.windclientes, width = 30)
+        self.deuda.place(x = (self.xe + 60), y = (self.ye + 175))
+
+        self.b_guardar = ttk.Button(self.windclientes, text = "Guardar cliente", width = 70, command =  self.agregar_producto)
+        self.b_guardar.place(x = (self.xe - 170), y = (self.ye + 210))
+
+        self.b_eliminar = ttk.Button(self.windclientes, text = "Eliminar cliente", width = 70, command =  self.eliminar_producto)
+        self.b_eliminar.place(x = (self.xe + 35), y = (self.ye + 500))
+        self.b_eliminar['state'] = 'disable'
+
+        self.b_actualizar = ttk.Button(self.windclientes, text = "Actualizar cliente", width = 70, command =  self.editar_producto)
+        self.b_actualizar.place(x = 30, y = (self.ye + 500))
+        self.b_actualizar['state'] = 'disable'
+
 
     def prueba(self):
         if self.v.get() == 1:
@@ -179,6 +265,14 @@ class product:
         self.price_c.delete(0, END)
         self.price_v.delete(0, END)
         self.amount.delete(0, END)
+
+    def clean1(self):
+        self.ci_cliente.delete(0, END)
+        self.nombre.delete(0, END)
+        self.apellido.delete(0, END)
+        self.telefono.delete(0, END)
+        self.direccion.delete(0, END)
+        self.direccion.delete(0, END)
 
     def obt_productos(self):
         view = self.tree.get_children()
@@ -236,6 +330,41 @@ class product:
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
 
+        "Acabo de agregar la funcion para la operacion de mas"
+    def suma_inventario(self):
+        if len(self.amount.get()) != 0: 
+            cant_n = int(self.amount.get())
+            self.suma = int(self.cant_v) + cant_n
+            query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+            parametros = (self.suma, self.Id_operacion)
+            self.run_query(query, parametros)
+            messagebox.showinfo("BASE DE DATOS", "Se han sumado las cantidades al inventario")
+        else:
+            messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+        self.id.configure(state = 'normal')
+        self.b1["state"] = "normal"
+        self.b2["state"] = "disable"
+        self.b3["state"] = "disable"
+        self.clean()
+        self.obt_productos()
+
+    "Acabo de agregar la funcion para la operacion de menos"
+    def resta_inventario(self):
+        if len(self.amount.get()) != 0: 
+            cant_n = int(self.amount.get())
+            self.resta = int(self.cant_v) - cant_n
+            query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+            parametros = (self.resta, self.Id_operacion)
+            self.run_query(query, parametros)
+            messagebox.showinfo("BASE DE DATOS", "Se han restado las cantidades al inventario")
+        else:
+            messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+        self.id.configure(state = 'normal')
+        self.b1["state"] = "normal"
+        self.b2["state"] = "disable"
+        self.b3["state"] = "disable"
+        self.clean()
+        self.obt_productos()
 
     def seleccionar_click(self, event):
         self.clean()
@@ -248,8 +377,26 @@ class product:
         self.price_c.insert(0, self.values[1])
         self.price_v.insert(0, self.values[2])
         self.amount.insert(0, self.values[3])
+        self.cant_v = self.values[3]
+        self.Id_operacion = self.values[0]
         self.id.configure(state = 'disable')
-        Hovertip(self.id, text = "No puede cambiar el ID de los productos ya ingresados", hover_delay = 100)
+        Hovertip(self.id, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
+
+    def seleccionar1_click(self, event):
+        self.clean1()
+        self.b_guardar["state"] = "disable"
+        self.b_actualizar["state"] = "normal"
+        self.b_eliminar["state"] = "normal"
+        self.selected = self.tree.focus()
+        self.values = self.tree.item(self.selected, 'values')
+        self.ci_cliente.insert(0, self.values[0])
+        self.nombre.insert(0, self.values[1])
+        self.apellido.insert(0, self.values[2])
+        self.telefono.insert(0, self.values[3])
+        self.direccion.insert(0, self.values[4])
+        self.deuda.insert(0, self.values[5])
+        self.ci_cliente.configure(state = 'disable')
+        Hovertip(self.ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
 
 if __name__ == "__main__":
     wn = Tk()
