@@ -1,6 +1,7 @@
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import *
+from tkinter import PhotoImage
 import sqlite3
 
 class product:
@@ -13,12 +14,17 @@ class product:
         self.wind.title("Aplicacion de Inventario")
         self.wind.resizable(width = 0, height = 0)
         self.wind.geometry("802x500")
+        self.wind.iconbitmap('archivo.ico')
         
-        self.tree = ttk.Treeview(wn )
+        self.tree = ttk.Treeview(wn)
         self.tree['columns'] = ("ID", "PRECIO_COSTO", "PRECIO_VENTA", "CANTIDAD")
         self.tree.place(x = 0, y = 200)
         self.tree.bind("<Double-Button-1>", self.seleccionar_click)
         self.tree.column('#0', width = 0, stretch = NO)
+        self.tree.column('#1', minwidth = 200, anchor = CENTER)
+        self.tree.column('#2', minwidth = 200, anchor = CENTER)
+        self.tree.column('#3', minwidth = 200, anchor = CENTER)
+        self.tree.column('#4', minwidth = 200, anchor = CENTER)
         self.tree.heading('#1', text = 'ID', anchor = CENTER)
         self.tree.heading('#2', text = 'PRECIO COSTO', anchor = CENTER)
         self.tree.heading('#3', text = 'PRECIO VENTA', anchor = CENTER)
@@ -60,50 +66,22 @@ class product:
         self.b3.place(x = 30, y = (self.ye + 435))
         self.b3['state'] = 'disable'
 
+        self.img = PhotoImage(file = 'lupa.png')
+        self.bsearch = Button(self.wind, width = 35, height = 35, command = self.wind2)
+        self.bsearch.config(image = self.img)
+        self.bsearch.place(x = 15, y = 15)
+
         self.menuvar = Menu(self.wind)
         self.menuDB = Menu(self.menuvar, tearoff = 0)
-        self.menuDB.add_command(label = "Crear/Conectar Base De Datos", command = self.conexDB)
-        self.menuDB.add_command(label = "Eliminar Base De Datos", command = self.borrarDB)
+        self.menuDB.add_command(label = "Limpiar Base De Datos 'PRODUCTO'", command = self.borrarDB)
         self.menuvar.add_cascade(label = "Inicio", menu = self.menuDB)
 
         self.ayudamenu = Menu(self.menuvar, tearoff = 0)
         self.ayudamenu.add_command(label = "Resetear Campos", command = self.clean)
-        #self.menuDB.add_command(label = "Manual de Usuario", command = self.manual_usuario)
+        self.ayudamenu.add_command(label = "Manual de Usuario")# command = self.manual_usuario)
         self.menuvar.add_cascade(label = "Ayuda", menu = self.ayudamenu)
 
         self.wind.config(menu = self.menuvar)
-
-    def conexDB(self):
-        self.conn = sqlite3.connect('inventario.db')
-        self.cursor = self.conn.cursor()
-
-        try:
-            self.cursor.execute('''
-                CREATE TABLE producto(
-                ID_PRODUCTO VARCHAR(15) PRIMARY KEY NOT NULL,
-                TIPO_PRODUCTO VARCHAR(50) NOT NULL,
-                PRECIO_COSTO FLOAT NOT NULL,
-                PRECIO_VENTA FLOAT NOT NUL,
-                CANTIDAD_PRODUCTO INTEGER NOT NULL)
-                ''')
-            self.cursor.excute('''
-                CREATE TABLE cliente(
-                CI VARCHAR(10) PRIMARY KEY NOT NULL,
-                NOMBRE VARCHAR(25) NOT NULL,
-                APELLIDO VARCHAR(25) NOT NULL,
-                TELEFONO VARCHAR(20) NOT NULL,
-                DIRECCION VARCHAR(100) NOT NULL,
-                DEUDA FLOAT NOT NULL)
-                ''')
-            self.cursor.excute('''
-                CREATE TABLE pedido(
-                ID_PEDIDO INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                CI_CLIENTE VARCHAR(10) NOT NULL,
-                ID_PRODUCTO VARCHAR(15) NOT NULL)
-                ''')
-            messagebox.showinfo("BASE DE DATOS", "Se creo exitosamente la Base de Datos")
-        except:
-            messagebox.showinfo("BASE DE DATOS", "Se conecto exitosamente a la Base de Datos")
 
     def run_query(self, query, parametros = ()):
         with sqlite3.connect('inventario.db') as conn:
@@ -114,12 +92,29 @@ class product:
 
     def borrarDB(self):
         try:
-            if messagebox.askyesno(message = "Se borraran todos los datos, ¿Desea continuar?", title = "ADVERTENCIA"):
-                query = 'DROP TABLE producto; DROP TABLE cliente; DROP TABLE pedido'
+            if messagebox.askyesno(message = "Se borraran todos los PRODUCTOS, ¿Desea continuar?", title = "ADVERTENCIA"):
+                query = 'DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO'
                 self.run_query(query)
-                messagebox.showinfo("BASE DE DATOS", "Se elimino exitosamente la Base de Datos")
+                self.obt_productos()
+                self.clean()
+                messagebox.showinfo("BASE DE DATOS", "Se vacio exitosamente la tabla 'PRODUCTO'")
         except:
-            messagebox.showerror("ERROR", "No se pudo eliminar la base de datos")
+            messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
+
+    def wind2(self):
+        self.wind2 = Toplevel()
+        self.wind2.resizable(width = 0, height = 0)
+        self.wind2.geometry("401x250+400+400")
+        self.wind2.iconbitmap('archivo.ico')
+        num = int
+        self.rb_producto = Radiobutton(self.wind2, text = "PRODUCTO", value = 1, variable = num)
+        self.rb_producto.place(x = 150, y = 50)
+        self.rb_cliente = Radiobutton(self.wind2, text = "CLIENTE", value = 2, variable = num)
+        self.rb_cliente.place(x = 150, y = 80)
+        self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = num)
+        self.rb_pedido.place(x = 150, y = 110)
+        print(num.get())
+
 
     def clean(self):
         self.id.delete(0, END)
