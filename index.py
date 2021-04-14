@@ -157,7 +157,7 @@ class product:
         self.rb_pedido.place(x = 20, y = 110)
         
     def windclientes (self):
-        #self.wind.iconify() 
+        self.wind.iconify() 
         self.windclientes = Toplevel()
         self.windclientes.resizable(width=0,height=0)
         self.windclientes.geometry("900x550+200+50")
@@ -165,7 +165,7 @@ class product:
         self.windclientes.title("Clientes")
 
         self.tree1 = ttk.Treeview(self.windclientes)
-        self.tree1['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO ", "TELEFONO","DIRECCION", "DEUDA")
+        self.tree1['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO", "TELEFONO","DIRECCION", "DEUDA")
         self.tree1.place(x = 0, y = 270)
         self.tree1.bind("<Double-Button-1>", self.seleccionar1_click)
         self.tree1.column('#0', width = 0, stretch = NO)
@@ -279,7 +279,7 @@ class product:
         self.apellido.delete(0, END)
         self.telefono.delete(0, END)
         self.direccion.delete(0, END)
-        self.direccion.delete(0, END)
+        self.deuda.delete(0, END)
 
     def obt_productos(self):
         view = self.tree.get_children()
@@ -293,15 +293,16 @@ class product:
     
     def obt_clientes(self):
         pass
-        view1 = self.tree1.get_children()
-        for elementos1 in view1:
-            self.tree1.delete(elementos1)
+        view = self.tree1.get_children()
+        for elementos in view:
+            self.tree1.delete(elementos)
             
         query = "SELECT * FROM cliente ORDER BY CI_CLIENTE DESC"
-        db_rows1 = self.run_query(query)
-        for row1 in db_rows1:
-            messagebox.showerror("ADVERTENCIA", "si entra en el for")
-           #self.tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]), row[4], row[5]))
+        db_rows = self.run_query(query)
+        for row in db_rows:
+            #messagebox.showerror("ADVERTENCIA", "si entra en el for")
+            self.tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+           #SyntaxError: positional argument follows keyword argument
 
     def validacion(self):
         return len(self.id.get()) != 0 and len(self.price_c.get()) != 0 and len(self.price_v.get()) != 0 and len(self.amount.get()) != 0
