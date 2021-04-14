@@ -68,7 +68,7 @@ class product:
         self.b3['state'] = 'disable'
 
         self.img = PhotoImage(file = 'lupa.png')
-        self.bsearch = Button(self.wind, width = 35, height = 35, command = self.wind2)
+        self.bsearch = Button(self.wind, width = 35, height = 35, command = self.windbuscar)
         self.bsearch.config(image = self.img)
         self.bsearch.place(x = 15, y = 15)
         Hovertip(self.bsearch, text = "Buscar", hover_delay = 100)
@@ -134,7 +134,7 @@ class product:
         except:
             messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
 
-    def wind2(self):
+    def windbuscar(self):
         self.wind.iconify()
         self.wind2 = Toplevel()
         self.wind2.resizable(width = 0, height = 0)
@@ -158,13 +158,13 @@ class product:
         
     def windclientes (self):
         self.wind.iconify() 
-        self.windclientes = Toplevel()
-        self.windclientes.resizable(width=0,height=0)
-        self.windclientes.geometry("900x550+200+50")
-        self.windclientes.iconbitmap('archivo.ico')
-        self.windclientes.title("Clientes")
+        self.windclientes1 = Toplevel()
+        self.windclientes1.resizable(width=0,height=0)
+        self.windclientes1.geometry("900x550+200+50")
+        self.windclientes1.iconbitmap('archivo.ico')
+        self.windclientes1.title("Clientes")
 
-        self.tree1 = ttk.Treeview(self.windclientes)
+        self.tree1 = ttk.Treeview(self.windclientes1)
         self.tree1['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO", "TELEFONO","DIRECCION", "DEUDA")
         self.tree1.place(x = 0, y = 270)
         self.tree1.bind("<Double-Button-1>", self.seleccionar1_click)
@@ -183,59 +183,59 @@ class product:
         self.tree1.heading('#6', text = 'DEUDA', anchor = CENTER)
         self.obt_clientes()
 
-        self.l_title = Label(self.windclientes, text = "Agregue un cliente")
+        self.l_title = Label(self.windclientes1, text = "Agregue un cliente")
         self.l_title.place(x = (self.xe), y = self.ye)
 
-        self.l_ci_cedula = Label(self.windclientes, text = "Cedula: ")
+        self.l_ci_cedula = Label(self.windclientes1, text = "Cedula: ")
         self.l_ci_cedula.place(x = 376, y = 40)
-        self.ci_cliente = Entry(self.windclientes, width = 30)
+        self.ci_cliente = Entry(self.windclientes1, width = 30)
         self.ci_cliente.focus()
         self.ci_cliente.place(x = (self.xe + 60), y = (self.ye + 25))
 
-        self.l_nombre = Label(self.windclientes, text = "nombre: ")
+        self.l_nombre = Label(self.windclientes1, text = "nombre: ")
         self.l_nombre.place(x = 370, y = 70)
-        self.nombre = Entry(self.windclientes, width = 30)
+        self.nombre = Entry(self.windclientes1, width = 30)
         self.nombre.place(x = (self.xe + 60), y = (self.ye + 55))
 
-        self.l_apellido = Label(self.windclientes, text = "apellido: ")
+        self.l_apellido = Label(self.windclientes1, text = "apellido: ")
         self.l_apellido.place(x = 370, y = 100)
-        self.apellido = Entry(self.windclientes, width = 30)
+        self.apellido = Entry(self.windclientes1, width = 30)
         self.apellido.place(x = (self.xe + 60), y = (self.ye + 85))
 
-        self.l_telefono = Label(self.windclientes, text = "telefono: ")
+        self.l_telefono = Label(self.windclientes1, text = "telefono: ")
         self.l_telefono.place(x = 370, y = 130)
-        self.telefono = Entry(self.windclientes, width = 30)
+        self.telefono = Entry(self.windclientes1, width = 30)
         self.telefono.place(x = (self.xe + 60), y = (self.ye + 115))
 
-        self.l_direccion = Label(self.windclientes, text = "direccion: ")
+        self.l_direccion = Label(self.windclientes1, text = "direccion: ")
         self.l_direccion.place(x = 366, y = 160)
-        self.direccion = Entry(self.windclientes, width = 30)
+        self.direccion = Entry(self.windclientes1, width = 30)
         self.direccion.place(x = (self.xe + 60), y = (self.ye + 145))
 
-        self.l_deuda = Label(self.windclientes, text = "deuda: ")
+        self.l_deuda = Label(self.windclientes1, text = "deuda: ")
         self.l_deuda.place(x = 382, y = 190)
-        self.deuda = Entry(self.windclientes, width = 30)
+        self.deuda = Entry(self.windclientes1, width = 30)
         self.deuda.place(x = (self.xe + 60), y = (self.ye + 175))
 
-        self.b_guardar = ttk.Button(self.windclientes, text = "Guardar cliente", width = 70, command =  self.agregar_cliente)
+        self.b_guardar = ttk.Button(self.windclientes1, text = "Guardar cliente", width = 70, command =  self.agregar_cliente)
         self.b_guardar.place(x = (self.xe - 170), y = (self.ye + 210))
 
-        self.b_eliminar = ttk.Button(self.windclientes, text = "Eliminar cliente", width = 70, command =  self.eliminar_cliente)
+        self.b_eliminar = ttk.Button(self.windclientes1, text = "Eliminar cliente", width = 70, command =  self.eliminar_cliente)
         self.b_eliminar.place(x = (self.xe + 35), y = (self.ye + 500))
         self.b_eliminar['state'] = 'disable'
 
-        self.b_actualizar = ttk.Button(self.windclientes, text = "Actualizar cliente", width = 70, command =  self.editar_cliente)
+        self.b_actualizar = ttk.Button(self.windclientes1, text = "Actualizar cliente", width = 70, command =  self.editar_cliente)
         self.b_actualizar.place(x = 30, y = (self.ye + 500))
         self.b_actualizar['state'] = 'disable'
 
         self.img7 = PhotoImage(file = 'home.png')
-        self.bprin_cliente = Button(self.windclientes, width = 35, height = 35, command = self.principal_pedido)
+        self.bprin_cliente = Button(self.windclientes1, width = 35, height = 35, command = self.principal_cliente)
         self.bprin_cliente.config(image = self.img7)
         self.bprin_cliente.place(x = 15, y = 65)
         Hovertip(self.bprin_cliente, text = "PANTALLA PRINCIPAL")
 
-    def principal_pedido(self):
-        self.windclientes.destroy()
+    def principal_cliente(self):
+        self.windclientes1.destroy()
         self.wind.deiconify()
 
     def prueba(self):
@@ -254,25 +254,40 @@ class product:
             if self.v.get() == 1:
                 query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
                 parametros = (self.ebuscar.get())
+                view = self.tree.get_children()
+            
+                for elementos in view:
+                    self.tree.delete(elementos)
+                
+                db_rows = self.run_query(query, (parametros, ))
+
+                for row in db_rows:
+                    self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+                
+                self.wind.deiconify()
+                self.wind2.destroy()
+
             elif self.v.get() == 2:
                 query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY NOMBRE DESC"
                 parametros = (self.ebuscar.get())
+                self.windclientes()
+                view = self.tree1.get_children()
+
+                for elementos in view:
+                    self.tree1.delete(elementos)
+                
+                db_rows = self.run_query(query, (parametros, ))
+
+                for row in db_rows:
+                    self.tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+                
+                self.wind.deiconify()
+                self.wind2.destroy()
             elif self.v.get() == 3:
                 query = "SELECT * FROM pedido WHERE ID_PEDIDO = ? ORDER BY ID_PEDIDO DESC"
                 parametros = (self.ebuscar.get())
             
-            view = self.tree.get_children()
             
-            for elementos in view:
-                self.tree.delete(elementos)
-            
-            db_rows = self.run_query(query, (parametros, ))
-
-            for row in db_rows:
-                self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
-            
-            self.wind.deiconify()
-            self.wind2.destroy()
         else:
             messagebox.showwarning("ADVERTENCIA", "Debe elegir una opcion, y rellenar el campo con lo que seas buscar")
 
