@@ -363,21 +363,26 @@ class product:
         cursor = conn.cursor()
         query = ("SELECT PRECIO_VENTA FROM producto WHERE ID_PRODUCTO = ?")
         parametros = str(self.id_pro.get())
-        self.run_query(query, (parametros, ))
-        self.precio = cursor.fetchone()
-        query = ("SELECT DEUDA FROM cliente WHERE CI_CLIENTE = ?")
-        parametros = (self.ci.get())
         self.run_query(query, parametros)
-        self.deuda = cursor.fetchone()
-        self.cant_deuda = self.cant.get()
-
-        print(self.deuda)
-        print(self.precio)
-        self.total = (int(self.cant_deuda) * int(self.precio)) + int(self.deuda)
-        print(self.total)
-        query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
-        parametros = (self.total, self.ci.get())
-        self.run_query(query, parametros)
+        precio = cursor.fetchone()
+        if precio:
+            query = ("SELECT DEUDA FROM cliente WHERE CI_CLIENTE = ?")
+            parametros = (self.ci.get())
+            self.run_query(query, parametros)
+            deuda1 = cursor.fetchone()
+            print(self.deuda1)
+            if deuda1:
+                cant_deuda = cant.get()
+                self.total = (int(cant_deuda) * int(precio)) + int(deuda)
+        #print(self.total)
+        #print(self.precio.get())
+                query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
+                parametros = (self.total, self.ci.get())
+                self.run_query(query, parametros)
+            else:
+                messagebox.showerror("JAJA", "Te la creiste wey 2")
+        else:
+            messagebox.showerror("JAJA", "Te la creiste wey")
 
 
     def editar_producto(self):
