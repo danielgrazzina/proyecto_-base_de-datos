@@ -90,6 +90,18 @@ class product:
             conn.commit()
         return result
 
+    def seleccionar_click(self, event):
+        self.clean()
+        self.b1["state"] = "disable"
+        self.b2["state"] = "normal"
+        self.b3["state"] = "normal"
+        self.selected = self.tree.focus()
+        self.values = self.tree.item(self.selected, 'values')
+        self.id.insert(0, self.values[0])
+        self.price_c.insert(0, self.values[1])
+        self.price_v.insert(0, self.values[2])
+        self.amount.insert(0, self.values[3])
+
     def borrarDB(self):
         try:
             if messagebox.askyesno(message = "Se borraran todos los PRODUCTOS, ¿Desea continuar?", title = "ADVERTENCIA"):
@@ -122,44 +134,6 @@ class product:
         self.rb_cliente.place(x = 20, y = 80)
         self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = self.v, command = self.prueba)
         self.rb_pedido.place(x = 20, y = 110)
-        
-    def prueba(self):
-        if self.v.get() == 1:
-            self.lbuscar['text'] = "Ha seleccionado la opcion PRODUCTO"
-            self.linstruccion['text'] = "Ingrese el ID del PRODUCTO que desea buscar"
-        elif self.v.get() == 2:
-            self.lbuscar['text'] = "Ha seleccionado la opcion CLIENTE"
-            self.linstruccion['text'] = "Ingrese la CI del CLIENTE que desea buscar"
-        elif self.v.get() == 3:
-            self.lbuscar['text'] = "Ha seleccionado la opcion PEDIDO"
-            self.linstruccion['text'] = "Ingrese el ID del PEDIDO que desea buscar"
-
-    def buscar(self):
-        if len(self.ebuscar.get()) != 0 and self.v.get() != 0:
-            if self.v.get() == 1:
-                query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
-                parametros = (self.ebuscar.get())
-            elif self.v.get() == 2:
-                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
-                parametros = (self.ebuscar.get())
-            elif self.v.get() == 3:
-                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
-                parametros = (self.ebuscar.get())
-            
-            view = self.tree.get_children()
-            
-            for elementos in view:
-                self.tree.delete(elementos)
-            
-            db_rows = self.run_query(query, (parametros, ))
-
-            for row in db_rows:
-                self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
-            
-            self.wind.deiconify()
-            self.wind2.destroy()
-        else:
-            messagebox.showwarning("ADVERTENCIA", "Debe elegir una opcion, y rellenar el campo con lo que seas buscar")
 
     def clean(self):
         self.id.delete(0, END)
@@ -193,8 +167,8 @@ class product:
 
     def editar_producto(self):
         if self.validacion():
-            query = '''UPDATE producto SET ID_PRODUCTO = ?, PRECIO_COSTO = ?, PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ?'''
-            parametros = (self.id.get(), self.price_c.get(), self.price_v.get(), self.amount.get())
+            parametros = (self.price_c.get(), self.price_v.get(), self.amount.get(), self.id.get())
+            query = ("UPDATE producto SET PRECIO_COSTO =? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
             self.run_query(query, parametros)
             messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
         else:
@@ -221,18 +195,45 @@ class product:
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
 
+    def prueba(self):
+        if self.v.get() == 1:
+            self.lbuscar['text'] = "Ha seleccionado la opcion PRODUCTO"
+            self.linstruccion['text'] = "Ingrese el ID del PRODUCTO que desea buscar"
+        elif self.v.get() == 2:
+            self.lbuscar['text'] = "Ha seleccionado la opcion CLIENTE"
+            self.linstruccion['text'] = "Ingrese la CI del CLIENTE que desea buscar"
+            self.linstruccion.place(x = 125, y = 135)
+        elif self.v.get() == 3:
+            self.lbuscar['text'] = "Ha seleccionado la opcion PEDIDO"
+            self.linstruccion['text'] = "Ingrese el ID del PEDIDO que desea buscar"
+            self.linstruccion.place(x = 126, y = 135)
 
-    def seleccionar_click(self, event):
-        self.clean()
-        self.b1["state"] = "disable"
-        self.b2["state"] = "normal"
-        self.b3["state"] = "normal"
-        self.selected = self.tree.focus()
-        self.values = self.tree.item(self.selected, 'values')
-        self.id.insert(0, self.values[0])
-        self.price_c.insert(0, self.values[1])
-        self.price_v.insert(0, self.values[2])
-        self.amount.insert(0, self.values[3])
+    def buscar(self):
+        if len(self.ebuscar.get()) != 0 and self.v.get() != 0:
+            if self.v.get() == 1:
+                query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            elif self.v.get() == 2:
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            elif self.v.get() == 3:
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            
+            view = self.tree.get_children()
+            
+            for elementos in view:
+                self.tree.delete(elementos)
+            
+            db_rows = self.run_query(query, (parametros, ))
+
+            for row in db_rows:
+                self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+            
+            self.wind.deiconify()
+            self.wind2.destroy()
+        else:
+            messagebox.showwarning("ADVERTENCIA", "Debe elegir una opcion, y rellenar el campo con lo que seas buscar")
 
 if __name__ == "__main__":
     wn = Tk()
