@@ -102,6 +102,7 @@ class product:
             messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
 
     def wind2(self):
+        self.wind.iconify()
         self.wind2 = Toplevel()
         self.wind2.resizable(width = 0, height = 0)
         self.wind2.geometry("400x200+400+400")
@@ -110,8 +111,10 @@ class product:
         self.lbuscar.place(x = 10, y = 10)
         self.ebuscar = Entry(self.wind2, width = 30)
         self.ebuscar.place(x = 150, y = 65)
-        self.bbuscar = ttk.Button(self.wind2, text = "Buscar", width = 29)
+        self.bbuscar = ttk.Button(self.wind2, text = "Buscar", width = 29, command = self.buscar)
         self.bbuscar.place(x = 150, y = 100)
+        self.linstruccion = Label(self.wind2, text = "")
+        self.linstruccion.place(x = 120, y = 135)
         self.v = IntVar()
         self.rb_producto = Radiobutton(self.wind2, text = "PRODUCTO", value = 1, variable = self.v, command = self.prueba)
         self.rb_producto.place(x = 20, y = 50)
@@ -119,13 +122,44 @@ class product:
         self.rb_cliente.place(x = 20, y = 80)
         self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = self.v, command = self.prueba)
         self.rb_pedido.place(x = 20, y = 110)
-    
+        
     def prueba(self):
+        if self.v.get() == 1:
+            self.lbuscar['text'] = "Ha seleccionado la opcion PRODUCTO"
+            self.linstruccion['text'] = "Ingrese el ID del PRODUCTO que desea buscar"
+        elif self.v.get() == 2:
+            self.lbuscar['text'] = "Ha seleccionado la opcion CLIENTE"
+            self.linstruccion['text'] = "Ingrese la CI del CLIENTE que desea buscar"
+        elif self.v.get() == 3:
+            self.lbuscar['text'] = "Ha seleccionado la opcion PEDIDO"
+            self.linstruccion['text'] = "Ingrese el ID del PEDIDO que desea buscar"
 
-        self.lbuscar = Label(self.wind2, text = "Selecciones lo que desea buscar")
-        self.lbuscar.place(x = 10, y = 10)
+    def buscar(self):
+        if len(self.ebuscar.get()) != 0 and self.v.get() != 0:
+            if self.v.get() == 1:
+                query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            elif self.v.get() == 2:
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            elif self.v.get() == 3:
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            
+            view = self.tree.get_children()
+            
+            for elementos in view:
+                self.tree.delete(elementos)
+            
+            db_rows = self.run_query(query, (parametros, ))
 
-
+            for row in db_rows:
+                self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+            
+            self.wind.deiconify()
+            self.wind2.destroy()
+        else:
+            messagebox.showwarning("ADVERTENCIA", "Debe elegir una opcion, y rellenar el campo con lo que seas buscar")
 
     def clean(self):
         self.id.delete(0, END)
