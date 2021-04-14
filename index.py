@@ -71,10 +71,10 @@ class product:
         self.bsearch.config(image = self.img)
         self.bsearch.place(x = 15, y = 15)
 
-        #self.img1=PhotoImage(file='')
-        self.bclientes= Button(self.wind,width=35, height=35,command=self.windclientes)
-        #self.bclientes.config(Image=self.img1)
-        self.bclientes.place(x=15,y=50)
+        self.img1=PhotoImage(file='clientes.png')
+        self.bclientes= Button(self.wind,width=35,height=35,command=self.windclientes)
+        self.bclientes.config(image=self.img1)
+        self.bclientes.place(x=15,y=65)
 
         self.menuvar = Menu(self.wind)
         self.menuDB = Menu(self.menuvar, tearoff = 0)
@@ -129,10 +129,11 @@ class product:
         self.rb_pedido.place(x = 20, y = 110)
         
     def windclientes (self):
-        self.wind.iconify() 
+        #self.wind.iconify() 
         self.windclientes = Toplevel()
         self.windclientes.resizable(width=0,height=0)
-        self.windclientes.geometry("800x600+400+400")
+        self.windclientes.geometry("900x500+200+50")
+        self.windclientes.iconbitmap('archivo.ico')
 
     def prueba(self):
         if self.v.get() == 1:
