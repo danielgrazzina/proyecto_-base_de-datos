@@ -228,6 +228,15 @@ class product:
         self.b_actualizar.place(x = 30, y = (self.ye + 500))
         self.b_actualizar['state'] = 'disable'
 
+        self.img7 = PhotoImage(file = 'home.png')
+        self.bprin_cliente = Button(self.windclientes, width = 35, height = 35, command = self.principal_pedido)
+        self.bprin_cliente.config(image = self.img7)
+        self.bprin_cliente.place(x = 15, y = 65)
+        Hovertip(self.bprin_cliente, text = "PANTALLA PRINCIPAL")
+
+    def principal_pedido(self):
+        self.windclientes.destroy()
+        self.wind.deiconify()
 
     def prueba(self):
         if self.v.get() == 1:
