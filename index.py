@@ -98,6 +98,8 @@ class product:
         self.bactualizar.place(x = 590, y = 160)
         Hovertip(self.bactualizar, text = "ACTUALIZAR lista")
 
+        """Esto 
+        tambien"""
         self.img5 = PhotoImage(file = 'pedido.png')
         self.bpedido = Button(self.wind, width = 35, height = 35, command = self.windpedido)
         self.bpedido.configure(image = self.img5)
@@ -189,6 +191,8 @@ class product:
         self.tree.heading('#6', text = 'DEUDA', anchor = CENTER)
         #self.obt_productos()
 
+    """Esto 
+    tambien"""
     def windpedido(self):
         self.wind.iconify()
         self.windpedido = Toplevel()
@@ -252,10 +256,14 @@ class product:
         self.tree3.heading('#4', text = 'FECHA', anchor = CENTER)
         self.obt_productos()
 
+    """Esto 
+    tambien"""
     def buscar_pedido(self):
         self.windpedido.destroy()
         self.wind2()
 
+    """Esto 
+    tambien"""
     def principal_pedido(self):
         self.windpedido.destroy()
         self.wind.deiconify()
@@ -304,6 +312,8 @@ class product:
         self.price_v.delete(0, END)
         self.amount.delete(0, END)
 
+    """Esto 
+    tambien"""
     def clean_pedido(self):
         self.ci.delete(0, END)
         self.id_pro.delete(0, END)
@@ -319,6 +329,8 @@ class product:
         for row in db_rows:
             self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
+    """Esto 
+    tambien"""
     def obt_pedidos(self):
         view = self.tree3.get_children()
         for elementos in view:
@@ -332,6 +344,8 @@ class product:
     def validacion(self):
         return len(self.id.get()) != 0 and len(self.price_c.get()) != 0 and len(self.price_v.get()) != 0 and len(self.amount.get()) != 0
 
+    """Esto 
+    tambien"""
     def validacion_pedido(self):
         return len(self.ci.get()) != 0 and len(self.id_pro.get()) != 0 and len(self.cant.get()) != 0
 
@@ -346,6 +360,8 @@ class product:
         self.obt_productos()
         self.clean()
 
+    """Esto 
+    tambien"""
     def agregar_pedido(self):
         if self.validacion_pedido():
             query = "INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)"
@@ -358,6 +374,8 @@ class product:
         self.obt_pedidos()
         self.clean_pedido()
 
+    """Esto 
+    tambien"""
     def deuda(self):
         conn = sqlite3.connect('inventario.db')
         cursor = conn.cursor()
@@ -455,6 +473,8 @@ class product:
         self.obt_productos()
         Hovertip(self.id, text = "", hover_delay = 360000)
 
+    """Esto 
+    tambien"""
     def dia(self):
         now = datetime.now()
         return now
