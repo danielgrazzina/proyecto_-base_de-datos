@@ -368,15 +368,15 @@ class product:
                 query = "SELECT * FROM pedido WHERE ID_PEDIDO = ? ORDER BY ID_PEDIDO DESC"
                 parametros = (self.ebuscar.get())
                 self.windpedido1()
-                view = self.tree2.get_children()
+                view = self.tree3.get_children()
 
                 for elementos in view:
-                    self.tree2.delete(elementos)
+                    self.tree3.delete(elementos)
                 
                 db_rows = self.run_query(query, (parametros, ))
 
                 for row in db_rows:
-                    self.tree2.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+                    self.tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
                 
                 self.wind.deiconify()
                 self.wind2.destroy()
