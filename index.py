@@ -97,6 +97,13 @@ class product:
         self.bactualizar.configure(image = self.img4)
         self.bactualizar.place(x = 590, y = 160)
 
+        "Agrege el boton de pedido"
+        self.img5 = PhotoImage(file = 'pedido.png')
+        self.bpedido = Button(self.wind, width = 35, height = 35, command = self.windpedido)
+        self.bpedido.configure(image = self.img5)
+        self.bpedido.place(x = 15, y = 115)
+        Hovertip(self.bpedido, text = "PEDIDOS")
+
         self.menuvar = Menu(self.wind)
         self.menuDB = Menu(self.menuvar, tearoff = 0)
         self.menuDB.add_command(label = "Limpiar Base De Datos 'PRODUCTO'", command = self.borrarDB)
@@ -174,7 +181,7 @@ class product:
         self.tree.heading('#4', text = 'TELEFONO', anchor = CENTER)
         self.tree.heading('#5', text = 'DIRECCION', anchor = CENTER)
         self.tree.heading('#6', text = 'DEUDA', anchor = CENTER)
-        #self.obt_productos()
+        self.obt_productos1()
 
         self.l_title = Label(self.windclientes, text = "Agregue un cliente")
         self.l_title.place(x = (self.xe), y = self.ye)
@@ -210,14 +217,14 @@ class product:
         self.deuda = Entry(self.windclientes, width = 30)
         self.deuda.place(x = (self.xe + 60), y = (self.ye + 175))
 
-        self.b_guardar = ttk.Button(self.windclientes, text = "Guardar cliente", width = 70, command =  self.agregar_producto)
+        self.b_guardar = ttk.Button(self.windclientes, text = "Guardar cliente", width = 70, command =  self.agregar_cliente)
         self.b_guardar.place(x = (self.xe - 170), y = (self.ye + 210))
 
-        self.b_eliminar = ttk.Button(self.windclientes, text = "Eliminar cliente", width = 70, command =  self.eliminar_producto)
+        self.b_eliminar = ttk.Button(self.windclientes, text = "Eliminar cliente", width = 70, command =  self.eliminar_cliente)
         self.b_eliminar.place(x = (self.xe + 35), y = (self.ye + 500))
         self.b_eliminar['state'] = 'disable'
 
-        self.b_actualizar = ttk.Button(self.windclientes, text = "Actualizar cliente", width = 70, command =  self.editar_producto)
+        self.b_actualizar = ttk.Button(self.windclientes, text = "Actualizar cliente", width = 70, command =  self.editar_cliente)
         self.b_actualizar.place(x = 30, y = (self.ye + 500))
         self.b_actualizar['state'] = 'disable'
 
@@ -239,10 +246,10 @@ class product:
                 query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
                 parametros = (self.ebuscar.get())
             elif self.v.get() == 2:
-                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY NOMBRE DESC"
                 parametros = (self.ebuscar.get())
             elif self.v.get() == 3:
-                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PRODUCTO DESC"
+                query = "SELECT * FROM pedido WHERE ID_PEDIDO = ? ORDER BY ID_PEDIDO DESC"
                 parametros = (self.ebuscar.get())
             
             view = self.tree.get_children()
@@ -283,9 +290,22 @@ class product:
         db_rows = self.run_query(query)
         for row in db_rows:
             self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+    
+    def obt_productos1(self):
+        view = self.tree.get_children()
+        for elementos in view:
+            self.tree.delete(elementos)
+            
+        query = "SELECT * FROM cliente ORDER BY CI_CLIENTE DESC"
+        db_rows = self.run_query(query)
+        for row in db_rows:
+            self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]), row[4], row[5]))
 
     def validacion(self):
         return len(self.id.get()) != 0 and len(self.price_c.get()) != 0 and len(self.price_v.get()) != 0 and len(self.amount.get()) != 0
+
+    def validacion1(self):
+        return len(self.ci_cedula.get()) != 0 and len(self.nombre.get()) != 0 and len(self.apellido.get()) != 0 and len(self.telefono.get()) != 0 and len(self.direccion.get()) != 0 and len(self.deuda.get()) != 0
 
     def agregar_producto(self):
         if self.validacion():
@@ -297,6 +317,17 @@ class product:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
         self.obt_productos()
         self.clean()
+
+        def agregar_cliente(self):
+        if self.validacion1():
+            query = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)"
+            parametros = (self.ci_cedula.get(), self.nombre.get(), self.apellido.get(), self.telefono.get(), self.direccion.get(), self.deuda.get())
+            self.run_query(query, parametros)
+            messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
+        else:
+            messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+        self.obt_productos1()
+        self.clean1()
 
     def editar_producto(self):
         if self.validacion():
