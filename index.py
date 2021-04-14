@@ -119,8 +119,7 @@ class product:
         self.rb_cliente.place(x = 20, y = 80)
         self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = self.v, command = self.prueba)
         self.rb_pedido.place(x = 20, y = 110)
-
-
+    
     def prueba(self):
 
         self.lbuscar = Label(self.wind2, text = "Selecciones lo que desea buscar")
