@@ -104,16 +104,28 @@ class product:
     def wind2(self):
         self.wind2 = Toplevel()
         self.wind2.resizable(width = 0, height = 0)
-        self.wind2.geometry("401x250+400+400")
+        self.wind2.geometry("400x200+400+400")
         self.wind2.iconbitmap('archivo.ico')
-        num = int
-        self.rb_producto = Radiobutton(self.wind2, text = "PRODUCTO", value = 1, variable = num)
-        self.rb_producto.place(x = 150, y = 50)
-        self.rb_cliente = Radiobutton(self.wind2, text = "CLIENTE", value = 2, variable = num)
-        self.rb_cliente.place(x = 150, y = 80)
-        self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = num)
-        self.rb_pedido.place(x = 150, y = 110)
-        print(num.get())
+        self.lbuscar = Label(self.wind2, text = "Selecciones lo que desea buscar")
+        self.lbuscar.place(x = 10, y = 10)
+        self.ebuscar = Entry(self.wind2, width = 30)
+        self.ebuscar.place(x = 150, y = 65)
+        self.bbuscar = ttk.Button(self.wind2, text = "Buscar", width = 29)
+        self.bbuscar.place(x = 150, y = 100)
+        self.v = IntVar()
+        self.rb_producto = Radiobutton(self.wind2, text = "PRODUCTO", value = 1, variable = self.v, command = self.prueba)
+        self.rb_producto.place(x = 20, y = 50)
+        self.rb_cliente = Radiobutton(self.wind2, text = "CLIENTE", value = 2, variable = self.v, command = self.prueba)
+        self.rb_cliente.place(x = 20, y = 80)
+        self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = self.v, command = self.prueba)
+        self.rb_pedido.place(x = 20, y = 110)
+
+
+    def prueba(self):
+
+        self.lbuscar = Label(self.wind2, text = "Selecciones lo que desea buscar")
+        self.lbuscar.place(x = 10, y = 10)
+
 
 
     def clean(self):
