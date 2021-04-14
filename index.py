@@ -99,7 +99,7 @@ class product:
 
         "Agrege el boton de pedido"
         self.img5 = PhotoImage(file = 'pedido.png')
-        self.bpedido = Button(self.wind, width = 35, height = 35, command = self.windpedido)
+        self.bpedido = Button(self.wind, width = 35, height = 35) #command = self.windpedido)
         self.bpedido.configure(image = self.img5)
         self.bpedido.place(x = 15, y = 115)
         Hovertip(self.bpedido, text = "PEDIDOS")
@@ -164,33 +164,33 @@ class product:
         self.windclientes.iconbitmap('archivo.ico')
         self.windclientes.title("Clientes")
 
-        self.tree = ttk.Treeview(self.windclientes)
-        self.tree['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO ", "TELEFONO","DIRECCION", "DEUDA")
-        self.tree.place(x = 0, y = 270)
-        self.tree.bind("<Double-Button-1>", self.seleccionar1_click)
-        self.tree.column('#0', width = 0, stretch = NO)
-        self.tree.column('#1', minwidth = 150, width=150,  anchor = CENTER)
-        self.tree.column('#2', minwidth = 150, width=150, anchor = CENTER)
-        self.tree.column('#3', minwidth = 150, width=150, anchor = CENTER)
-        self.tree.column('#4', minwidth = 150, width=150, anchor = CENTER)
-        self.tree.column('#5', minwidth = 150, width=150, anchor = CENTER)
-        self.tree.column('#6', minwidth = 150, width=150, anchor = CENTER)
-        self.tree.heading('#1', text = 'CI_CLIENTE', anchor = CENTER)
-        self.tree.heading('#2', text = 'NOMBRE', anchor = CENTER)
-        self.tree.heading('#3', text = 'APELLIDO', anchor = CENTER)
-        self.tree.heading('#4', text = 'TELEFONO', anchor = CENTER)
-        self.tree.heading('#5', text = 'DIRECCION', anchor = CENTER)
-        self.tree.heading('#6', text = 'DEUDA', anchor = CENTER)
-        self.obt_productos1()
+        self.tree1 = ttk.Treeview(self.windclientes)
+        self.tree1['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO ", "TELEFONO","DIRECCION", "DEUDA")
+        self.tree1.place(x = 0, y = 270)
+        self.tree1.bind("<Double-Button-1>", self.seleccionar1_click)
+        self.tree1.column('#0', width = 0, stretch = NO)
+        self.tree1.column('#1', minwidth = 150, width=150,  anchor = CENTER)
+        self.tree1.column('#2', minwidth = 150, width=150, anchor = CENTER)
+        self.tree1.column('#3', minwidth = 150, width=150, anchor = CENTER)
+        self.tree1.column('#4', minwidth = 150, width=150, anchor = CENTER)
+        self.tree1.column('#5', minwidth = 150, width=150, anchor = CENTER)
+        self.tree1.column('#6', minwidth = 150, width=150, anchor = CENTER)
+        self.tree1.heading('#1', text = 'CEDULA', anchor = CENTER)
+        self.tree1.heading('#2', text = 'NOMBRE', anchor = CENTER)
+        self.tree1.heading('#3', text = 'APELLIDO', anchor = CENTER)
+        self.tree1.heading('#4', text = 'TELEFONO', anchor = CENTER)
+        self.tree1.heading('#5', text = 'DIRECCION', anchor = CENTER)
+        self.tree1.heading('#6', text = 'DEUDA', anchor = CENTER)
+        self.obt_clientes()
 
         self.l_title = Label(self.windclientes, text = "Agregue un cliente")
         self.l_title.place(x = (self.xe), y = self.ye)
 
         self.l_ci_cedula = Label(self.windclientes, text = "Cedula: ")
         self.l_ci_cedula.place(x = 376, y = 40)
-        self.ci_cedula = Entry(self.windclientes, width = 30)
-        self.ci_cedula.focus()
-        self.ci_cedula.place(x = (self.xe + 60), y = (self.ye + 25))
+        self.ci_cliente = Entry(self.windclientes, width = 30)
+        self.ci_cliente.focus()
+        self.ci_cliente.place(x = (self.xe + 60), y = (self.ye + 25))
 
         self.l_nombre = Label(self.windclientes, text = "nombre: ")
         self.l_nombre.place(x = 370, y = 70)
@@ -291,21 +291,23 @@ class product:
         for row in db_rows:
             self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
     
-    def obt_productos1(self):
-        view = self.tree.get_children()
-        for elementos in view:
-            self.tree.delete(elementos)
+    def obt_clientes(self):
+        pass
+        view1 = self.tree1.get_children()
+        for elementos1 in view1:
+            self.tree1.delete(elementos1)
             
         query = "SELECT * FROM cliente ORDER BY CI_CLIENTE DESC"
-        db_rows = self.run_query(query)
-        for row in db_rows:
-            self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]), row[4], row[5]))
+        db_rows1 = self.run_query(query)
+        for row1 in db_rows1:
+            messagebox.showerror("ADVERTENCIA", "si entra en el for")
+           #self.tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]), row[4], row[5]))
 
     def validacion(self):
         return len(self.id.get()) != 0 and len(self.price_c.get()) != 0 and len(self.price_v.get()) != 0 and len(self.amount.get()) != 0
 
     def validacion1(self):
-        return len(self.ci_cedula.get()) != 0 and len(self.nombre.get()) != 0 and len(self.apellido.get()) != 0 and len(self.telefono.get()) != 0 and len(self.direccion.get()) != 0 and len(self.deuda.get()) != 0
+        return len(self.ci_cliente.get()) != 0 and len(self.nombre.get()) != 0 and len(self.apellido.get()) != 0 and len(self.telefono.get()) != 0 and len(self.direccion.get()) != 0 and len(self.deuda.get()) != 0
 
     def agregar_producto(self):
         if self.validacion():
@@ -318,15 +320,15 @@ class product:
         self.obt_productos()
         self.clean()
 
-        def agregar_cliente(self):
+    def agregar_cliente(self):
         if self.validacion1():
             query = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)"
-            parametros = (self.ci_cedula.get(), self.nombre.get(), self.apellido.get(), self.telefono.get(), self.direccion.get(), self.deuda.get())
+            parametros = (self.ci_cliente.get(), self.nombre.get(), self.apellido.get(), self.telefono.get(), self.direccion.get(), self.deuda.get())
             self.run_query(query, parametros)
             messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
         else:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        self.obt_productos1()
+        self.obt_clientes()
         self.clean1()
 
     def editar_producto(self):
@@ -344,6 +346,9 @@ class product:
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
 
+    def editar_cliente():
+        pass
+
     def eliminar_producto(self):
         try:
             if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
@@ -360,6 +365,9 @@ class product:
         self.b1["state"] = "normal"
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
+
+    def eliminar_cliente(self):
+        pass
 
         "Acabo de agregar la funcion para la operacion de mas"
     def suma_inventario(self):
