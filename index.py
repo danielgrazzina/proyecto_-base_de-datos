@@ -2,6 +2,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import *
 from tkinter import PhotoImage
+from idlelib.tooltip import Hovertip
 import sqlite3
 
 class product:
@@ -15,7 +16,7 @@ class product:
         self.wind.resizable(width = 0, height = 0)
         self.wind.geometry("802x500")
         self.wind.iconbitmap('archivo.ico')
-        
+
         self.tree = ttk.Treeview(wn)
         self.tree['columns'] = ("ID", "PRECIO_COSTO", "PRECIO_VENTA", "CANTIDAD")
         self.tree.place(x = 0, y = 200)
@@ -70,6 +71,38 @@ class product:
         self.bsearch = Button(self.wind, width = 35, height = 35, command = self.wind2)
         self.bsearch.config(image = self.img)
         self.bsearch.place(x = 15, y = 15)
+        Hovertip(self.bsearch, text = "BUSCAR")
+
+        self.img1 = PhotoImage(file = 'clientes.png')
+        self.bclientes = Button(self.wind, width = 35, height = 35, command = self.windclientes)
+        self.bclientes.config(image = self.img1)
+        self.bclientes.place(x = 15, y = 65)
+        Hovertip(self.bclientes, text = "CLIENTES")
+
+        self.img2 = PhotoImage(file = 'mas.png')
+        self.bmas = Button(self.wind, width = 15, height = 15, command = self.suma_inventario)
+        self.bmas.config(image = self.img2)
+        self.bmas.place(x = 590, y = 130)
+        Hovertip(self.bmas, text = "SUMAR la cantidad escrita en el inventario")
+
+        self.img3 = PhotoImage(file = 'menos.png')
+        self.bmenos = Button(self.wind, width = 15, height = 15, command = self.resta_inventario)
+        self.bmenos.config(image = self.img3)
+        self.bmenos.place(x = 615, y = 130)
+        Hovertip(self.bmenos, text = "RESTAR la cantidad escrita en el inventario")
+
+        self.img4 = PhotoImage(file = 'actualizar.png')
+        self.bactualizar = Button(self.wind, width = 18, height = 18, command = self.obt_productos)
+        self.bactualizar.configure(image = self.img4)
+        self.bactualizar.place(x = 590, y = 160)
+        Hovertip(self.bactualizar, text = "ACTUALIZAR lista")
+
+        "Agrege el boton de pedido"
+        self.img5 = PhotoImage(file = 'pedido.png')
+        self.bpedido = Button(self.wind, width = 35, height = 35, command = self.windpedido)
+        self.bpedido.configure(image = self.img5)
+        self.bpedido.place(x = 15, y = 115)
+        Hovertip(self.bpedido, text = "PEDIDOS")
 
         self.menuvar = Menu(self.wind)
         self.menuDB = Menu(self.menuvar, tearoff = 0)
@@ -102,6 +135,7 @@ class product:
             messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
 
     def wind2(self):
+        self.wind.iconify()
         self.wind2 = Toplevel()
         self.wind2.resizable(width = 0, height = 0)
         self.wind2.geometry("400x200+400+400")
@@ -110,8 +144,10 @@ class product:
         self.lbuscar.place(x = 10, y = 10)
         self.ebuscar = Entry(self.wind2, width = 30)
         self.ebuscar.place(x = 150, y = 65)
-        self.bbuscar = ttk.Button(self.wind2, text = "Buscar", width = 29)
+        self.bbuscar = ttk.Button(self.wind2, text = "Buscar", width = 29, command = self.buscar)
         self.bbuscar.place(x = 150, y = 100)
+        self.linstruccion = Label(self.wind2, text = "")
+        self.linstruccion.place(x = 120, y = 135)
         self.v = IntVar()
         self.rb_producto = Radiobutton(self.wind2, text = "PRODUCTO", value = 1, variable = self.v, command = self.prueba)
         self.rb_producto.place(x = 20, y = 50)
@@ -119,13 +155,73 @@ class product:
         self.rb_cliente.place(x = 20, y = 80)
         self.rb_pedido = Radiobutton(self.wind2, text = "PEDIDO", value = 3, variable = self.v, command = self.prueba)
         self.rb_pedido.place(x = 20, y = 110)
-    
+        
+    def windclientes(self):
+        #self.wind.iconify() 
+        self.windclientes = Toplevel()
+        #self.windclientes.resizable(width=0,height=0)
+        self.windclientes.geometry("800x500+200+50")
+        self.windclientes.iconbitmap('archivo.ico')
+
+        self.tree = ttk.Treeview(self.windclientes)
+        self.tree['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO ", "TELEFONO", "DIRECCION", "DEUDA")
+        self.tree.place(x = 0, y = 200)
+        #self.tree.bind("<Double-Button-1>", self.seleccionar_click)
+        self.tree.column('#0', width = 0, stretch = NO)
+        self.tree.column('#1', minwidth = 150, width = 150, anchor = CENTER)
+        self.tree.column('#2', minwidth = 200, anchor = CENTER)
+        self.tree.column('#3', minwidth = 200, anchor = CENTER)
+        self.tree.column('#4', minwidth = 200, anchor = CENTER)
+        self.tree.column('#5', minwidth = 200, anchor = CENTER)
+        self.tree.column('#6', minwidth = 200, anchor = CENTER)
+        self.tree.heading('#1', text = 'CI CLIENTE', anchor = CENTER)
+        self.tree.heading('#2', text = 'NOMBRE', anchor = CENTER)
+        self.tree.heading('#3', text = 'APELLIDO', anchor = CENTER)
+        self.tree.heading('#4', text = 'TELEFONO', anchor = CENTER)
+        self.tree.heading('#5', text = 'DIRECCION', anchor = CENTER)
+        self.tree.heading('#6', text = 'DEUDA', anchor = CENTER)
+        #self.obt_productos()
+
+    def windpedido(self):
+        pass
+
     def prueba(self):
+        if self.v.get() == 1:
+            self.lbuscar['text'] = "Ha seleccionado la opcion PRODUCTO"
+            self.linstruccion['text'] = "Ingrese el ID del PRODUCTO que desea buscar"
+        elif self.v.get() == 2:
+            self.lbuscar['text'] = "Ha seleccionado la opcion CLIENTE"
+            self.linstruccion['text'] = "Ingrese la CI del CLIENTE que desea buscar"
+        elif self.v.get() == 3:
+            self.lbuscar['text'] = "Ha seleccionado la opcion PEDIDO"
+            self.linstruccion['text'] = "Ingrese el ID del PEDIDO que desea buscar"
 
-        self.lbuscar = Label(self.wind2, text = "Selecciones lo que desea buscar")
-        self.lbuscar.place(x = 10, y = 10)
+    def buscar(self):
+        if len(self.ebuscar.get()) != 0 and self.v.get() != 0:
+            if self.v.get() == 1:
+                query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
+                parametros = (self.ebuscar.get())
+            elif self.v.get() == 2:
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY NOMBRE DESC"
+                parametros = (self.ebuscar.get())
+            elif self.v.get() == 3:
+                query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY ID_PEDIDO DESC"
+                parametros = (self.ebuscar.get())
+            
+            view = self.tree.get_children()
+            
+            for elementos in view:
+                self.tree.delete(elementos)
+            
+            db_rows = self.run_query(query, (parametros, ))
 
-
+            for row in db_rows:
+                self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+            
+            self.wind.deiconify()
+            self.wind2.destroy()
+        else:
+            messagebox.showerror("ADVERTENCIA", "Debe elegir una opcion, y rellenar el campo con lo que seas buscar")
 
     def clean(self):
         self.id.delete(0, END)
@@ -159,17 +255,19 @@ class product:
 
     def editar_producto(self):
         if self.validacion():
-            query = '''UPDATE producto SET ID_PRODUCTO = ?, PRECIO_COSTO = ?, PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ?'''
-            parametros = (self.id.get(), self.price_c.get(), self.price_v.get(), self.amount.get())
+            parametros = (self.price_c.get(), self.price_v.get(), self.amount.get(), self.id.get())
+            query = ("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
             self.run_query(query, parametros)
             messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
         else:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
         self.obt_productos()
+        self.id.configure(state = 'normal')
         self.clean()
         self.b1["state"] = "normal"
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
+        Hovertip(self.id, text = "", hover_delay = 360000)
 
     def eliminar_producto(self):
         try:
@@ -182,11 +280,48 @@ class product:
             messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
             return
         self.obt_productos()
+        self.id.configure(state = 'normal')
         self.clean()
         self.b1["state"] = "normal"
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
+        Hovertip(self.id, text = "", hover_delay = 360000)
 
+    def suma_inventario(self):
+        if len(self.amount.get()) != 0: 
+            cant_n = int(self.amount.get())
+            self.suma = int(self.cant_v) + cant_n
+            query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+            parametros = (self.suma, self.Id_operacion)
+            self.run_query(query, parametros)
+            messagebox.showinfo("BASE DE DATOS", "Se han sumado las cantidades al inventario")
+        else:
+            messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+        self.id.configure(state = 'normal')
+        self.b1["state"] = "normal"
+        self.b2["state"] = "disable"
+        self.b3["state"] = "disable"
+        self.clean()
+        self.obt_productos()
+        Hovertip(self.id, text = "", hover_delay = 360000)
+
+    def resta_inventario(self):
+        if len(self.amount.get()) != 0: 
+            cant_n = int(self.amount.get())
+            self.resta = int(self.cant_v) - cant_n
+            query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+            parametros = (self.resta, self.Id_operacion)
+            self.run_query(query, parametros)
+            messagebox.showinfo("BASE DE DATOS", "Se han restado las cantidades al inventario")
+        else:
+            messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+        self.id.configure(state = 'normal')
+        self.b1["state"] = "normal"
+        self.b2["state"] = "disable"
+        self.b3["state"] = "disable"
+        self.clean()
+        self.obt_productos()
+        Hovertip(self.id, text = "", hover_delay = 360000)
 
     def seleccionar_click(self, event):
         self.clean()
@@ -199,6 +334,10 @@ class product:
         self.price_c.insert(0, self.values[1])
         self.price_v.insert(0, self.values[2])
         self.amount.insert(0, self.values[3])
+        self.cant_v = self.values[3]
+        self.Id_operacion = self.values[0]
+        self.id.configure(state = 'disable')
+        self.hover1 = Hovertip(self.id, text = "No puede cambiar el ID de los productos ya ingresados", hover_delay = 100)
 
 if __name__ == "__main__":
     wn = Tk()
