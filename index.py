@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter import *
 from tkinter import PhotoImage
 from idlelib.tooltip import Hovertip
+from datetime import datetime
 import sqlite3
 
 class product:
@@ -99,7 +100,7 @@ class product:
 
         "Agrege el boton de pedido"
         self.img5 = PhotoImage(file = 'pedido.png')
-        self.bpedido = Button(self.wind, width = 35, height = 35) #command = self.windpedido)
+        self.bpedido = Button(self.wind, width = 35, height = 35, command = self.windpedido1)
         self.bpedido.configure(image = self.img5)
         self.bpedido.place(x = 15, y = 115)
         Hovertip(self.bpedido, text = "PEDIDOS")
@@ -228,14 +229,94 @@ class product:
         self.b_actualizar.place(x = 30, y = (self.ye + 500))
         self.b_actualizar['state'] = 'disable'
 
+        self.bpsearch = Button(self.windclientes1, width = 35, height = 35, command = self.buscar_cliente)
+        self.bpsearch.config(image = self.img)
+        self.bpsearch.place(x = 15, y = 15)
+        Hovertip(self.bsearch, text = "BUSCAR")
+
         self.img7 = PhotoImage(file = 'home.png')
         self.bprin_cliente = Button(self.windclientes1, width = 35, height = 35, command = self.principal_cliente)
         self.bprin_cliente.config(image = self.img7)
         self.bprin_cliente.place(x = 15, y = 65)
         Hovertip(self.bprin_cliente, text = "PANTALLA PRINCIPAL")
 
+    def windpedido1(self):
+        self.wind.iconify()
+        self.windpedido = Toplevel()
+        self.windpedido.resizable(width = 0, height = 0)
+        self.windpedido.geometry("800x500")
+        self.windpedido.iconbitmap('archivo.ico')
+
+        self.l2 = Label(self.windpedido, text = "Ingrese un pedido")
+        self.l2.place(x = 345, y = 40)
+
+        self.lci = Label(self.windpedido, text = "CI: ")
+        self.lci.place(x = 356, y = 65)
+        self.ci = Entry(self.windpedido, width = 30)
+        self.ci.focus()
+        self.ci.place(x = 400, y = 65)
+
+        self.lid_pro = Label(self.windpedido, text = "ID Producto: ")
+        self.lid_pro.place(x = 304, y = 95)
+        self.id_pro = Entry(self.windpedido, width = 30)
+        self.id_pro.place(x = 400, y = 95)
+
+        self.lcant = Label(self.windpedido, text = "Cantidad Producto: ")
+        self.lcant.place(x = 267, y = 125)
+        self.cant = Entry(self.windpedido, width = 30)
+        self.cant.place(x = 400, y = 125)
+
+        self.bgpedido = ttk.Button(self.windpedido, text = "Guardar Pedido", width = 60, command = self.agregar_pedido)
+        self.bgpedido.place(x = 215, y = 160)
+
+        self.bepedido = ttk.Button(self.windpedido, text = "Eliminar Pedido", width = 60, command =  self.eliminar_producto)
+        self.bepedido.place(x = 400, y = 450)
+        self.bepedido['state'] = 'disable'
+
+        self.bapedido = ttk.Button(self.windpedido, text = "Actualizar Pedido", width = 60, command =  self.editar_producto)
+        self.bapedido.place(x = 30, y = 450)
+        self.bapedido['state'] = 'disable'
+
+        self.bpsearch = Button(self.windpedido, width = 35, height = 35, command = self.buscar_pedido)
+        self.bpsearch.config(image = self.img)
+        self.bpsearch.place(x = 15, y = 15)
+        Hovertip(self.bsearch, text = "BUSCAR")
+
+        self.img6 = PhotoImage(file = 'home.png')
+        self.bprin_pedido = Button(self.windpedido, width = 35, height = 35, command = self.principal_pedido)
+        self.bprin_pedido.config(image = self.img6)
+        self.bprin_pedido.place(x = 15, y = 65)
+        Hovertip(self.bprin_pedido, text = "PANTALLA PRINCIPAL")
+
+        self.tree3 = ttk.Treeview(self.windpedido)
+        self.tree3['columns'] = ("CI", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
+        self.tree3.place(x = 0, y = 200)
+        self.tree3.bind("<Double-Button-1>", self.seleccionar_click)
+        self.tree3.column('#0', width = 0, stretch = NO)
+        self.tree3.column('#1', minwidth = 200, anchor = CENTER)
+        self.tree3.column('#2', minwidth = 200, anchor = CENTER)
+        self.tree3.column('#3', minwidth = 200, anchor = CENTER)
+        self.tree3.column('#4', minwidth = 200, anchor = CENTER)
+        self.tree3.heading('#1', text = 'CI CLIENTE', anchor = CENTER)
+        self.tree3.heading('#2', text = 'ID PRODUCTO', anchor = CENTER)
+        self.tree3.heading('#3', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
+        self.tree3.heading('#4', text = 'FECHA', anchor = CENTER)
+        self.obt_productos()
+
+    def buscar_cliente(self):
+        self.windclientes1.destroy()
+        self.windbuscar()
+
     def principal_cliente(self):
         self.windclientes1.destroy()
+        self.wind.deiconify()
+    
+    def buscar_pedido(self):
+        self.windpedido.destroy()
+        self.windbuscar()
+
+    def principal_pedido(self):
+        self.windpedido.destroy()
         self.wind.deiconify()
 
     def prueba(self):
@@ -286,6 +367,19 @@ class product:
             elif self.v.get() == 3:
                 query = "SELECT * FROM pedido WHERE ID_PEDIDO = ? ORDER BY ID_PEDIDO DESC"
                 parametros = (self.ebuscar.get())
+                self.windpedido1()
+                view = self.tree2.get_children()
+
+                for elementos in view:
+                    self.tree2.delete(elementos)
+                
+                db_rows = self.run_query(query, (parametros, ))
+
+                for row in db_rows:
+                    self.tree2.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+                
+                self.wind.deiconify()
+                self.wind2.destroy()
             
             
         else:
@@ -304,6 +398,11 @@ class product:
         self.telefono.delete(0, END)
         self.direccion.delete(0, END)
         self.deuda.delete(0, END)
+
+    def clean_pedido(self):
+        self.ci.delete(0, END)
+        self.id_pro.delete(0, END)
+        self.cant.delete(0, END)
 
     def obt_productos(self):
         view = self.tree.get_children()
@@ -325,11 +424,24 @@ class product:
         for row in db_rows:
             self.tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
+    def obt_pedidos(self):
+        view = self.tree3.get_children()
+        for elementos in view:
+            self.tree3.delete(elementos)
+
+        query = "SELECT * FROM pedido ORDER BY CI_CLIENTE DESC"
+        db_rows = self.run_query(query)
+        for row in db_rows:
+            self.tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
+
     def validacion(self):
         return len(self.id.get()) != 0 and len(self.price_c.get()) != 0 and len(self.price_v.get()) != 0 and len(self.amount.get()) != 0
 
     def validacion1(self):
         return len(self.ci_cliente.get()) != 0 and len(self.nombre.get()) != 0 and len(self.apellido.get()) != 0 and len(self.telefono.get()) != 0 and len(self.direccion.get()) != 0 and len(self.deuda.get()) != 0
+
+    def validacion_pedido(self):
+        return len(self.ci.get()) != 0 and len(self.id_pro.get()) != 0 and len(self.cant.get()) != 0
 
     def agregar_producto(self):
         if self.validacion():
@@ -352,6 +464,44 @@ class product:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
         self.obt_clientes()
         self.clean1()
+
+    def agregar_pedido(self):
+        if self.validacion_pedido():
+            query = "INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)"
+            parametros = (self.ci.get(), self.id_pro.get(), self.cant.get(), self.dia())
+            self.run_query(query, parametros)
+            self.deuda()
+            messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
+        else:
+            messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+        self.obt_pedidos()
+        self.clean_pedido()
+
+    def deuda_fun(self):
+        conn = sqlite3.connect('inventario.db')
+        cursor = conn.cursor()
+        query = ("SELECT PRECIO_VENTA FROM producto WHERE ID_PRODUCTO = ?")
+        parametros = str(self.id_pro.get())
+        self.run_query(query, parametros)
+        precio = cursor.fetchone()
+        if precio:
+            query = ("SELECT DEUDA FROM cliente WHERE CI_CLIENTE = ?")
+            parametros = (self.ci.get())
+            self.run_query(query, parametros)
+            deuda1 = cursor.fetchone()
+            print(self.deuda1)
+            if deuda1:
+                cant_deuda = cant.get()
+                self.total = (int(cant_deuda) * int(precio)) + int(deuda)
+        #print(self.total)
+        #print(self.precio.get())
+                query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
+                parametros = (self.total, self.ci.get())
+                self.run_query(query, parametros)
+            else:
+                messagebox.showerror("JAJA", "Te la creiste wey 2")
+        else:
+            messagebox.showerror("JAJA", "Te la creiste wey")
 
     def editar_producto(self):
         if self.validacion():
@@ -452,6 +602,10 @@ class product:
         self.b3["state"] = "disable"
         self.clean()
         self.obt_productos()
+    
+    def dia(self):
+        now = datetime.now()
+        return now
 
     def seleccionar_click(self, event):
         self.clean()
