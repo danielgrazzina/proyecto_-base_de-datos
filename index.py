@@ -2,6 +2,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import *
 from tkinter import PhotoImage
+from idlelib.tooltip import Hovertip
 import sqlite3
 
 class product:
@@ -205,13 +206,14 @@ class product:
 
     def editar_producto(self):
         if self.validacion():
-            query = '''UPDATE producto SET ID_PRODUCTO = ?, PRECIO_COSTO = ?, PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ?'''
-            parametros = (self.id.get(), self.price_c.get(), self.price_v.get(), self.amount.get())
+            parametros = (self.price_c.get(), self.price_v.get(), self.amount.get(), self.id.get())
+            query = ("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
             self.run_query(query, parametros)
             messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
         else:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
         self.obt_productos()
+        self.id.configure(state = 'normal')
         self.clean()
         self.b1["state"] = "normal"
         self.b2["state"] = "disable"
@@ -228,6 +230,7 @@ class product:
             messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
             return
         self.obt_productos()
+        self.id.configure(state = 'normal')
         self.clean()
         self.b1["state"] = "normal"
         self.b2["state"] = "disable"
@@ -245,6 +248,8 @@ class product:
         self.price_c.insert(0, self.values[1])
         self.price_v.insert(0, self.values[2])
         self.amount.insert(0, self.values[3])
+        self.id.configure(state = 'disable')
+        Hovertip(self.id, text = "No puede cambiar el ID de los productos ya ingresados", hover_delay = 100)
 
 if __name__ == "__main__":
     wn = Tk()
