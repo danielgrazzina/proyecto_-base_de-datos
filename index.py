@@ -203,3 +203,4 @@ class product:
 if __name__ == "__main__":
     wn = Tk()
     app = product(wn)
+    wn.mainloop()
