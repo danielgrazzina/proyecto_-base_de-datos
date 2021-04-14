@@ -292,17 +292,14 @@ class product:
             self.tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
     
     def obt_clientes(self):
-        pass
         view = self.tree1.get_children()
         for elementos in view:
             self.tree1.delete(elementos)
             
-        query = "SELECT * FROM cliente ORDER BY CI_CLIENTE DESC"
-        db_rows = self.run_query(query)
+        query = "SELECT * FROM cliente ORDER BY NOMBRE DESC"
+        db_rows = self.run_query(query) 
         for row in db_rows:
-            #messagebox.showerror("ADVERTENCIA", "si entra en el for")
             self.tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
-           #SyntaxError: positional argument follows keyword argument
 
     def validacion(self):
         return len(self.id.get()) != 0 and len(self.price_c.get()) != 0 and len(self.price_v.get()) != 0 and len(self.amount.get()) != 0
@@ -347,8 +344,20 @@ class product:
         self.b2["state"] = "disable"
         self.b3["state"] = "disable"
 
-    def editar_cliente():
-        pass
+    def editar_cliente(self):
+        if self.validacion1():
+            parametros = (self.nombre.get(), self.apellido.get(), self.telefono.get(), self.direccion.get(), self.deuda.get(), self.ci_cliente.get())
+            query = ("UPDATE cliente SET NOMBRE = ? , APELLIDO = ?, TELEFONO = ?, DIRECCION = ?, DEUDA = ? WHERE CI_CLIENTE = ?")
+            self.run_query(query, parametros)
+            messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
+        else:
+            messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+        self.obt_clientes()
+        self.ci_cliente.configure(state = 'normal')
+        self.clean1()
+        self.b_guardar["state"] = "normal"
+        self.b_eliminar["state"] = "disable"
+        self.b_actualizar["state"] = "disable"
 
     def eliminar_producto(self):
         try:
@@ -368,7 +377,21 @@ class product:
         self.b3["state"] = "disable"
 
     def eliminar_cliente(self):
-        pass
+        try:
+            if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
+                query = "DELETE FROM cliente WHERE CI_CLIENTE = ?"
+                parametros = self.ci_cliente.get()
+                self.run_query(query, (parametros, ))
+                messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
+        except:
+            messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
+            return
+        self.obt_clientes()
+        self.ci_cliente.configure(state = 'normal')
+        self.clean1()
+        self.b_actualizar["state"] = "normal"
+        self.b_eliminar["state"] = "disable"
+        self.b_actualizar["state"] = "disable"
 
         "Acabo de agregar la funcion para la operacion de mas"
     def suma_inventario(self):
@@ -427,8 +450,8 @@ class product:
         self.b_guardar["state"] = "disable"
         self.b_actualizar["state"] = "normal"
         self.b_eliminar["state"] = "normal"
-        self.selected = self.tree.focus()
-        self.values = self.tree.item(self.selected, 'values')
+        self.selected = self.tree1.focus()
+        self.values = self.tree1.item(self.selected, 'values')
         self.ci_cliente.insert(0, self.values[0])
         self.nombre.insert(0, self.values[1])
         self.apellido.insert(0, self.values[2])
