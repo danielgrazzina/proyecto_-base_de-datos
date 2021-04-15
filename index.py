@@ -512,7 +512,7 @@ class product:
         else:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
         self.obt_productos()
-        self.id.configure(state = 'normal')
+        self.id.configure(state = 'normal')  
         self.clean()
         self.b1["state"] = "normal"
         self.b2["state"] = "disable"
