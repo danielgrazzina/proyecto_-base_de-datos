@@ -301,7 +301,7 @@ class product:
         self.tree3.heading('#2', text = 'ID PRODUCTO', anchor = CENTER)
         self.tree3.heading('#3', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
         self.tree3.heading('#4', text = 'FECHA', anchor = CENTER)
-        self.obt_productos()
+        self.obt_pedidos()
 
     def buscar_cliente(self):
         self.windclientes1.destroy()
@@ -472,10 +472,11 @@ class product:
             self.run_query(query, parametros)
             self.deuda_fun()
             messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
+            self.obt_pedidos()
         else:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        self.obt_pedidos()
-        self.clean_pedido()
+        
+        #self.clean_pedido()
 
     def deuda_fun(self):
         conn = sqlite3.connect('inventario.db')
