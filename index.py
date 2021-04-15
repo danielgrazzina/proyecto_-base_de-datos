@@ -365,7 +365,7 @@ class product:
                 self.wind.deiconify()
                 self.wind2.destroy()
             elif self.v.get() == 3:
-                query = "SELECT * FROM pedido WHERE ID_PEDIDO = ? ORDER BY ID_PEDIDO DESC"
+                query = "SELECT * FROM pedido WHERE ID = ? ORDER BY ID DESC"
                 parametros = (self.ebuscar.get())
                 self.windpedido1()
                 view = self.tree3.get_children()
@@ -470,7 +470,7 @@ class product:
             query = "INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)"
             parametros = (self.ci.get(), self.id_pro.get(), self.cant.get(), self.dia())
             self.run_query(query, parametros)
-            self.deuda()
+            self.deuda_fun()
             messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
         else:
             messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
@@ -481,27 +481,26 @@ class product:
         conn = sqlite3.connect('inventario.db')
         cursor = conn.cursor()
         query = ("SELECT PRECIO_VENTA FROM producto WHERE ID_PRODUCTO = ?")
-        parametros = str(self.id_pro.get())
-        self.run_query(query, parametros)
+        parametros = self.id_pro.get()
+        cursor.execute(query, (parametros, ))
         precio = cursor.fetchone()
+        self.valor_precio = precio[0]
         if precio:
             query = ("SELECT DEUDA FROM cliente WHERE CI_CLIENTE = ?")
             parametros = (self.ci.get())
-            self.run_query(query, parametros)
-            deuda1 = cursor.fetchone()
-            print(self.deuda1)
-            if deuda1:
-                cant_deuda = cant.get()
-                self.total = (int(cant_deuda) * int(precio)) + int(deuda)
-        #print(self.total)
-        #print(self.precio.get())
+            cursor.execute(query, (parametros, ))
+            self.deuda1 = cursor.fetchone()
+            self.valor_deuda = self.deuda1[0]
+            if self.deuda1:
+                cant_deuda = self.cant.get()
+                self.total = (int(cant_deuda) * self.valor_precio) + self.valor_deuda
                 query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
                 parametros = (self.total, self.ci.get())
                 self.run_query(query, parametros)
             else:
-                messagebox.showerror("JAJA", "Te la creiste wey 2")
+                messagebox.showerror("ERROR", "Debe ingresar un cliente y su deuda")
         else:
-            messagebox.showerror("JAJA", "Te la creiste wey")
+            messagebox.showerror("ERROR", "Debe ingresar un producto y su precio de venta")
 
     def editar_producto(self):
         if self.validacion():
