@@ -4,29 +4,31 @@ from tkinter import *
 from tkinter import PhotoImage
 from idlelib.tooltip import Hovertip
 from datetime import datetime
+import time
 import sqlite3
 
-tu_clave = []
-seleccion = ""
-op_producto = 9
-op_cliente = 9
-op_pedido = 9
-clean_total = 0
-resultado = []
+tu_clave=[]
+seleccion=""
+op_producto=9
+op_cliente=9
+op_pedido=9
+clean_total=0
+resultado=[]
 now = datetime.now()
+str_now = now.strftime("%d/%m/%Y")
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
     miconexion=sqlite3.connect("inventario.db")
     micursor=miconexion.cursor()
-
+    
     if op_BD == 0:
         # consultar
         if tabla ==  0:
             # tabla producto
             if op_producto == 0:
                 #id_producto
-                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",(seleccion, ))
+                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",seleccion)
                 resultado=micursor.fetchone()
                 return resultado   
             elif op_producto == 1:
@@ -80,6 +82,10 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("SELECT * FROM cliente WHERE DEUDA = ?",seleccion)
                 resultado=micursor.fetchone()
                 return resultado
+            elif op_cliente == 6:
+                micursor.execute("SELECT * FROM cliente ORDER BY NOMBRE DESC")
+                resultado=micursor.fetchall()
+                return resultado
         elif tabla == 3:
             # tabla pedido
             if op_pedido == 0:
@@ -104,7 +110,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 return resultado
             elif op_pedido == 4:
                 # fecha
-                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",seleccion)
+                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",(seleccion, ))
                 resultado=micursor.fetchone()
                 return resultado
             elif op_pedido == 5:
@@ -152,8 +158,9 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             row0=tu_clave[0]
             row1=tu_clave[1]
             row2=tu_clave[2]
+            row3=tu_clave[3]
             
-            micursor.execute("UPDATE producto SET ID_PEDIDO = NULL, ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?",(row1,row2,now,row0))
+            micursor.execute("UPDATE producto SET CI_CLIENTE = ? , ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE ID_PEDIDO = ?",(row1,row2,row3,row0))
             miconexion.commit() 
 
     elif op_BD == 3:
@@ -186,7 +193,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
                 miconexion.commit()
     miconexion.close()
-
+    
 def borrarPRODUCTO():
     op_BD = 3
     tabla = 0
@@ -200,7 +207,7 @@ def validacion():
 def obt_productos():
     view = tree.get_children()
     for elementos in view:
-        tree.delete(elementos)
+         tree.delete(elementos)
     op_BD=0
     tabla=0
     op_producto=4
@@ -395,12 +402,40 @@ def windbuscar():
 
 def windclientes():
     def validacion1():
-        pass
+        return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
 
     def obt_clientes():
-        pass
+        view = tree1.get_children()
+        for elementos in view:
+            tree1.delete(elementos)
+        op_BD=0
+        tabla=1
+        tu_clave=[]
+        seleccion=""
+        op_cliente=6
+        resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente))
+          
+        for row in resultado:
+            tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
+        validacion1()
+        tu_clave=[]
+        tu_clave.append(ci_cliente.get())
+        tu_clave.append(nombre.get())
+        tu_clave.append(apellido.get())
+        tu_clave.append(telefono.get())
+        tu_clave.append(direccion.get())
+        tu_clave.append(deuda.get())
+        op_BD=1
+        tabla=1
+        base_datos(op_BD,tabla,tu_clave)
+        clean1()
+        obt_clientes()      
+
+    def editar_cliente():
+        validacion1()
+        tu_clave=[]
         tu_clave.append(ci_cliente.get())
         tu_clave.append(nombre.get())
         tu_clave.append(apellido.get())
@@ -409,14 +444,21 @@ def windclientes():
         tu_clave.append(deuda.get())
         op_BD=2
         tabla=1
-        base_datos(op_BD, tabla, tu_clave)
-        clean()
-
-    def editar_cliente():
-        pass
+        base_datos(op_BD,tabla,tu_clave)
+        ci_cliente.configure(state = 'normal')
+        clean1()
+        obt_clientes()
 
     def eliminar_cliente():
-        pass
+        validacion1()
+        tu_clave=[]
+        tu_clave.append(ci_cliente.get())
+        op_BD=3
+        tabla=1
+        base_datos(op_BD,tabla,tu_clave)
+        ci_cliente.configure(state = 'normal')
+        clean1()
+        obt_clientes()
 
     def clean1():
         ci_cliente.delete(0, END)
@@ -435,7 +477,20 @@ def windclientes():
         wind.deiconify()
 
     def seleccionar1_click(event):
-        pass
+        clean1()
+        b_guardar["state"] = "disable"
+        b_actualizar["state"] = "normal"
+        b_eliminar["state"] = "normal"
+        selected = tree1.focus()
+        values = tree1.item(selected, 'values')
+        ci_cliente.insert(0, values[0])
+        nombre.insert(0, values[1])
+        apellido.insert(0, values[2])
+        telefono.insert(0, values[3])
+        direccion.insert(0, values[4])
+        deuda.insert(0, values[5])
+        ci_cliente.configure(state = 'disable')
+        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
 
     wind.iconify() 
     windclientes1 = Toplevel()
@@ -460,8 +515,8 @@ def windclientes():
     tree1.heading('#4', text = 'TELEFONO', anchor = CENTER)
     tree1.heading('#5', text = 'DIRECCION', anchor = CENTER)
     tree1.heading('#6', text = 'DEUDA', anchor = CENTER)
-    #tree1.bind("<Double-Button-1>", seleccionar1_click)
-    #obt_clientes()
+    tree1.bind("<Double-Button-1>", seleccionar1_click)
+    obt_clientes()
 
     l_title = Label(windclientes1, text = "Agregue un cliente")
     l_title.place(x = 400, y = 10)
@@ -549,7 +604,7 @@ def windpedido1():
         op_pedido=5
         resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
         for row in resultado:
-            tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
+            tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
 
     def agregar_pedido():
         if validacion_pedido():
@@ -594,7 +649,7 @@ def windpedido1():
                 tu_clave.append(eci.get())
                 tu_clave.append(eid_pro.get())
                 tu_clave.append(ecant.get())
-                tu_clave.append(now)
+                tu_clave.append(str_now)
                 op_BD = 1
                 tabla = 2
                 base_datos(op_BD, tabla, tu_clave)
@@ -614,55 +669,123 @@ def windpedido1():
         eci.delete(0, END)
         eid_pro.delete(0, END)
         ecant.delete(0, END)
+        enumero_factura.delete(0, END)
+
+    def eliminar_pedido():
+        enumero_factura.configure(state = 'normal')
+        if validacion_pedido():
+            tu_clave = []
+            seleccion = eid_pro.get()
+            op_BD=0
+            tabla=0
+            op_producto = 0
+            resultado1 = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+            disminuir_inventario = int(resultado1[3]) + int(ecant.get())
+            tu_clave = []
+            tu_clave.append(resultado1[0])
+            tu_clave.append(resultado1[1])
+            tu_clave.append(resultado1[2])
+            tu_clave.append(disminuir_inventario)
+            op_BD = 2
+            tabla = 0
+            seleccion = eid_pro.get()
+            base_datos(op_BD, tabla, tu_clave, seleccion)
+            tu_clave = []
+            op_producto = 9
+            seleccion = eci.get()
+            op_BD=0
+            tabla=1
+            op_cliente = 0
+            resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente))
+            if (int(ecant.get()) * int(resultado1[2])) < resultado[5]:
+                sumar_deuda = resultado[5] - (int(ecant.get()) * int(resultado1[2])) 
+                tu_clave = []
+                tu_clave.append(resultado[0])
+                tu_clave.append(resultado[1])
+                tu_clave.append(resultado[2])
+                tu_clave.append(resultado[3])
+                tu_clave.append(resultado[4])
+                tu_clave.append(resultado[5])
+                tu_clave.remove(resultado[5])
+                tu_clave.append(sumar_deuda)
+            else:
+                messagebox.showerror("ERROR", "Hubo un error al eliminar datos datos")
+            op_BD=2
+            tabla=1
+            base_datos(op_BD, tabla, tu_clave)
+            tu_clave = []
+            tu_clave.append(enumero_factura.get())
+            op_BD = 3
+            tabla = 2
+            base_datos(op_BD, tabla, tu_clave)
+            messagebox.showinfo("BASE DE DATOS", "Se elimino correctamente el pedido y se actualizaron los campos inventario y deuda")
+        else:
+            messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+        eci.configure(state = 'normal')
+        eid_pro.configure(state = 'normal')
+        ecant.configure(state = 'normal')
+        bgpedido["state"] = "normal"
+        bepedido["state"] = "disable"
+        obt_pedidos()
+        obt_productos()
+        clean_pedido()
+        enumero_factura.configure(state = 'disable')
 
     def seleccionar_click2(event):
         clean()
+        enumero_factura.configure(state = 'normal')
         bgpedido["state"] = "disable"
-        bapedido["state"] = "normal"
         bepedido["state"] = "normal"
         selected = tree3.focus()
         values = tree3.item(selected, 'values')
-        eci.insert(0, values[0])
-        eid_pro.insert(0, values[1])
-        ecant.insert(0, values[2])
+        enumero_factura.insert(0, values[0])
+        eci.insert(0, values[1])
+        eid_pro.insert(0, values[2])
+        ecant.insert(0, values[3])
         eci.configure(state = 'disable')
+        if messagebox.askyesno(message="¿Desea usar la funcion eliminar pedido?", title="CONFIRMACION"):
+            eid_pro.configure(state = 'disable')
+            ecant.configure(state = 'disable')
         Hovertip(eci, text = "No puede actualizar la CI Cliente de los pedidos ya ingresados", hover_delay = 100)
+        enumero_factura.configure(state = 'disable')
        
     wind.iconify()
     windpedido = Toplevel()
     windpedido.resizable(width = 0, height = 0)
-    windpedido.geometry("800x500")
+    windpedido.geometry("1000x500")
     windpedido.iconbitmap('archivo.ico')
 
     l2 = Label(windpedido, text = "Ingrese un pedido")
-    l2.place(x = 345, y = 40)
+    l2.place(x = 445, y = 5)
+
+    lnumero_factura = Label(windpedido, text = "Numero Factura: ")
+    lnumero_factura.place(x = 383, y = 35)
+    enumero_factura = Entry(windpedido, width = 30)
+    enumero_factura.place(x = 500, y = 35)
+    enumero_factura.configure(state = 'disable')
 
     lci = Label(windpedido, text = "CI Cliente: ")
-    lci.place(x = 316, y = 65)
+    lci.place(x = 416, y = 65)
     eci = Entry(windpedido, width = 30)
     eci.focus()
-    eci.place(x = 400, y = 65)
+    eci.place(x = 500, y = 65)
 
     lid_pro = Label(windpedido, text = "ID Producto: ")
-    lid_pro.place(x = 304, y = 95)
+    lid_pro.place(x = 404, y = 95)
     eid_pro = Entry(windpedido, width = 30)
-    eid_pro.place(x = 400, y = 95)
+    eid_pro.place(x = 500, y = 95)
 
     lcant = Label(windpedido, text = "Cantidad Producto: ")
-    lcant.place(x = 267, y = 125)
+    lcant.place(x = 367, y = 125)
     ecant = Entry(windpedido, width = 30)
-    ecant.place(x = 400, y = 125)
+    ecant.place(x = 500, y = 125)
 
     bgpedido = ttk.Button(windpedido, text = "Guardar Pedido", width = 60, command =  lambda: agregar_pedido())
-    bgpedido.place(x = 215, y = 160)
+    bgpedido.place(x = 315, y = 160)
 
-    bepedido = ttk.Button(windpedido, text = "Eliminar Pedido", width = 60)
-    bepedido.place(x = 400, y = 450)
+    bepedido = ttk.Button(windpedido, text = "Eliminar Pedido", width = 60, command = lambda: eliminar_pedido())
+    bepedido.place(x = 315, y = 450)
     bepedido['state'] = 'disable'
-
-    bapedido = ttk.Button(windpedido, text = "Actualizar Pedido", width = 60, command = lambda: editar_pedido_inventario())
-    bapedido.place(x = 30, y = 450)
-    bapedido['state'] = 'disable'
 
     bpsearch = Button(windpedido, width = 35, height = 35, command = lambda: buscar_pedido())
     bpsearch.config(image = img)
@@ -679,24 +802,26 @@ def windpedido1():
     "Acabo de agregar el boton actualizar"
     img4 = PhotoImage(file = 'actualizar_tree.png')
     bactualizar_cliente = Button(windpedido, image = img4, width = 18, height = 18, command = lambda: obt_pedidos())
-    bactualizar_cliente.place(x = 590, y = 160)
+    bactualizar_cliente.place(x = 690, y = 160)
     bactualizar_cliente.image_names = img4
     bactualizar_cliente.config(image = img4)
     Hovertip(bactualizar_cliente, text = "Actualizar Lista", hover_delay = 100)
 
     tree3 = ttk.Treeview(windpedido)
-    tree3['columns'] = ("CI", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
+    tree3['columns'] = ("N_FACTURA", "CI_CLIENTE", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
     tree3.place(x = 0, y = 200)
-    #tree3.bind("<Double-Button-1>", seleccionar_click2)
+    tree3.bind("<Double-Button-1>", seleccionar_click2)
     tree3.column('#0', width = 0, stretch = NO)
     tree3.column('#1', minwidth = 200, anchor = CENTER)
     tree3.column('#2', minwidth = 200, anchor = CENTER)
     tree3.column('#3', minwidth = 200, anchor = CENTER)
     tree3.column('#4', minwidth = 200, anchor = CENTER)
-    tree3.heading('#1', text = 'CI CLIENTE', anchor = CENTER)
-    tree3.heading('#2', text = 'ID PRODUCTO', anchor = CENTER)
-    tree3.heading('#3', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
-    tree3.heading('#4', text = 'FECHA', anchor = CENTER)
+    tree3.column('#5', minwidth = 200, anchor = CENTER)
+    tree3.heading('#1', text = 'NUMERO FACTURA', anchor = CENTER)
+    tree3.heading('#2', text = 'CI CLIENTE', anchor = CENTER)
+    tree3.heading('#3', text = 'ID PRODUCTO', anchor = CENTER)
+    tree3.heading('#4', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
+    tree3.heading('#5', text = 'FECHA', anchor = CENTER)
     obt_pedidos()
 
 wn = Tk()
