@@ -7,78 +7,84 @@ from datetime import datetime
 import sqlite3
 
 def run_query(query, parametros = ()):
-        with sqlite3.connect('inventario.db') as conn:
-            cursor = conn.cursor()
-            result = cursor.execute(query, parametros)
-            conn.commit()
-        return result
+    pass
+        # with sqlite3.connect('inventario.db') as conn:
+        #     cursor = conn.cursor()
+        #     result = cursor.execute(query, parametros)
+        #     conn.commit()
+        # return result
 
 def borrarPRODUCTO():
-    try:
-        if messagebox.askyesno(message = "Se borraran todos los PRODUCTOS, ¿Desea continuar?", title = "ADVERTENCIA"):
-            query = 'DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO'
-            run_query(query)
-            obt_productos()
-            clean()
-            messagebox.showinfo("BASE DE DATOS", "Se vacio exitosamente la tabla 'PRODUCTO'")
-    except:
-        messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
+    pass
+    # try:
+    #     if messagebox.askyesno(message = "Se borraran todos los PRODUCTOS, ¿Desea continuar?", title = "ADVERTENCIA"):
+    #         query = 'DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO'
+    #         run_query(query)
+    #         obt_productos()
+    #         clean()
+    #         messagebox.showinfo("BASE DE DATOS", "Se vacio exitosamente la tabla 'PRODUCTO'")
+    # except:
+    #     messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
 
 def validacion():
-    return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
+    # return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
 
 def obt_productos():
-    view = tree.get_children()
-    for elementos in view:
-        tree.delete(elementos)
+    pass
+    # view = tree.get_children()
+    # for elementos in view:
+    #     tree.delete(elementos)
         
-    query = "SELECT * FROM producto ORDER BY ID_PRODUCTO DESC"
-    db_rows = run_query(query)
-    for row in db_rows:
-        tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+    # query = "SELECT * FROM producto ORDER BY ID_PRODUCTO DESC"
+    # db_rows = run_query(query)
+    # for row in db_rows:
+    #     tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
 def agregar_producto():
-    if validacion():
-        query = "INSERT INTO producto VALUES(?, ?, ?, ?)"
-        parametros = (eid.get(), price_c.get(), price_v.get(), amount.get())
-        run_query(query, parametros)
-        messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-    else:
-        messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-    obt_productos()
-    clean()
+    pass
+    # if validacion():
+    #     query = "INSERT INTO producto VALUES(?, ?, ?, ?)"
+    #     parametros = (eid.get(), price_c.get(), price_v.get(), amount.get())
+    #     run_query(query, parametros)
+    #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
+    # else:
+    #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+    # obt_productos()
+    # clean()
 
 def editar_producto():
-    if validacion():
-        parametros = (price_c.get(), price_v.get(), amount.get(), eid.get())
-        query = ("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
-        run_query(query, parametros)
-        messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
-    else:
-        messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-    obt_productos()
-    eid.configure(state = 'normal')
-    clean()
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
+    pass
+    # if validacion():
+    #     parametros = (price_c.get(), price_v.get(), amount.get(), eid.get())
+    #     query = ("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
+    #     run_query(query, parametros)
+    #     messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
+    # else:
+    #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+    # obt_productos()
+    # eid.configure(state = 'normal')
+    # clean()
+    # b1["state"] = "normal"
+    # b2["state"] = "disable"
+    # b3["state"] = "disable"
 
 def eliminar_producto():
-    try:
-        if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
-            query = "DELETE FROM producto WHERE ID_PRODUCTO = ?"
-            parametros = eid.get()
-            run_query(query, (parametros, ))
-            messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
-    except:
-        messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
-        return
-    obt_productos()
-    eid.configure(state = 'normal')
-    clean()
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
+    pass
+    # try:
+    #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
+    #         query = "DELETE FROM producto WHERE ID_PRODUCTO = ?"
+    #         parametros = eid.get()
+    #         run_query(query, (parametros, ))
+    #         messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
+    # except:
+    #     messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
+    #     return
+    # obt_productos()
+    # eid.configure(state = 'normal')
+    # clean()
+    # b1["state"] = "normal"
+    # b2["state"] = "disable"
+    # b3["state"] = "disable"
 
 def clean():
     eid.delete(0, END)
@@ -87,79 +93,61 @@ def clean():
     eamount.delete(0, END)
 
 def seleccionar_click(event):
-    clean()
-    b1["state"] = "disable"
-    b2["state"] = "normal"
-    b3["state"] = "normal"
-    selected = tree.focus()
-    values = tree.item(selected, 'values')
-    eid.insert(0, values[0])
-    price_c.insert(0, values[1])
-    price_v.insert(0, values[2])
-    amount.insert(0, values[3])
-    cant_v = values[3]
-    Id_operacion = values[0]
-    eid.configure(state = 'disable')
-    Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
+    pass
+    # clean()
+    # b1["state"] = "disable"
+    # b2["state"] = "normal"
+    # b3["state"] = "normal"
+    # selected = tree.focus()
+    # values = tree.item(selected, 'values')
+    # eid.insert(0, values[0])
+    # price_c.insert(0, values[1])
+    # price_v.insert(0, values[2])
+    # amount.insert(0, values[3])
+    # cant_v = values[3]
+    # Id_operacion = values[0]
+    # eid.configure(state = 'disable')
+    # Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
 
 "Acabo de agregar la funcion para la operacion de mas"
 def suma_inventario():
-    if len(eamount.get()) != 0: 
-        cant_n = int(amount.get())
-        suma = int(cant_v) + cant_n
-        query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-        parametros = (suma, Id_operacion)
-        run_query(query, parametros)
-        messagebox.showinfo("BASE DE DATOS", "Se han sumado las cantidades al inventario")
-    else:
-        messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-    eid.configure(state = 'normal')
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
-    clean()
-    obt_productos()
+    pass
+    # if len(eamount.get()) != 0: 
+    #     cant_n = int(amount.get())
+    #     suma = int(cant_v) + cant_n
+    #     query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+    #     parametros = (suma, Id_operacion)
+    #     run_query(query, parametros)
+    #     messagebox.showinfo("BASE DE DATOS", "Se han sumado las cantidades al inventario")
+    # else:
+    #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+    # eid.configure(state = 'normal')
+    # b1["state"] = "normal"
+    # b2["state"] = "disable"
+    # b3["state"] = "disable"
+    # clean()
+    # obt_productos()
 
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
-    if len(eamount.get()) != 0: 
-        cant_n = int(amount.get())
-        resta = int(cant_v) - cant_n
-        query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-        parametros = (resta, Id_operacion)
-        run_query(query, parametros)
-        messagebox.showinfo("BASE DE DATOS", "Se han restado las cantidades al inventario")
-    else:
-        messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-    eid.configure(state = 'normal')
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
-    clean()
-    obt_productos()
+    pass
+    # if len(eamount.get()) != 0: 
+    #     cant_n = int(amount.get())
+    #     resta = int(cant_v) - cant_n
+    #     query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+    #     parametros = (resta, Id_operacion)
+    #     run_query(query, parametros)
+    #     messagebox.showinfo("BASE DE DATOS", "Se han restado las cantidades al inventario")
+    # else:
+    #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+    # eid.configure(state = 'normal')
+    # b1["state"] = "normal"
+    # b2["state"] = "disable"
+    # b3["state"] = "disable"
+    # clean()
+    # obt_productos()
 
 def windbuscar():
-    wind.iconify()
-    wind2 = Toplevel()
-    wind2.resizable(width = 0, height = 0)
-    wind2.geometry("400x200")
-    wind2.iconbitmap('archivo.ico')
-    lbuscar = Label(wind2, text = "Selecciones lo que desea buscar")
-    lbuscar.place(x = 10, y = 10)
-    ebuscar = Entry(wind2, width = 30)
-    ebuscar.place(x = 150, y = 65)
-    bbuscar = ttk.Button(wind2, text = "Buscar", width = 29, command = lambda: buscar())
-    bbuscar.place(x = 150, y = 100)
-    linstruccion = Label(wind2, text = "")
-    linstruccion.place(x = 120, y = 135)
-    v = IntVar()
-    rb_producto = Radiobutton(wind2, text = "PRODUCTO", value = 1, variable = v)
-    rb_producto.place(x = 20, y = 50)
-    rb_cliente = Radiobutton(wind2, text = "CLIENTE", value = 2, variable = v)
-    rb_cliente.place(x = 20, y = 80)
-    rb_pedido = Radiobutton(wind2, text = "PEDIDO", value = 3, variable = v)
-    rb_pedido.place(x = 20, y = 110)
-
     def buscar():
         if len(ebuscar.get()) != 0 and v.get() != 0:
             if v.get() == 1:
@@ -203,62 +191,88 @@ def windbuscar():
                 wind.deiconify()
                 wind2.destroy()
 
+    wind.iconify()
+    wind2 = Toplevel()
+    wind2.resizable(width = 0, height = 0)
+    wind2.geometry("400x200")
+    wind2.iconbitmap('archivo.ico')
+    lbuscar = Label(wind2, text = "Selecciones lo que desea buscar")
+    lbuscar.place(x = 10, y = 10)
+    ebuscar = Entry(wind2, width = 30)
+    ebuscar.place(x = 150, y = 65)
+    bbuscar = ttk.Button(wind2, text = "Buscar", width = 29, command = lambda: buscar())
+    bbuscar.place(x = 150, y = 100)
+    linstruccion = Label(wind2, text = "")
+    linstruccion.place(x = 120, y = 135)
+    v = IntVar()
+    rb_producto = Radiobutton(wind2, text = "PRODUCTO", value = 1, variable = v)
+    rb_producto.place(x = 20, y = 50)
+    rb_cliente = Radiobutton(wind2, text = "CLIENTE", value = 2, variable = v)
+    rb_cliente.place(x = 20, y = 80)
+    rb_pedido = Radiobutton(wind2, text = "PEDIDO", value = 3, variable = v)
+    rb_pedido.place(x = 20, y = 110)
+
 def windclientes():
     def validacion1():
-        return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
+        pass
+        # return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
 
     def obt_clientes():
-        view = tree1.get_children()
-        for elementos in view:
-            tree1.delete(elementos)
+        pass
+        # view = tree1.get_children()
+        # for elementos in view:
+        #     tree1.delete(elementos)
             
-        query = "SELECT * FROM cliente ORDER BY NOMBRE DESC"
-        db_rows = run_query(query) 
-        for row in db_rows:
-            tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+        # query = "SELECT * FROM cliente ORDER BY NOMBRE DESC"
+        # db_rows = run_query(query) 
+        # for row in db_rows:
+        #     tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
-        if validacion1():
-            query = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)"
-            parametros = (ci_cliente.get(), nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get())
-            run_query(query, parametros)
-            messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-        else:
-            messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        obt_clientes()
-        clean1()
+        pass
+        # if validacion1():
+        #     query = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)"
+        #     parametros = (ci_cliente.get(), nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get())
+        #     run_query(query, parametros)
+        #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
+        # else:
+        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+        # obt_clientes()
+        # clean1()
 
     def editar_cliente():
-        if validacion1():
-            parametros = (nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get(), ci_cliente.get())
-            query = ("UPDATE cliente SET NOMBRE = ? , APELLIDO = ?, TELEFONO = ?, DIRECCION = ?, DEUDA = ? WHERE CI_CLIENTE = ?")
-            run_query(query, parametros)
-            messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
-        else:
-            messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        obt_clientes()
-        ci_cliente.configure(state = 'normal')
-        clean1()
-        b_guardar["state"] = "normal"
-        b_eliminar["state"] = "disable"
-        b_actualizar["state"] = "disable"
+        pass
+        # if validacion1():
+        #     parametros = (nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get(), ci_cliente.get())
+        #     query = ("UPDATE cliente SET NOMBRE = ? , APELLIDO = ?, TELEFONO = ?, DIRECCION = ?, DEUDA = ? WHERE CI_CLIENTE = ?")
+        #     run_query(query, parametros)
+        #     messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
+        # else:
+        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+        # obt_clientes()
+        # ci_cliente.configure(state = 'normal')
+        # clean1()
+        # b_guardar["state"] = "normal"
+        # b_eliminar["state"] = "disable"
+        # b_actualizar["state"] = "disable"
 
     def eliminar_cliente():
-        try:
-            if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
-                query = "DELETE FROM cliente WHERE CI_CLIENTE = ?"
-                parametros = ci_cliente.get()
-                run_query(query, (parametros, ))
-                messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
-        except:
-            messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
-            return
-        obt_clientes()
-        ci_cliente.configure(state = 'normal')
-        clean1()
-        b_guardar["state"] = "normal"
-        b_eliminar["state"] = "disable"
-        b_actualizar["state"] = "disable"
+        pass
+        # try:
+        #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
+        #         query = "DELETE FROM cliente WHERE CI_CLIENTE = ?"
+        #         parametros = ci_cliente.get()
+        #         run_query(query, (parametros, ))
+        #         messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
+        # except:
+        #     messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
+        #     return
+        # obt_clientes()
+        # ci_cliente.configure(state = 'normal')
+        # clean1()
+        # b_guardar["state"] = "normal"
+        # b_eliminar["state"] = "disable"
+        # b_actualizar["state"] = "disable"
 
     def clean1():
         ci_cliente.delete(0, END)
@@ -277,20 +291,21 @@ def windclientes():
         wind.deiconify()
 
     def seleccionar1_click(event):
-        clean1()
-        b_guardar["state"] = "disable"
-        b_actualizar["state"] = "normal"
-        b_eliminar["state"] = "normal"
-        selected = tree1.focus()
-        values = tree1.item(selected, 'values')
-        ci_cliente.insert(0, values[0])
-        nombre.insert(0, values[1])
-        apellido.insert(0, values[2])
-        telefono.insert(0, values[3])
-        direccion.insert(0, values[4])
-        deuda.insert(0, values[5])
-        ci_cliente.configure(state = 'disable')
-        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
+        pass
+        # clean1()
+        # b_guardar["state"] = "disable"
+        # b_actualizar["state"] = "normal"
+        # b_eliminar["state"] = "normal"
+        # selected = tree1.focus()
+        # values = tree1.item(selected, 'values')
+        # ci_cliente.insert(0, values[0])
+        # nombre.insert(0, values[1])
+        # apellido.insert(0, values[2])
+        # telefono.insert(0, values[3])
+        # direccion.insert(0, values[4])
+        # deuda.insert(0, values[5])
+        # ci_cliente.configure(state = 'disable')
+        # Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
 
     wind.iconify() 
     windclientes1 = Toplevel()
@@ -315,8 +330,8 @@ def windclientes():
     tree1.heading('#4', text = 'TELEFONO', anchor = CENTER)
     tree1.heading('#5', text = 'DIRECCION', anchor = CENTER)
     tree1.heading('#6', text = 'DEUDA', anchor = CENTER)
-    tree1.bind("<Double-Button-1>", seleccionar1_click)
-    obt_clientes()
+    #tree1.bind("<Double-Button-1>", seleccionar1_click)
+    #obt_clientes()
 
     l_title = Label(windclientes1, text = "Agregue un cliente")
     l_title.place(x = 400, y = 10)
