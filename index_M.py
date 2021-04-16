@@ -6,8 +6,6 @@ from idlelib.tooltip import Hovertip
 from datetime import datetime
 import sqlite3
 
-op_BD=9
-tabla=9
 tu_clave=[]
 seleccion=""
 op_producto=9
@@ -159,9 +157,8 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             row1=tu_clave[1]
             row2=tu_clave[2]
             row3=tu_clave[3]
-            row4=tu_clave[4]
             
-            micursor.execute("UPDATE producto SET CI_CLIENTE = ? , ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE ID_PEDIDO = ?",(row1,row2,row3,row4,row0))
+            micursor.execute("UPDATE producto SET CI_CLIENTE = ? , ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE ID_PEDIDO = ?",(row1,row2,row3,row0))
             miconexion.commit() 
 
     elif op_BD == 3:
@@ -211,6 +208,7 @@ def obt_productos():
          tree.delete(elementos)
     op_BD=0
     tabla=0
+    op_producto=4
     resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
     for row in resultado:
          tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
@@ -818,5 +816,6 @@ ayudamenu.add_command(label = "Manual de Usuario")
 menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
 
 wind.config(menu = menuvar)
+
 app = wind
 wn.mainloop()  
