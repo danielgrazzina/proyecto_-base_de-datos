@@ -271,6 +271,34 @@ def eliminar_producto():
     bmas["state"] = "disable"
     bmenos["state"] = "disable"
 
+    "Acabo de agregar la funcion para la operacion de mas"
+def suma_inventario():
+    tu_clave = []
+    cant_n = int(eamount.get())
+    seleccion = eid.get()
+    op_BD=0
+    tabla=0
+    op_producto = 0
+    resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+    tu_clave = []
+    suma = cant_n + int(resultado[3])
+    tu_clave.append(eid.get())
+    tu_clave.append(eprice_c.get())
+    tu_clave.append(eprice_v.get())
+    tu_clave.append(suma)
+    op_BD = 2
+    tabla = 0
+    base_datos(op_BD, tabla, tu_clave)
+    eid.configure(state = 'normal')
+    clean()
+    obt_productos()
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
+    messagebox.showinfo("BASE DE DATOS", "Se aumento correctamente el inventario")
+
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
     tu_clave = []
