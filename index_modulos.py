@@ -108,7 +108,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 resultado=micursor.fetchone()
                 return resultado
             elif op_pedido == 5:
-                micursor.execute("SELECT * FROM pedido ORDER BY CI_CLIENTE DESC")
+                micursor.execute("SELECT * FROM pedido ORDER BY FECHA DESC")
                 resultado=micursor.fetchall()
                 return resultado
     elif op_BD ==  1:
@@ -123,7 +123,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             miconexion.commit()
         elif tabla == 2:
             # pedido 
-            micursor.execute("INSERT INTO pedido VALUES(?, ?, ?, ?, ?)",tu_clave)
+            micursor.execute("INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)",tu_clave)
             miconexion.commit()
     elif op_BD == 2:
         #actualizar
@@ -152,9 +152,8 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             row0=tu_clave[0]
             row1=tu_clave[1]
             row2=tu_clave[2]
-            row3=tu_clave[3]
             
-            micursor.execute("UPDATE producto SET ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?",(row1,row2,row3,row0))
+            micursor.execute("UPDATE producto SET ID_PEDIDO = NULL, ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?",(row1,row2,now,row0))
             miconexion.commit() 
 
     elif op_BD == 3:
@@ -204,7 +203,6 @@ def obt_productos():
         tree.delete(elementos)
     op_BD=0
     tabla=0
-
     op_producto=4
     resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
     for row in resultado:
@@ -233,7 +231,6 @@ def editar_producto():
         tu_clave.append(eprice_c.get())
         tu_clave.append(eprice_v.get())
         tu_clave.append(eamount.get())
-        print(tu_clave)
         op_BD=2
         tabla=0
         base_datos(op_BD, tabla, tu_clave)
@@ -320,7 +317,6 @@ def resta_inventario():
         tu_clave.append(eprice_c.get())
         tu_clave.append(eprice_v.get())
         tu_clave.append(0)
-        print(tu_clave)
         op_BD = 2
         tabla = 0
         base_datos(op_BD, tabla, tu_clave)
@@ -542,58 +538,82 @@ def windpedido1():
         wind.deiconify()
 
     def validacion_pedido():
-        return len(ci.get()) != 0 and len(id_pro.get()) != 0 and len(cant.get()) != 0
+        return len(eci.get()) != 0 and len(eid_pro.get()) != 0 and len(ecant.get()) != 0
 
     def obt_pedidos():
-        view = tree.get_children()
+        view = tree3.get_children()
         for elementos in view:
-            tree.delete(elementos)
-            op_BD=0
-            tabla=3
-            op_pedido=5
-            resultado=(base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
+            tree3.delete(elementos)
+        op_BD=0
+        tabla=3
+        op_pedido=5
+        resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
         for row in resultado:
             tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
 
     def agregar_pedido():
-        tu_clave = []
-        op_producto = 9
-        seleccion = eci.get()
-        op_BD=0
-        tabla=1
-        op_cliente = 0
-        resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente))
-        tu_clave = []
-        seleccion = eid_pro.get()
-        op_BD=0
-        tabla=0
-        op_producto = 0
-        resultado1 = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
-        sumar_deuda = (int(ecant.get()) * int(resultado1[2])) + resultado[5]
-        tu_clave = []
-        tu_clave.append(resultado[0])
-        tu_clave.append(resultado[1])
-        tu_clave.append(resultado[2])
-        tu_clave.append(resultado[3])
-        tu_clave.append(resultado[4])
-        tu_clave.append(resultado[5])
-        tu_clave.remove(resultado[5])
-        tu_clave.append(sumar_deuda)
-        op_BD=2
-        tabla=1
-        base_datos(op_BD, tabla, tu_clave)
-        tu_clave = []
-        tu_clave.append(eci.get())
-        tu_clave.append(eid_pro.get())
-        tu_clave.append(ecant.get())
-        tu_clave.append(now)
-        op_BD = 2
-        tabla = 2
-        base_datos(op_BD, tabla, tu_clave)
-        clean()
+        if validacion_pedido():
+            tu_clave = []
+            seleccion = eid_pro.get()
+            op_BD=0
+            tabla=0
+            op_producto = 0
+            resultado1 = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+            if int(ecant.get()) <= int(resultado1[3]):
+                disminuir_inventario = int(resultado1[3]) - int(ecant.get())
+                tu_clave = []
+                tu_clave.append(resultado1[0])
+                tu_clave.append(resultado1[1])
+                tu_clave.append(resultado1[2])
+                tu_clave.append(disminuir_inventario)
+                op_BD = 2
+                tabla = 0
+                seleccion = eid_pro.get()
+                base_datos(op_BD, tabla, tu_clave, seleccion)
+                tu_clave = []
+                op_producto = 9
+                seleccion = eci.get()
+                op_BD=0
+                tabla=1
+                op_cliente = 0
+                resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente))
+                sumar_deuda = (int(ecant.get()) * int(resultado1[2])) + resultado[5]
+                tu_clave = []
+                tu_clave.append(resultado[0])
+                tu_clave.append(resultado[1])
+                tu_clave.append(resultado[2])
+                tu_clave.append(resultado[3])
+                tu_clave.append(resultado[4])
+                tu_clave.append(resultado[5])
+                tu_clave.remove(resultado[5])
+                tu_clave.append(sumar_deuda)
+                op_BD=2
+                tabla=1
+                base_datos(op_BD, tabla, tu_clave)
+                tu_clave = []
+                tu_clave.append(eci.get())
+                tu_clave.append(eid_pro.get())
+                tu_clave.append(ecant.get())
+                tu_clave.append(now)
+                op_BD = 1
+                tabla = 2
+                base_datos(op_BD, tabla, tu_clave)
+                messagebox.showinfo("BASE DE DATOS", "Se guardo correctamente el pedido y se actualizaron los campos inventario y deuda")
+            else:
+                messagebox.showerror("ERROR", "No pueden haber pedidos que la Cantidad Pedido exceda la Cantidad disponible en el inventario")
+        else:
+            messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+        obt_pedidos()
+        obt_productos()
+        clean_pedido()
 
     def editar_pedido_inventario():
         pass
+
+    def clean_pedido():
+        eci.delete(0, END)
+        eid_pro.delete(0, END)
+        ecant.delete(0, END)
 
     def seleccionar_click2(event):
         clean()
@@ -633,7 +653,7 @@ def windpedido1():
     ecant = Entry(windpedido, width = 30)
     ecant.place(x = 400, y = 125)
 
-    bgpedido = ttk.Button(windpedido, text = "Guardar Pedido", width = 60, command = lambda: agregar_pedido())
+    bgpedido = ttk.Button(windpedido, text = "Guardar Pedido", width = 60, command =  lambda: agregar_pedido())
     bgpedido.place(x = 215, y = 160)
 
     bepedido = ttk.Button(windpedido, text = "Eliminar Pedido", width = 60)
