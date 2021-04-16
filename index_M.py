@@ -14,6 +14,7 @@ op_pedido=9
 clean_total=0
 resultado=[]
 now = datetime.now()
+str_now = now.strftime("%d/%m/%Y")
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
@@ -127,7 +128,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             miconexion.commit()
         elif tabla == 2:
             # pedido 
-            micursor.execute("INSERT INTO pedido VALUES(?, ?, ?, ?, ?)",tu_clave)
+            micursor.execute("INSERT INTO pedido VALUES(null, ?, ?, ?, ?)",tu_clave)
             miconexion.commit()
     elif op_BD == 2:
         #actualizar
@@ -198,6 +199,7 @@ def borrarPRODUCTO():
     clean_total = 1
     base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
     clean()
+    obt_productos()
 
 def validacion():
     return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
@@ -242,7 +244,7 @@ def editar_producto():
         base_datos(op_BD, tabla, tu_clave)
         messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
     else:
-        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+        messagebox.showerror("ERROR", "No puede haber campos en blanco")
     eid.configure(state = 'normal')
     clean()
     obt_productos()
@@ -401,6 +403,14 @@ def windbuscar():
     rb_pedido.place(x = 20, y = 110)
 
 def windclientes():
+
+    def borrarCLIENTES():
+        op_BD = 3
+        tabla = 1
+        clean_total = 1
+        base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
+        clean1()
+        obt_clientes()
     def validacion1():
         return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
 
@@ -419,44 +429,60 @@ def windclientes():
             tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
-        validacion1()
         tu_clave=[]
-        tu_clave.append(ci_cliente.get())
-        tu_clave.append(nombre.get())
-        tu_clave.append(apellido.get())
-        tu_clave.append(telefono.get())
-        tu_clave.append(direccion.get())
-        tu_clave.append(deuda.get())
-        op_BD=1
-        tabla=1
-        base_datos(op_BD,tabla,tu_clave)
+        if validacion1():
+            tu_clave.append(ci_cliente.get())
+            tu_clave.append(nombre.get())
+            tu_clave.append(apellido.get())
+            tu_clave.append(telefono.get())
+            tu_clave.append(direccion.get())
+            tu_clave.append(deuda.get())
+            op_BD=1
+            tabla=1
+            base_datos(op_BD,tabla,tu_clave)
+            messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+        else:
+            messagebox.showerror("ERROR", "No puede haber campos en blanco")
         clean1()
         obt_clientes()      
 
     def editar_cliente():
-        validacion1()
         tu_clave=[]
-        tu_clave.append(ci_cliente.get())
-        tu_clave.append(nombre.get())
-        tu_clave.append(apellido.get())
-        tu_clave.append(telefono.get())
-        tu_clave.append(direccion.get())
-        tu_clave.append(deuda.get())
-        op_BD=2
-        tabla=1
-        base_datos(op_BD,tabla,tu_clave)
+        if validacion1():
+            tu_clave.append(ci_cliente.get())
+            tu_clave.append(nombre.get())
+            tu_clave.append(apellido.get())
+            tu_clave.append(telefono.get())
+            tu_clave.append(direccion.get())
+            tu_clave.append(deuda.get())
+            op_BD=2
+            tabla=1
+            base_datos(op_BD,tabla,tu_clave)
+            messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+        else:
+            messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+        ci_cliente.configure(state = 'normal')
         clean1()
         obt_clientes()
+        b_guardar["state"] = "normal"
+        b_actualizar["state"] = "disable"
+        b_eliminar["state"] = "disable"
 
     def eliminar_cliente():
-        validacion1()
         tu_clave=[]
-        tu_clave.append(ci_cliente.get())
-        op_BD=3
-        tabla=1
-        base_datos(op_BD,tabla,tu_clave)
-        clean1() 
-        obt_clientes()
+        if len(ci_cliente.get()) != 0:
+            tu_clave.append(ci_cliente.get())
+            op_BD=3
+            tabla=1
+            base_datos(op_BD,tabla,tu_clave)
+            messagebox.showinfo("BASE DE DATOS", "Se eliminaron correctamente los campos")
+        else:
+            ci_cliente.configure(state = 'normal')
+            clean1()
+            obt_clientes()
+            b_guardar["state"] = "normal"
+            b_actualizar["state"] = "disable"
+            b_eliminar["state"] = "disable"
 
     def clean1():
         ci_cliente.delete(0, END)
@@ -473,6 +499,10 @@ def windclientes():
     def principal_cliente():
         windclientes1.destroy()
         wind.deiconify()
+    
+    def pedido_cliente():
+        windclientes1.destroy()
+        windpedido1()
 
     def seleccionar1_click(event):
         clean1()
@@ -488,14 +518,14 @@ def windclientes():
         direccion.insert(0, values[4])
         deuda.insert(0, values[5])
         ci_cliente.configure(state = 'disable')
-        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
+        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente, elimine y cree uno nuevo", hover_delay = 100)
 
     wind.iconify() 
     windclientes1 = Toplevel()
     windclientes1.resizable(width=0,height=0)
-    windclientes1.geometry("900x550")
+    windclientes1.geometry("900x570")
     windclientes1.iconbitmap('archivo.ico')
-    windclientes1.title("Clientes")
+    windclientes1.title("Aplicacion de Inventario (CLIENTES)")
 
     tree1 = ttk.Treeview(windclientes1)
     tree1['columns'] = ("CI_CLIENTE", "NONMBRE", "APELLIDO", "TELEFONO","DIRECCION", "DEUDA")
@@ -565,13 +595,22 @@ def windclientes():
     bpsearch.config(image = img)
     bpsearch.place(x = 15, y = 15)
     Hovertip(bsearch, text = "Buscar")
+    Hovertip(bpsearch, text = "buscar", hover_delay = 100)
 
     img6 = PhotoImage(file = 'principal.png')
     bprin_cliente = Button(windclientes1, width = 35, height = 35, command = lambda: principal_cliente())
     bprin_cliente.image_names = img6
     bprin_cliente.config(image = img6)
     bprin_cliente.place(x = 15, y = 65)
-    Hovertip(bprin_cliente, text = "Pantalla Principal")
+    Hovertip(bprin_cliente, text = "Pantalla Principal", hover_delay = 100)
+
+    "Agrege el boton de pedido"
+    img7 = PhotoImage(file = 'pedidos.png')
+    bpedido1 = Button(windclientes1, width = 35, height = 35, command = lambda: pedido_cliente())
+    bpedido1.image_names = img7
+    bpedido1.configure(image = img7)
+    bpedido1.place(x = 15, y = 115)
+    Hovertip(bpedido1, text = "Pedidos", hover_delay = 100)
 
     "Acabo de agregar el boton actualizar"
     img4 = PhotoImage(file = 'actualizar_tree.png')
@@ -581,7 +620,28 @@ def windclientes():
     bactualizar_cliente.config(image = img4)
     Hovertip(bactualizar_cliente, text = "Actualizar Lista", hover_delay = 100)
 
+    menuvar = Menu(windclientes1)
+    menuDB = Menu(menuvar, tearoff = 0)
+    menuDB.add_command(label = "Limpiar Base De Datos 'CLIENTES'", command = lambda: borrarCLIENTES())
+    menuvar.add_cascade(label = "Inicio", menu = menuDB)
+
+    ayudamenu = Menu(menuvar, tearoff = 0)
+    ayudamenu.add_command(label = "Resetear Campos", command = lambda: clean1())
+    ayudamenu.add_command(label = "Manual de Usuario")
+    menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
+
+    windclientes1.config(menu = menuvar)
+
 def windpedido1():
+
+    def borrarPEDIDO():
+            op_BD = 3
+            tabla = 2
+            clean_total = 1
+            base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
+            clean_pedido()
+            obt_pedidos()
+
     def buscar_pedido():
         windpedido.destroy()
         windbuscar()
@@ -605,6 +665,7 @@ def windpedido1():
             tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
 
     def agregar_pedido():
+
         if validacion_pedido():
             tu_clave = []
             seleccion = eid_pro.get()
@@ -686,6 +747,22 @@ def windpedido1():
     windpedido.resizable(width = 0, height = 0)
     windpedido.geometry("800x500")
     windpedido.iconbitmap('archivo.ico')
+    windpedido.title("Aplicacion de Inventario (PEDIDOS)")
+
+    tree3 = ttk.Treeview(windpedido)
+    tree3['columns'] = ("CI", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
+    tree3.place(x = 0, y = 200)
+    #tree3.bind("<Double-Button-1>", seleccionar_click2)
+    tree3.column('#0', width = 0, stretch = NO)
+    tree3.column('#1', minwidth = 200, anchor = CENTER)
+    tree3.column('#2', minwidth = 200, anchor = CENTER)
+    tree3.column('#3', minwidth = 200, anchor = CENTER)
+    tree3.column('#4', minwidth = 200, anchor = CENTER)
+    tree3.heading('#1', text = 'CI CLIENTE', anchor = CENTER)
+    tree3.heading('#2', text = 'ID PRODUCTO', anchor = CENTER)
+    tree3.heading('#3', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
+    tree3.heading('#4', text = 'FECHA', anchor = CENTER)
+    obt_pedidos()
 
     l2 = Label(windpedido, text = "Ingrese un pedido")
     l2.place(x = 345, y = 40)
@@ -737,26 +814,23 @@ def windpedido1():
     bactualizar_cliente.config(image = img4)
     Hovertip(bactualizar_cliente, text = "Actualizar Lista", hover_delay = 100)
 
-    tree3 = ttk.Treeview(windpedido)
-    tree3['columns'] = ("CI", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
-    tree3.place(x = 0, y = 200)
-    #tree3.bind("<Double-Button-1>", seleccionar_click2)
-    tree3.column('#0', width = 0, stretch = NO)
-    tree3.column('#1', minwidth = 200, anchor = CENTER)
-    tree3.column('#2', minwidth = 200, anchor = CENTER)
-    tree3.column('#3', minwidth = 200, anchor = CENTER)
-    tree3.column('#4', minwidth = 200, anchor = CENTER)
-    tree3.heading('#1', text = 'CI CLIENTE', anchor = CENTER)
-    tree3.heading('#2', text = 'ID PRODUCTO', anchor = CENTER)
-    tree3.heading('#3', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
-    tree3.heading('#4', text = 'FECHA', anchor = CENTER)
-    obt_pedidos()
+    menuvar = Menu(windpedido)
+    menuDB = Menu(menuvar, tearoff = 0)
+    menuDB.add_command(label = "Limpiar Base De Datos 'PEDIDOS'", command = lambda: borrarPEDIDO())
+    menuvar.add_cascade(label = "Inicio", menu = menuDB)
+
+    ayudamenu = Menu(menuvar, tearoff = 0)
+    ayudamenu.add_command(label = "Resetear Campos", command = lambda: clean_pedido())
+    ayudamenu.add_command(label = "Manual de Usuario")
+    menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
+
+    windpedido.config(menu = menuvar)
 
 wn = Tk()
 wind = wn
 
 wind = wn
-wind.title("Aplicacion de Inventario")
+wind.title("Aplicacion de Inventario (PRODUCTOS)")
 wind.resizable(width = 0, height = 0)
 wind.geometry("802x500")
 wind.iconbitmap('archivo.ico')
