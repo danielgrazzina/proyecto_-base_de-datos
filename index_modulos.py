@@ -6,29 +6,27 @@ from idlelib.tooltip import Hovertip
 from datetime import datetime
 import sqlite3
 
-op_BD=9
-tabla=9
-tu_clave=[]
-seleccion=""
-op_producto=9
-op_cliente=9
-op_pedido=9
-clean_total=0
-resultado=[]
+tu_clave = []
+seleccion = ""
+op_producto = 9
+op_cliente = 9
+op_pedido = 9
+clean_total = 0
+resultado = []
 now = datetime.now()
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
     miconexion=sqlite3.connect("inventario.db")
     micursor=miconexion.cursor()
-    
+
     if op_BD == 0:
         # consultar
         if tabla ==  0:
             # tabla producto
             if op_producto == 0:
                 #id_producto
-                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",seleccion)
+                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",(seleccion, ))
                 resultado=micursor.fetchone()
                 return resultado   
             elif op_producto == 1:
@@ -54,7 +52,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             # tabla cliente
             if op_cliente == 0:
                 # Cedula
-                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",seleccion)
+                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",(seleccion, ))
                 resultado=micursor.fetchone()
                 return resultado
             elif op_cliente == 1:
@@ -81,10 +79,6 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 #deuda
                 micursor.execute("SELECT * FROM cliente WHERE DEUDA = ?",seleccion)
                 resultado=micursor.fetchone()
-                return resultado
-            elif op_cliente == 6:
-                micursor.execute("SELECT * FROM cliente ORDER BY NOMBRE DESC")
-                resultado=micursor.fetchall()
                 return resultado
         elif tabla == 3:
             # tabla pedido
@@ -113,7 +107,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",seleccion)
                 resultado=micursor.fetchone()
                 return resultado
-            elif op_cliente == 6:
+            elif op_pedido == 5:
                 micursor.execute("SELECT * FROM pedido ORDER BY CI_CLIENTE DESC")
                 resultado=micursor.fetchall()
                 return resultado
@@ -159,9 +153,8 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             row1=tu_clave[1]
             row2=tu_clave[2]
             row3=tu_clave[3]
-            row4=tu_clave[4]
             
-            micursor.execute("UPDATE producto SET CI_CLIENTE = ? , ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE ID_PEDIDO = ?",(row1,row2,row3,row4,row0))
+            micursor.execute("UPDATE producto SET ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?",(row1,row2,row3,row0))
             miconexion.commit() 
 
     elif op_BD == 3:
@@ -194,7 +187,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
                 miconexion.commit()
     miconexion.close()
-    
+
 def borrarPRODUCTO():
     op_BD = 3
     tabla = 0
@@ -208,9 +201,11 @@ def validacion():
 def obt_productos():
     view = tree.get_children()
     for elementos in view:
-         tree.delete(elementos)
+        tree.delete(elementos)
     op_BD=0
     tabla=0
+
+    op_producto=4
     resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
     for row in resultado:
          tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
@@ -272,6 +267,34 @@ def eliminar_producto():
     b3["state"] = "disable"
     bmas["state"] = "disable"
     bmenos["state"] = "disable"
+
+"Acabo de agregar la funcion para la operacion de mas"
+def suma_inventario():
+    tu_clave = []
+    cant_n = int(eamount.get())
+    seleccion = eid.get()
+    op_BD=0
+    tabla=0
+    op_producto = 0
+    resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+    tu_clave = []
+    suma = cant_n + int(resultado[3])
+    tu_clave.append(eid.get())
+    tu_clave.append(eprice_c.get())
+    tu_clave.append(eprice_v.get())
+    tu_clave.append(suma)
+    op_BD = 2
+    tabla = 0
+    base_datos(op_BD, tabla, tu_clave)
+    eid.configure(state = 'normal')
+    clean()
+    obt_productos()
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
+    messagebox.showinfo("BASE DE DATOS", "Se aumento correctamente el inventario")
 
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
@@ -376,40 +399,12 @@ def windbuscar():
 
 def windclientes():
     def validacion1():
-        return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
+        pass
 
     def obt_clientes():
-        view = tree.get_children()
-        for elementos in view:
-            tree.delete(elementos)
-        op_BD=0
-        tabla=1
-        tu_clave=[]
-        seleccion=""
-        op_cliente=6
-        resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente))
-          
-        for row in resultado:
-            tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+        pass
 
     def agregar_cliente():
-        validacion1()
-        tu_clave=[]
-        tu_clave.append(ci_cliente.get())
-        tu_clave.append(nombre.get())
-        tu_clave.append(apellido.get())
-        tu_clave.append(telefono.get())
-        tu_clave.append(direccion.get())
-        tu_clave.append(deuda.get())
-        op_BD=1
-        tabla=1
-        base_datos(op_BD,tabla,tu_clave)
-        clean1()
-        obt_clientes()      
-
-    def editar_cliente():
-        validacion1()
-        tu_clave=[]
         tu_clave.append(ci_cliente.get())
         tu_clave.append(nombre.get())
         tu_clave.append(apellido.get())
@@ -418,19 +413,14 @@ def windclientes():
         tu_clave.append(deuda.get())
         op_BD=2
         tabla=1
-        base_datos(op_BD,tabla,tu_clave)
-        clean1()
-        obt_clientes()
+        base_datos(op_BD, tabla, tu_clave)
+        clean()
+
+    def editar_cliente():
+        pass
 
     def eliminar_cliente():
-        validacion1()
-        tu_clave=[]
-        tu_clave.append(ci_cliente.get())
-        op_BD=3
-        tabla=1
-        base_datos(op_BD,tabla,tu_clave)
-        clean1() 
-        obt_clientes()
+        pass
 
     def clean1():
         ci_cliente.delete(0, END)
@@ -449,20 +439,7 @@ def windclientes():
         wind.deiconify()
 
     def seleccionar1_click(event):
-        clean1()
-        b_guardar["state"] = "disable"
-        b_actualizar["state"] = "normal"
-        b_eliminar["state"] = "normal"
-        selected = tree1.focus()
-        values = tree1.item(selected, 'values')
-        ci_cliente.insert(0, values[0])
-        nombre.insert(0, values[1])
-        apellido.insert(0, values[2])
-        telefono.insert(0, values[3])
-        direccion.insert(0, values[4])
-        deuda.insert(0, values[5])
-        ci_cliente.configure(state = 'disable')
-        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
+        pass
 
     wind.iconify() 
     windclientes1 = Toplevel()
@@ -487,8 +464,8 @@ def windclientes():
     tree1.heading('#4', text = 'TELEFONO', anchor = CENTER)
     tree1.heading('#5', text = 'DIRECCION', anchor = CENTER)
     tree1.heading('#6', text = 'DEUDA', anchor = CENTER)
-    tree1.bind("<Double-Button-1>", seleccionar1_click)
-    obt_clientes()
+    #tree1.bind("<Double-Button-1>", seleccionar1_click)
+    #obt_clientes()
 
     l_title = Label(windclientes1, text = "Agregue un cliente")
     l_title.place(x = 400, y = 10)
@@ -818,5 +795,6 @@ ayudamenu.add_command(label = "Manual de Usuario")
 menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
 
 wind.config(menu = menuvar)
+
 app = wind
-wn.mainloop()  
+wn.mainloop()
