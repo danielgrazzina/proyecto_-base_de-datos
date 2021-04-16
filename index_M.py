@@ -9,6 +9,11 @@ import sqlite3
 op_BD=9
 tabla=9
 tu_clave=[]
+seleccion=""
+op_producto=9
+op_cliente=9
+op_pedido=9
+clean_total=0
 resultado=[]
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
@@ -75,6 +80,10 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 #deuda
                 micursor.execute("SELECT * FROM cliente WHERE DEUDA = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
+            elif op_cliente == 6:
+                micursor.execute("SELECT * FROM cliente ORDER BY NOMBRE DESC")
+                resultado=micursor.fetchall()
                 return resultado
         elif tabla == 3:
             # tabla pedido
@@ -202,7 +211,6 @@ def obt_productos():
     seleccion=""
     op_producto=4
     resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
-    print(resultado)
     for row in resultado:
          tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
@@ -215,6 +223,7 @@ def agregar_producto():
     tabla=0
     base_datos(op_BD, tabla, tu_clave)
     clean()
+    obt_productos()
 
 def editar_producto():
     tu_clave.append(eid.get())
@@ -368,21 +377,24 @@ def windbuscar():
 
 def windclientes():
     def validacion1():
-        pass
-        # return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
+        return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
 
     def obt_clientes():
-        pass
-         #view = tree1.get_children()
-         #for elementos in view:
-             #tree1.delete(elementos)
-            
-        # query = "SELECT * FROM cliente ORDER BY NOMBRE DESC"
-        # db_rows = run_query(query) 
-        # for row in db_rows:
-        #     tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+        view = tree.get_children()
+        for elementos in view:
+            tree.delete(elementos)
+        op_BD=0
+        tabla=1
+        tu_clave=[]
+        seleccion=""
+        op_cliente=6
+        resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente))
+          
+        for row in resultado:
+            tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
+        tu_clave=[]
         tu_clave.append(ci_cliente.get())
         tu_clave.append(nombre.get())
         tu_clave.append(apellido.get())
@@ -392,50 +404,31 @@ def windclientes():
         op_BD=1
         tabla=1
         base_datos(op_BD,tabla,tu_clave)
-        clean1()       
+        clean1()
+        obt_clientes()      
 
     def editar_cliente():
-        pass
-        # if validacion1():
-        #     parametros = (nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get(), ci_cliente.get())
-        #     query = ("UPDATE cliente SET NOMBRE = ? , APELLIDO = ?, TELEFONO = ?, DIRECCION = ?, DEUDA = ? WHERE CI_CLIENTE = ?")
-        #     run_query(query, parametros)
-        #     messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
-        # else:
-        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        # obt_clientes()
-        # ci_cliente.configure(state = 'normal')
-        # clean1()
-        # b_guardar["state"] = "normal"
-        # b_eliminar["state"] = "disable"
-        # b_actualizar["state"] = "disable"
-
-    def eliminar_cliente():
+        tu_clave=[]
         tu_clave.append(ci_cliente.get())
         tu_clave.append(nombre.get())
         tu_clave.append(apellido.get())
         tu_clave.append(telefono.get())
         tu_clave.append(direccion.get())
         tu_clave.append(deuda.get())
+        op_BD=2
+        tabla=1
+        base_datos(op_BD,tabla,tu_clave)
+        clean1()
+        obt_clientes()
+
+    def eliminar_cliente():
+        tu_clave=[]
+        tu_clave.append(ci_cliente.get())
         op_BD=3
         tabla=1
         base_datos(op_BD,tabla,tu_clave)
         clean1() 
-        # try:
-        #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
-        #         query = "DELETE FROM cliente WHERE CI_CLIENTE = ?"
-        #         parametros = ci_cliente.get()
-        #         run_query(query, (parametros, ))
-        #         messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
-        # except:
-        #     messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
-        #     return
-        # obt_clientes()
-        # ci_cliente.configure(state = 'normal')
-        # clean1()
-        # b_guardar["state"] = "normal"
-        # b_eliminar["state"] = "disable"
-        # b_actualizar["state"] = "disable"
+        obt_clientes()
 
     def clean1():
         ci_cliente.delete(0, END)
@@ -454,21 +447,20 @@ def windclientes():
         wind.deiconify()
 
     def seleccionar1_click(event):
-        pass
-        # clean1()
-        # b_guardar["state"] = "disable"
-        # b_actualizar["state"] = "normal"
-        # b_eliminar["state"] = "normal"
-        # selected = tree1.focus()
-        # values = tree1.item(selected, 'values')
-        # ci_cliente.insert(0, values[0])
-        # nombre.insert(0, values[1])
-        # apellido.insert(0, values[2])
-        # telefono.insert(0, values[3])
-        # direccion.insert(0, values[4])
-        # deuda.insert(0, values[5])
-        # ci_cliente.configure(state = 'disable')
-        # Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
+        clean1()
+        b_guardar["state"] = "disable"
+        b_actualizar["state"] = "normal"
+        b_eliminar["state"] = "normal"
+        selected = tree1.focus()
+        values = tree1.item(selected, 'values')
+        ci_cliente.insert(0, values[0])
+        nombre.insert(0, values[1])
+        apellido.insert(0, values[2])
+        telefono.insert(0, values[3])
+        direccion.insert(0, values[4])
+        deuda.insert(0, values[5])
+        ci_cliente.configure(state = 'disable')
+        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
 
     wind.iconify() 
     windclientes1 = Toplevel()
@@ -493,8 +485,8 @@ def windclientes():
     tree1.heading('#4', text = 'TELEFONO', anchor = CENTER)
     tree1.heading('#5', text = 'DIRECCION', anchor = CENTER)
     tree1.heading('#6', text = 'DEUDA', anchor = CENTER)
-    #tree1.bind("<Double-Button-1>", seleccionar1_click)
-    #obt_clientes()
+    tree1.bind("<Double-Button-1>", seleccionar1_click)
+    obt_clientes()
 
     l_title = Label(windclientes1, text = "Agregue un cliente")
     l_title.place(x = 400, y = 10)
