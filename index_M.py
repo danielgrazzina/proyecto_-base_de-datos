@@ -112,6 +112,10 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",seleccion)
                 resultado=micursor.fetchone()
                 return resultado
+            elif op_cliente == 6:
+                micursor.execute("SELECT * FROM pedido ORDER BY CI_CLIENTE DESC")
+                resultado=micursor.fetchall()
+                return resultado
     elif op_BD ==  1:
         #crear nuevo
         if tabla == 0:
@@ -215,6 +219,7 @@ def obt_productos():
          tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
 def agregar_producto():
+    validacion()
     tu_clave.append(eid.get())
     tu_clave.append(eprice_c.get())
     tu_clave.append(eprice_v.get())
@@ -226,6 +231,7 @@ def agregar_producto():
     obt_productos()
 
 def editar_producto():
+    validacion()
     tu_clave.append(eid.get())
     tu_clave.append(eprice_c.get())
     tu_clave.append(eprice_v.get())
@@ -394,6 +400,7 @@ def windclientes():
             tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
+        validacion1()
         tu_clave=[]
         tu_clave.append(ci_cliente.get())
         tu_clave.append(nombre.get())
@@ -408,6 +415,7 @@ def windclientes():
         obt_clientes()      
 
     def editar_cliente():
+        validacion1()
         tu_clave=[]
         tu_clave.append(ci_cliente.get())
         tu_clave.append(nombre.get())
@@ -422,6 +430,7 @@ def windclientes():
         obt_clientes()
 
     def eliminar_cliente():
+        validacion1()
         tu_clave=[]
         tu_clave.append(ci_cliente.get())
         op_BD=3
@@ -637,6 +646,7 @@ tree.heading('#1', text = 'ID', anchor = CENTER)
 tree.heading('#2', text = 'PRECIO COSTO', anchor = CENTER)
 tree.heading('#3', text = 'PRECIO VENTA', anchor = CENTER)
 tree.heading('#4', text = 'CANTIDAD', anchor = CENTER)
+tree.bind("<Double-Button-1>", seleccionar_click)
 
 
 l1 = Label(wind, text = "Agregue un producto")
