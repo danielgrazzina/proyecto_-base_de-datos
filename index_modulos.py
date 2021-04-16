@@ -13,6 +13,7 @@ op_cliente = 9
 op_pedido = 9
 clean_total = 0
 resultado = []
+now = datetime.now()
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
@@ -25,7 +26,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             # tabla producto
             if op_producto == 0:
                 #id_producto
-                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",seleccion)
+                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",(seleccion, ))
                 resultado=micursor.fetchone()
                 return resultado   
             elif op_producto == 1:
@@ -51,7 +52,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             # tabla cliente
             if op_cliente == 0:
                 # Cedula
-                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",seleccion)
+                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",(seleccion, ))
                 resultado=micursor.fetchone()
                 return resultado
             elif op_cliente == 1:
@@ -152,9 +153,8 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             row1=tu_clave[1]
             row2=tu_clave[2]
             row3=tu_clave[3]
-            row4=tu_clave[4]
             
-            micursor.execute("UPDATE producto SET CI_CLIENTE = ? , ID_PRODUCTO = ?, CANTIDAD_PEDIDA = ?, FECHA = ? WHERE ID_PEDIDO = ?",(row1,row2,row3,row4,row0))
+            micursor.execute("UPDATE producto SET ID_PRODUCTO = ?, CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?",(row1,row2,row3,row0))
             miconexion.commit() 
 
     elif op_BD == 3:
@@ -542,7 +542,7 @@ def windpedido1():
         wind.deiconify()
 
     def validacion_pedido():
-        return len(self.ci.get()) != 0 and len(self.id_pro.get()) != 0 and len(self.cant.get()) != 0
+        return len(ci.get()) != 0 and len(id_pro.get()) != 0 and len(cant.get()) != 0
 
     def obt_pedidos():
         view = tree.get_children()
@@ -556,10 +556,57 @@ def windpedido1():
             tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
 
     def agregar_pedido():
-        pass
+        tu_clave = []
+        op_producto = 9
+        seleccion = eci.get()
+        op_BD=0
+        tabla=1
+        op_cliente = 0
+        resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente))
+        tu_clave = []
+        seleccion = eid_pro.get()
+        op_BD=0
+        tabla=0
+        op_producto = 0
+        resultado1 = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+        sumar_deuda = (int(ecant.get()) * int(resultado1[2])) + resultado[5]
+        tu_clave = []
+        tu_clave.append(resultado[0])
+        tu_clave.append(resultado[1])
+        tu_clave.append(resultado[2])
+        tu_clave.append(resultado[3])
+        tu_clave.append(resultado[4])
+        tu_clave.append(resultado[5])
+        tu_clave.remove(resultado[5])
+        tu_clave.append(sumar_deuda)
+        op_BD=2
+        tabla=1
+        base_datos(op_BD, tabla, tu_clave)
+        tu_clave = []
+        tu_clave.append(eci.get())
+        tu_clave.append(eid_pro.get())
+        tu_clave.append(ecant.get())
+        tu_clave.append(now)
+        op_BD = 2
+        tabla = 2
+        base_datos(op_BD, tabla, tu_clave)
+        clean()
 
     def editar_pedido_inventario():
         pass
+
+    def seleccionar_click2(event):
+        clean()
+        bgpedido["state"] = "disable"
+        bapedido["state"] = "normal"
+        bepedido["state"] = "normal"
+        selected = tree3.focus()
+        values = tree3.item(selected, 'values')
+        eci.insert(0, values[0])
+        eid_pro.insert(0, values[1])
+        ecant.insert(0, values[2])
+        eci.configure(state = 'disable')
+        Hovertip(eci, text = "No puede actualizar la CI Cliente de los pedidos ya ingresados", hover_delay = 100)
        
     wind.iconify()
     windpedido = Toplevel()
@@ -572,19 +619,19 @@ def windpedido1():
 
     lci = Label(windpedido, text = "CI Cliente: ")
     lci.place(x = 316, y = 65)
-    ci = Entry(windpedido, width = 30)
-    ci.focus()
-    ci.place(x = 400, y = 65)
+    eci = Entry(windpedido, width = 30)
+    eci.focus()
+    eci.place(x = 400, y = 65)
 
     lid_pro = Label(windpedido, text = "ID Producto: ")
     lid_pro.place(x = 304, y = 95)
-    id_pro = Entry(windpedido, width = 30)
-    id_pro.place(x = 400, y = 95)
+    eid_pro = Entry(windpedido, width = 30)
+    eid_pro.place(x = 400, y = 95)
 
     lcant = Label(windpedido, text = "Cantidad Producto: ")
     lcant.place(x = 267, y = 125)
-    cant = Entry(windpedido, width = 30)
-    cant.place(x = 400, y = 125)
+    ecant = Entry(windpedido, width = 30)
+    ecant.place(x = 400, y = 125)
 
     bgpedido = ttk.Button(windpedido, text = "Guardar Pedido", width = 60, command = lambda: agregar_pedido())
     bgpedido.place(x = 215, y = 160)
