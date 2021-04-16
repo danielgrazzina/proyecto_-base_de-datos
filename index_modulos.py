@@ -27,6 +27,7 @@ def borrarPRODUCTO():
     #     messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
 
 def validacion():
+    pass
     # return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
 
 def obt_productos():
@@ -383,22 +384,127 @@ def windclientes():
     bpsearch.place(x = 15, y = 15)
     Hovertip(bsearch, text = "Buscar")
 
-    img7 = PhotoImage(file = 'principal.png')
+    img6 = PhotoImage(file = 'principal.png')
     bprin_cliente = Button(windclientes1, width = 35, height = 35, command = lambda: principal_cliente())
-    bprin_cliente.image_names = img7
-    bprin_cliente.config(image = img7)
+    bprin_cliente.image_names = img6
+    bprin_cliente.config(image = img6)
     bprin_cliente.place(x = 15, y = 65)
     Hovertip(bprin_cliente, text = "Pantalla Principal")
 
     "Acabo de agregar el boton actualizar"
     img4 = PhotoImage(file = 'actualizar_tree.png')
-    bactualizar_cliente = Button(windclientes1, image = img4, width = 18, height = 18, command = lambda: obt_productos())
-    bactualizar_cliente.place(x = 590, y = 160)
+    bactualizar_cliente = Button(windclientes1, image = img4, width = 18, height = 18, command = lambda: obt_clientes())
+    bactualizar_cliente.place(x = 640, y = 225)
     bactualizar_cliente.image_names = img4
     bactualizar_cliente.config(image = img4)
     Hovertip(bactualizar_cliente, text = "Actualizar Lista", hover_delay = 100)
 
 def windpedido1():
+    def buscar_pedido():
+        windpedido.destroy()
+        windbuscar()
+
+    def principal_pedido():
+        windpedido.destroy()
+        wind.deiconify()
+
+    def validacion_pedido():
+        pass
+        # return len(ci.get()) != 0 and len(id_pro.get()) != 0 and len(cant.get()) != 0
+    def obt_pedidos():
+        pass
+        # view = tree3.get_children()
+        # for elementos in view:
+        #     tree3.delete(elementos)
+
+        # query = "SELECT * FROM pedido ORDER BY CI_CLIENTE DESC"
+        # db_rows = run_query(query)
+        # for row in db_rows:
+        #     tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
+    def agregar_pedido():
+        pass
+        # if validacion_pedido():
+        #     query = "INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)"
+        #     parametros = (str(ci.get()), str(id_pro.get()), cant.get(), dia())
+        #     run_query(query, parametros)
+        #     deuda_fun()
+        #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
+        # else:
+        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
+        # obt_pedidos()
+        # clean_pedido()
+    def editar_pedido_inventario():
+        pass
+        # conn = sqlite3.connect('inventario.db')
+        # cursor = conn.cursor()
+        # query = ("SELECT PRECIO_VENTA FROM producto WHERE ID_PRODUCTO = ?")
+        # parametros = id_pro.get()
+        # cursor.execute(query, (parametros, ))
+        # precio = cursor.fetchone()
+        # valor_precio1 = precio[0]
+        # query = ("SELECT DEUDA FROM cliente WHERE CI_CLIENTE = ?")
+        # parametros = (ci.get())
+        # cursor.execute(query, (parametros, ))
+        # deuda2 = cursor.fetchone()
+        # valor_deuda1 = deuda2[0]
+        # parametros = (id_pro.get(), cant.get(), dia(), ci_pedido_v)
+        # query = ("UPDATE pedido SET ID_PRODUCTO = ? , CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?")
+        # cursor.execute(query, parametros)
+        # precio1 = cursor.fetchone()
+        # valor_precio1 = precio[0]
+        # if cant.get() < cant_v1:
+        #     if len(cant.get()) != 0:
+
+        #         query = "SELECT CANTIDAD_PRODUCTO FROM producto WHERE ID_PRODUCTO = ?"
+        #         parametros = (Id_operacion1)
+        #         print(parametros)
+        #         cursor.execute(query, (parametros, ))
+        #         fetchone_cantidad = cursor.fetchone()
+        #         cant_producto_v = fetchone_cantidad[0]
+        #         cant_n1 = int(cant.get())
+        #         inventario_resta = (int(cant_v1) - cant_n1) 
+        #         inventario_operacion = inventario_resta + cant_producto_v
+
+        #         query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+        #         parametros = (inventario_operacion, Id_operacion1)
+        #         print(inventario_operacion)
+        #         cursor.execute(query, parametros)
+        #         total1 = (inventario_resta * valor_precio1) - valor_deuda1
+
+        #         query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
+        #         parametros = (total1, ci.get())
+        #         cursor.execute(query, parametros)
+
+        #         messagebox.showinfo("BASE DE DATOS", "Se han actualizado los campos")
+
+        # elif cant.get() > cant_v1:
+        #     if len(cant.get()) != 0:
+
+        #         query = "SELECT CANTIDAD_PRODUCTO FROM producto WHERE ID_PRODUCTO = ?"
+        #         parametros = (Id_operacion1)
+        #         cursor.execute(query, (parametros, ))
+        #         fetchone_cantidad = cursor.fetchone()
+        #         cant_producto_v = fetchone_cantidad[0]
+        #         cant_n1 = int(cant.get())
+        #         inventario_resta = (int(cant_v1) - cant_n1) 
+        #         inventario_operacion = inventario_resta - cant_producto_v
+
+        #         query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
+        #         parametros = (inventario_operacion, Id_operacion1)
+        #         cursor.execute(query, parametros)
+        #         total1 = (inventario_resta * valor_precio1) + valor_deuda1
+
+        #         query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
+        #         parametros = (total1, ci.get())
+        #         cursor.execute(query, parametros)
+        #         messagebox.showinfo("BASE DE DATOS", "Se han actualizado los campos")
+        # else:
+        #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
+        # ci.configure(state = 'normal')
+        # obt_pedidos()
+        # clean_pedido()
+        # Hovertip(ci, text = "No puede actualizar la CI de los pedidos ya ingresados", hover_delay = 360000)
+
     wind.iconify()
     windpedido = Toplevel()
     windpedido.resizable(width = 0, height = 0)
@@ -424,27 +530,36 @@ def windpedido1():
     cant = Entry(windpedido, width = 30)
     cant.place(x = 400, y = 125)
 
-    bgpedido = ttk.Button(windpedido, text = "Guardar Pedido", width = 60)
+    bgpedido = ttk.Button(windpedido, text = "Guardar Pedido", width = 60, command = lambda: agregar_pedido())
     bgpedido.place(x = 215, y = 160)
 
     bepedido = ttk.Button(windpedido, text = "Eliminar Pedido", width = 60)
     bepedido.place(x = 400, y = 450)
     bepedido['state'] = 'disable'
 
-    bapedido = ttk.Button(windpedido, text = "Actualizar Pedido", width = 60)
+    bapedido = ttk.Button(windpedido, text = "Actualizar Pedido", width = 60, command = lambda: editar_pedido_inventario())
     bapedido.place(x = 30, y = 450)
     bapedido['state'] = 'disable'
 
-    bpsearch = Button(windpedido, width = 35, height = 35)
+    bpsearch = Button(windpedido, width = 35, height = 35, command = lambda: buscar_pedido())
     bpsearch.config(image = img)
     bpsearch.place(x = 15, y = 15)
     Hovertip(bsearch, text = "Buscar")
 
-    img6 = PhotoImage(file = 'home.png')
-    bprin_pedido = Button(windpedido, width = 35, height = 35)
+    img6 = PhotoImage(file = 'principal.png')
+    bprin_pedido = Button(windpedido, width = 35, height = 35, command = lambda: principal_pedido())
+    bprin_pedido.image_names = img6
     bprin_pedido.config(image = img6)
     bprin_pedido.place(x = 15, y = 65)
     Hovertip(bprin_pedido, text = "Pantalla Principal")
+
+    "Acabo de agregar el boton actualizar"
+    img4 = PhotoImage(file = 'actualizar_tree.png')
+    bactualizar_cliente = Button(windpedido, image = img4, width = 18, height = 18, command = lambda: obt_pedidos())
+    bactualizar_cliente.place(x = 590, y = 160)
+    bactualizar_cliente.image_names = img4
+    bactualizar_cliente.config(image = img4)
+    Hovertip(bactualizar_cliente, text = "Actualizar Lista", hover_delay = 100)
 
     tree3 = ttk.Treeview(windpedido)
     tree3['columns'] = ("CI", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
@@ -556,7 +671,7 @@ Hovertip(bactualizar, text = "Actualizar Lista", hover_delay = 100)
 
 "Agrege el boton de pedido"
 img5 = PhotoImage(file = 'pedidos.png')
-bpedido = Button(wind, width = 35, height = 35)
+bpedido = Button(wind, width = 35, height = 35, command = lambda: windpedido1())
 bpedido.image_names = img5
 bpedido.configure(image = img5)
 bpedido.place(x = 15, y = 115)
