@@ -6,86 +6,335 @@ from idlelib.tooltip import Hovertip
 from datetime import datetime
 import sqlite3
 
-def run_query(query, parametros = ()):
-    pass
-        # with sqlite3.connect('inventario.db') as conn:
-        #     cursor = conn.cursor()
-        #     result = cursor.execute(query, parametros)
-        #     conn.commit()
-        # return result
+tu_clave = []
+seleccion = ""
+op_producto = 9
+op_cliente = 9
+op_pedido = 9
+clean_total = 0
+resultado = []
+
+def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
+    # conexion base de datos
+    miconexion=sqlite3.connect("inventario.db")
+    micursor=miconexion.cursor()
+
+    if op_BD == 0:
+        # consultar
+        if tabla ==  0:
+            # tabla producto
+            if op_producto == 0:
+                #id_producto
+                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado   
+            elif op_producto == 1:
+                # precio_costo
+                micursor.execute("SELECT * FROM producto WHERE PRECIO_COSTO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_producto == 2:
+                # precio_venta
+                micursor.execute("SELECT * FROM producto WHERE PRECIO_VENTA = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_producto == 3:
+                # cantidad_pro
+                micursor.execute("SELECT * FROM producto WHERE CANTIDAD_PRODUCTO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_producto == 4:
+                micursor.execute("SELECT * FROM producto ORDER BY ID_PRODUCTO DESC")
+                resultado=micursor.fetchall()
+                return resultado
+        elif tabla == 1:
+            # tabla cliente
+            if op_cliente == 0:
+                # Cedula
+                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_cliente == 1:
+                # nombre
+                micursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_cliente == 2:
+                #apellido
+                micursor.execute("SELECT * FROM cliente WHERE APELLIDO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_cliente == 3:
+                #telefono
+                micursor.execute("SELECT * FROM cliente WHERE TELEFONO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_cliente == 4:
+                #direccion
+                micursor.execute("SELECT * FROM cliente WHERE DIRECCION = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_cliente == 5:
+                #deuda
+                micursor.execute("SELECT * FROM cliente WHERE DEUDA = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+        elif tabla == 3:
+            # tabla pedido
+            if op_pedido == 0:
+                # id_pedido
+                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_pedido == 1:
+                # ci_cliente
+                micursor.execute("SELECT * FROM pedido WHERE CI_CLIENTE = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_pedido == 2:
+                # id_pedido
+                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_pedido == 3:
+                # cantidad_ped
+                micursor.execute("SELECT * FROM pedido WHERE CANTIDAD_PEDIDA = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_pedido == 4:
+                # fecha
+                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",seleccion)
+                resultado=micursor.fetchone()
+                return resultado
+            elif op_pedido == 5:
+                micursor.execute("SELECT * FROM pedido ORDER BY CI_CLIENTE DESC")
+                resultado=micursor.fetchall()
+                return resultado
+    elif op_BD ==  1:
+        #crear nuevo
+        if tabla == 0:
+            # productos
+            micursor.execute("INSERT INTO producto VALUES(?, ?, ?, ?)",tu_clave)
+            miconexion.commit()
+        elif tabla == 1:
+            # cliente
+            micursor.execute("INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)",tu_clave)
+            miconexion.commit()
+        elif tabla == 2:
+            # pedido 
+            micursor.execute("INSERT INTO pedido VALUES(?, ?, ?, ?, ?)",tu_clave)
+            miconexion.commit()
+    elif op_BD == 2:
+        #actualizar
+        if tabla == 0:
+            # productos
+            row0=tu_clave[0]
+            row1=tu_clave[1]
+            row2=tu_clave[2]
+            row3=tu_clave[3]
+            
+            micursor.execute("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?",(row1,row2,row3,row0))
+            miconexion.commit()
+        elif tabla == 1:
+            # cliente
+            row0=tu_clave[0]
+            row1=tu_clave[1]
+            row2=tu_clave[2]
+            row3=tu_clave[3]
+            row4=tu_clave[4]
+            row5=tu_clave[5]
+            
+            micursor.execute("UPDATE cliente SET NOMBRE = ?, APELLIDO = ?, TELEFONO = ?, DIRECCION = ?, DEUDA = ? WHERE CI_CLIENTE = ?",(row1,row2,row3,row4,row5,row0))
+            miconexion.commit()
+        elif tabla == 2:
+            # pedido
+            row0=tu_clave[0]
+            row1=tu_clave[1]
+            row2=tu_clave[2]
+            row3=tu_clave[3]
+            row4=tu_clave[4]
+            
+            micursor.execute("UPDATE producto SET CI_CLIENTE = ? , ID_PRODUCTO = ?, CANTIDAD_PEDIDA = ?, FECHA = ? WHERE ID_PEDIDO = ?",(row1,row2,row3,row4,row0))
+            miconexion.commit() 
+
+    elif op_BD == 3:
+        #eliminar
+        if tabla == 0:
+            # productos
+            if clean_total == 0:
+                row0=tu_clave[0]
+                micursor.execute("DELETE FROM producto WHERE ID_PRODUCTO = ?",(row0,))
+                miconexion.commit()
+            else:
+                micursor.execute("DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO")
+                miconexion.commit()
+        elif tabla == 1:
+            # cliente
+            if clean_total == 0:
+                row0=tu_clave[0]
+                micursor.execute("DELETE FROM cliente WHERE CI_CLIENTE = ?",(row0,))
+                miconexion.commit()
+            else:
+                micursor.execute("DELETE FROM cliente WHERE CI_CLIENTE = CI_CLIENTE")
+                miconexion.commit()
+        elif tabla == 2:
+            # pedido
+            if clean_total == 0:
+                row0=tu_clave[0]
+                micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ?",(row0,))
+                miconexion.commit()
+            else:
+                micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
+                miconexion.commit()
+    miconexion.close()
 
 def borrarPRODUCTO():
-    pass
-    # try:
-    #     if messagebox.askyesno(message = "Se borraran todos los PRODUCTOS, ¿Desea continuar?", title = "ADVERTENCIA"):
-    #         query = 'DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO'
-    #         run_query(query)
-    #         obt_productos()
-    #         clean()
-    #         messagebox.showinfo("BASE DE DATOS", "Se vacio exitosamente la tabla 'PRODUCTO'")
-    # except:
-    #     messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
+    op_BD = 3
+    tabla = 0
+    clean_total = 1
+    base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
+    clean()
 
 def validacion():
-    pass
-    # return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
+    return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
 
 def obt_productos():
-    pass
-    # view = tree.get_children()
-    # for elementos in view:
-    #     tree.delete(elementos)
-        
-    # query = "SELECT * FROM producto ORDER BY ID_PRODUCTO DESC"
-    # db_rows = run_query(query)
-    # for row in db_rows:
-    #     tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+    view = tree.get_children()
+    for elementos in view:
+        tree.delete(elementos)
+    op_BD=0
+    tabla=0
+
+    op_producto=4
+    resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
+    for row in resultado:
+         tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
 def agregar_producto():
-    pass
-    # if validacion():
-    #     query = "INSERT INTO producto VALUES(?, ?, ?, ?)"
-    #     parametros = (eid.get(), price_c.get(), price_v.get(), amount.get())
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-    # else:
-    #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-    # obt_productos()
-    # clean()
+    tu_clave = []
+    if validacion():
+        tu_clave.append(eid.get())
+        tu_clave.append(eprice_c.get())
+        tu_clave.append(eprice_v.get())
+        tu_clave.append(eamount.get())
+        op_BD=1
+        tabla=0
+        base_datos(op_BD, tabla, tu_clave)
+        messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+    else:
+        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+    clean()
+    obt_productos()
 
 def editar_producto():
-    pass
-    # if validacion():
-    #     parametros = (price_c.get(), price_v.get(), amount.get(), eid.get())
-    #     query = ("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
-    # else:
-    #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-    # obt_productos()
-    # eid.configure(state = 'normal')
-    # clean()
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
+    tu_clave = []
+    if validacion():
+        tu_clave.append(eid.get())
+        tu_clave.append(eprice_c.get())
+        tu_clave.append(eprice_v.get())
+        tu_clave.append(eamount.get())
+        print(tu_clave)
+        op_BD=2
+        tabla=0
+        base_datos(op_BD, tabla, tu_clave)
+        messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+    else:
+        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+    eid.configure(state = 'normal')
+    clean()
+    obt_productos()
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
 
 def eliminar_producto():
-    pass
-    # try:
-    #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
-    #         query = "DELETE FROM producto WHERE ID_PRODUCTO = ?"
-    #         parametros = eid.get()
-    #         run_query(query, (parametros, ))
-    #         messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
-    # except:
-    #     messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
-    #     return
-    # obt_productos()
-    # eid.configure(state = 'normal')
-    # clean()
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
+    tu_clave = []
+    if len(eid.get()) != 0:
+        tu_clave.append(eid.get())
+        op_BD=3
+        tabla=0
+        base_datos(op_BD, tabla, tu_clave)
+        messagebox.showinfo("BASE DE DATOS", "Se eliminaron correctamente los campos")
+    else:
+        messagebox.showerror("ERROR", "El ID Producto no puede estar vacio")
+    eid.configure(state = 'normal')
+    clean()
+    obt_productos()
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
+
+"Acabo de agregar la funcion para la operacion de mas"
+def suma_inventario():
+    tu_clave = []
+    cant_n = int(eamount.get())
+    seleccion = eid.get()
+    op_BD=0
+    tabla=0
+    op_producto = 0
+    resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+    tu_clave = []
+    suma = cant_n + int(resultado[3])
+    tu_clave.append(eid.get())
+    tu_clave.append(eprice_c.get())
+    tu_clave.append(eprice_v.get())
+    tu_clave.append(suma)
+    op_BD = 2
+    tabla = 0
+    base_datos(op_BD, tabla, tu_clave)
+    eid.configure(state = 'normal')
+    clean()
+    obt_productos()
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
+    messagebox.showinfo("BASE DE DATOS", "Se aumento correctamente el inventario")
+
+"Acabo de agregar la funcion para la operacion de menos"
+def resta_inventario():
+    tu_clave = []
+    cant_n = int(eamount.get())
+    seleccion = eid.get()
+    op_BD=0
+    tabla=0
+    op_producto = 0
+    resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+    if cant_n <= int(resultado[3]):
+        resta = int(resultado[3]) - cant_n
+        tu_clave.append(eid.get())
+        tu_clave.append(eprice_c.get())
+        tu_clave.append(eprice_v.get())
+        tu_clave.append(resta)
+        op_BD = 2
+        tabla = 0
+        base_datos(op_BD, tabla, tu_clave)
+    else:
+        tu_clave = []
+        tu_clave.append(eid.get())
+        tu_clave.append(eprice_c.get())
+        tu_clave.append(eprice_v.get())
+        tu_clave.append(0)
+        print(tu_clave)
+        op_BD = 2
+        tabla = 0
+        base_datos(op_BD, tabla, tu_clave)
+        messagebox.showwarning("ADVERTENCIA", "Habian "+ str(resultado[3]) +" repuestos de "+ str(seleccion) +" y usted ha restado " +
+        str(cant_n) + " asi que se ha colocado la cantidad en 0")
+    eid.configure(state = 'normal')
+    clean()
+    obt_productos()
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
+    messagebox.showinfo("BASE DE DATOS", "Se disminuyo correctamente el inventario")
 
 def clean():
     eid.delete(0, END)
@@ -94,100 +343,35 @@ def clean():
     eamount.delete(0, END)
 
 def seleccionar_click(event):
-    pass
-    # clean()
-    # b1["state"] = "disable"
-    # b2["state"] = "normal"
-    # b3["state"] = "normal"
-    # selected = tree.focus()
-    # values = tree.item(selected, 'values')
-    # eid.insert(0, values[0])
-    # price_c.insert(0, values[1])
-    # price_v.insert(0, values[2])
-    # amount.insert(0, values[3])
-    # cant_v = values[3]
-    # Id_operacion = values[0]
-    # eid.configure(state = 'disable')
-    # Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
-
-"Acabo de agregar la funcion para la operacion de mas"
-def suma_inventario():
-    pass
-    # if len(eamount.get()) != 0: 
-    #     cant_n = int(amount.get())
-    #     suma = int(cant_v) + cant_n
-    #     query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-    #     parametros = (suma, Id_operacion)
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Se han sumado las cantidades al inventario")
-    # else:
-    #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-    # eid.configure(state = 'normal')
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
-    # clean()
-    # obt_productos()
-
-"Acabo de agregar la funcion para la operacion de menos"
-def resta_inventario():
-    pass
-    # if len(eamount.get()) != 0: 
-    #     cant_n = int(amount.get())
-    #     resta = int(cant_v) - cant_n
-    #     query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-    #     parametros = (resta, Id_operacion)
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Se han restado las cantidades al inventario")
-    # else:
-    #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-    # eid.configure(state = 'normal')
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
-    # clean()
-    # obt_productos()
+    clean()
+    b1["state"] = "disable"
+    b2["state"] = "normal"
+    b3["state"] = "normal"
+    bmas["state"] = "normal"
+    bmenos["state"] = "normal"
+    selected = tree.focus()
+    values = tree.item(selected, 'values')
+    eid.insert(0, values[0])
+    eprice_c.insert(0, values[1])
+    eprice_v.insert(0, values[2])
+    eamount.insert(0, values[3])
+    eid.configure(state = 'disable')
+    Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
 
 def windbuscar():
     def buscar():
         if len(ebuscar.get()) != 0 and v.get() != 0:
             if v.get() == 1:
-                    #query = "SELECT * FROM producto WHERE ID_PRODUCTO = ? ORDER BY ID_PRODUCTO DESC"
-                    #parametros = (ebuscar.get())
-                    #view = tree.get_children()
-                    #for elementos in view:
-                        #tree.delete(elementos)
-                    #db_rows = run_query(query, (parametros, ))
-                    #for row in db_rows:
-                        #tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
                 messagebox.showinfo("FUNCIONA", "1")
                 wind.deiconify()
                 wind2.destroy()
 
             elif v.get() == 2:
-                    #query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY NOMBRE DESC"
-                    #parametros = (ebuscar.get())
-                    #windclientes()
-                    #view = tree1.get_children()
-                    #for elementos in view:
-                        #tree1.delete(elementos)
-                    #db_rows = run_query(query, (parametros, ))
-                    #for row in db_rows:
-                    # tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
                 messagebox.showinfo("FUNCIONA", "2")
                 wind.deiconify()
                 wind2.destroy()
 
             elif v.get() == 3:
-                    #query = "SELECT * FROM pedido WHERE ID = ? ORDER BY ID DESC"
-                    #parametros = (ebuscar.get())
-                    #windpedido1()
-                    #view = tree3.get_children()
-                    #for elementos in view:
-                        #tree3.delete(elementos)
-                    #db_rows = run_query(query, (parametros, ))
-                    #for row in db_rows:
-                        #tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
                 messagebox.showinfo("FUNCIONA", "3")
                 wind.deiconify()
                 wind2.destroy()
@@ -216,64 +400,27 @@ def windbuscar():
 def windclientes():
     def validacion1():
         pass
-        # return len(ci_cliente.get()) != 0 and len(nombre.get()) != 0 and len(apellido.get()) != 0 and len(telefono.get()) != 0 and len(direccion.get()) != 0 and len(deuda.get()) != 0
 
     def obt_clientes():
         pass
-        # view = tree1.get_children()
-        # for elementos in view:
-        #     tree1.delete(elementos)
-            
-        # query = "SELECT * FROM cliente ORDER BY NOMBRE DESC"
-        # db_rows = run_query(query) 
-        # for row in db_rows:
-        #     tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
-        pass
-        # if validacion1():
-        #     query = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)"
-        #     parametros = (ci_cliente.get(), nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get())
-        #     run_query(query, parametros)
-        #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-        # else:
-        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        # obt_clientes()
-        # clean1()
+        tu_clave.append(ci_cliente.get())
+        tu_clave.append(nombre.get())
+        tu_clave.append(apellido.get())
+        tu_clave.append(telefono.get())
+        tu_clave.append(direccion.get())
+        tu_clave.append(deuda.get())
+        op_BD=2
+        tabla=1
+        base_datos(op_BD, tabla, tu_clave)
+        clean()
 
     def editar_cliente():
         pass
-        # if validacion1():
-        #     parametros = (nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get(), ci_cliente.get())
-        #     query = ("UPDATE cliente SET NOMBRE = ? , APELLIDO = ?, TELEFONO = ?, DIRECCION = ?, DEUDA = ? WHERE CI_CLIENTE = ?")
-        #     run_query(query, parametros)
-        #     messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
-        # else:
-        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        # obt_clientes()
-        # ci_cliente.configure(state = 'normal')
-        # clean1()
-        # b_guardar["state"] = "normal"
-        # b_eliminar["state"] = "disable"
-        # b_actualizar["state"] = "disable"
 
     def eliminar_cliente():
         pass
-        # try:
-        #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
-        #         query = "DELETE FROM cliente WHERE CI_CLIENTE = ?"
-        #         parametros = ci_cliente.get()
-        #         run_query(query, (parametros, ))
-        #         messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
-        # except:
-        #     messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
-        #     return
-        # obt_clientes()
-        # ci_cliente.configure(state = 'normal')
-        # clean1()
-        # b_guardar["state"] = "normal"
-        # b_eliminar["state"] = "disable"
-        # b_actualizar["state"] = "disable"
 
     def clean1():
         ci_cliente.delete(0, END)
@@ -293,20 +440,6 @@ def windclientes():
 
     def seleccionar1_click(event):
         pass
-        # clean1()
-        # b_guardar["state"] = "disable"
-        # b_actualizar["state"] = "normal"
-        # b_eliminar["state"] = "normal"
-        # selected = tree1.focus()
-        # values = tree1.item(selected, 'values')
-        # ci_cliente.insert(0, values[0])
-        # nombre.insert(0, values[1])
-        # apellido.insert(0, values[2])
-        # telefono.insert(0, values[3])
-        # direccion.insert(0, values[4])
-        # deuda.insert(0, values[5])
-        # ci_cliente.configure(state = 'disable')
-        # Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
 
     wind.iconify() 
     windclientes1 = Toplevel()
@@ -337,34 +470,34 @@ def windclientes():
     l_title = Label(windclientes1, text = "Agregue un cliente")
     l_title.place(x = 400, y = 10)
 
-    l_ci_cedula = Label(windclientes1, text = "Cedula:")
-    l_ci_cedula.place(x = 320, y = 40)
+    l_ci_cedula = Label(windclientes1, text = "Cedula Cliente:")
+    l_ci_cedula.place(x = 290, y = 40)
     ci_cliente = Entry(windclientes1, width = 40)
     ci_cliente.focus()
     ci_cliente.place(x = 390, y = 40)
 
-    l_nombre = Label(windclientes1, text = "Nombre:")
-    l_nombre.place(x = 312, y = 70)
+    l_nombre = Label(windclientes1, text = "Nombre Cliente:")
+    l_nombre.place(x = 282, y = 70)
     nombre = Entry(windclientes1, width = 40)
     nombre.place(x = 390, y = 70)
 
-    l_apellido = Label(windclientes1, text = "Apellido:")
-    l_apellido.place(x = 312, y = 100)
+    l_apellido = Label(windclientes1, text = "Apellido Cliente:")
+    l_apellido.place(x = 282, y = 100)
     apellido = Entry(windclientes1, width = 40)
     apellido.place(x = 390, y = 100)
 
-    l_telefono = Label(windclientes1, text = "Telefono:")
-    l_telefono.place(x = 310, y = 130)
+    l_telefono = Label(windclientes1, text = "Telefono Cliente:")
+    l_telefono.place(x = 280, y = 130)
     telefono = Entry(windclientes1, width = 40)
     telefono.place(x = 390, y = 130)
 
-    l_direccion = Label(windclientes1, text = "Direccion:")
-    l_direccion.place(x = 306, y = 160)
+    l_direccion = Label(windclientes1, text = "Direccion Cliente:")
+    l_direccion.place(x = 276, y = 160)
     direccion = Entry(windclientes1, width = 40)
     direccion.place(x = 390, y = 160)
 
-    l_deuda = Label(windclientes1, text = "Deuda:")
-    l_deuda.place(x = 321, y = 190)
+    l_deuda = Label(windclientes1, text = "Deuda Cliente:")
+    l_deuda.place(x = 291, y = 190)
     deuda = Entry(windclientes1, width = 40)
     deuda.place(x = 390, y = 190)
 
@@ -409,102 +542,25 @@ def windpedido1():
         wind.deiconify()
 
     def validacion_pedido():
-        pass
-        # return len(ci.get()) != 0 and len(id_pro.get()) != 0 and len(cant.get()) != 0
-    def obt_pedidos():
-        pass
-        # view = tree3.get_children()
-        # for elementos in view:
-        #     tree3.delete(elementos)
+        return len(self.ci.get()) != 0 and len(self.id_pro.get()) != 0 and len(self.cant.get()) != 0
 
-        # query = "SELECT * FROM pedido ORDER BY CI_CLIENTE DESC"
-        # db_rows = run_query(query)
-        # for row in db_rows:
-        #     tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
+    def obt_pedidos():
+        view = tree.get_children()
+        for elementos in view:
+            tree.delete(elementos)
+            op_BD=0
+            tabla=3
+            op_pedido=5
+            resultado=(base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
+        for row in resultado:
+            tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
+
     def agregar_pedido():
         pass
-        # if validacion_pedido():
-        #     query = "INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)"
-        #     parametros = (str(ci.get()), str(id_pro.get()), cant.get(), dia())
-        #     run_query(query, parametros)
-        #     deuda_fun()
-        #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-        # else:
-        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        # obt_pedidos()
-        # clean_pedido()
+
     def editar_pedido_inventario():
         pass
-        # conn = sqlite3.connect('inventario.db')
-        # cursor = conn.cursor()
-        # query = ("SELECT PRECIO_VENTA FROM producto WHERE ID_PRODUCTO = ?")
-        # parametros = id_pro.get()
-        # cursor.execute(query, (parametros, ))
-        # precio = cursor.fetchone()
-        # valor_precio1 = precio[0]
-        # query = ("SELECT DEUDA FROM cliente WHERE CI_CLIENTE = ?")
-        # parametros = (ci.get())
-        # cursor.execute(query, (parametros, ))
-        # deuda2 = cursor.fetchone()
-        # valor_deuda1 = deuda2[0]
-        # parametros = (id_pro.get(), cant.get(), dia(), ci_pedido_v)
-        # query = ("UPDATE pedido SET ID_PRODUCTO = ? , CANTIDAD_PEDIDO = ?, FECHA = ? WHERE CI_CLIENTE = ?")
-        # cursor.execute(query, parametros)
-        # precio1 = cursor.fetchone()
-        # valor_precio1 = precio[0]
-        # if cant.get() < cant_v1:
-        #     if len(cant.get()) != 0:
-
-        #         query = "SELECT CANTIDAD_PRODUCTO FROM producto WHERE ID_PRODUCTO = ?"
-        #         parametros = (Id_operacion1)
-        #         print(parametros)
-        #         cursor.execute(query, (parametros, ))
-        #         fetchone_cantidad = cursor.fetchone()
-        #         cant_producto_v = fetchone_cantidad[0]
-        #         cant_n1 = int(cant.get())
-        #         inventario_resta = (int(cant_v1) - cant_n1) 
-        #         inventario_operacion = inventario_resta + cant_producto_v
-
-        #         query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-        #         parametros = (inventario_operacion, Id_operacion1)
-        #         print(inventario_operacion)
-        #         cursor.execute(query, parametros)
-        #         total1 = (inventario_resta * valor_precio1) - valor_deuda1
-
-        #         query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
-        #         parametros = (total1, ci.get())
-        #         cursor.execute(query, parametros)
-
-        #         messagebox.showinfo("BASE DE DATOS", "Se han actualizado los campos")
-
-        # elif cant.get() > cant_v1:
-        #     if len(cant.get()) != 0:
-
-        #         query = "SELECT CANTIDAD_PRODUCTO FROM producto WHERE ID_PRODUCTO = ?"
-        #         parametros = (Id_operacion1)
-        #         cursor.execute(query, (parametros, ))
-        #         fetchone_cantidad = cursor.fetchone()
-        #         cant_producto_v = fetchone_cantidad[0]
-        #         cant_n1 = int(cant.get())
-        #         inventario_resta = (int(cant_v1) - cant_n1) 
-        #         inventario_operacion = inventario_resta - cant_producto_v
-
-        #         query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-        #         parametros = (inventario_operacion, Id_operacion1)
-        #         cursor.execute(query, parametros)
-        #         total1 = (inventario_resta * valor_precio1) + valor_deuda1
-
-        #         query = "UPDATE cliente SET DEUDA = ? WHERE CI_CLIENTE = ?"
-        #         parametros = (total1, ci.get())
-        #         cursor.execute(query, parametros)
-        #         messagebox.showinfo("BASE DE DATOS", "Se han actualizado los campos")
-        # else:
-        #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-        # ci.configure(state = 'normal')
-        # obt_pedidos()
-        # clean_pedido()
-        # Hovertip(ci, text = "No puede actualizar la CI de los pedidos ya ingresados", hover_delay = 360000)
-
+       
     wind.iconify()
     windpedido = Toplevel()
     windpedido.resizable(width = 0, height = 0)
@@ -514,8 +570,8 @@ def windpedido1():
     l2 = Label(windpedido, text = "Ingrese un pedido")
     l2.place(x = 345, y = 40)
 
-    lci = Label(windpedido, text = "CI: ")
-    lci.place(x = 356, y = 65)
+    lci = Label(windpedido, text = "CI Cliente: ")
+    lci.place(x = 316, y = 65)
     ci = Entry(windpedido, width = 30)
     ci.focus()
     ci.place(x = 400, y = 65)
@@ -574,7 +630,7 @@ def windpedido1():
     tree3.heading('#2', text = 'ID PRODUCTO', anchor = CENTER)
     tree3.heading('#3', text = 'CANTIDAD PRODUCTO', anchor = CENTER)
     tree3.heading('#4', text = 'FECHA', anchor = CENTER)
-    #obt_pedidos()
+    obt_pedidos()
 
 wn = Tk()
 wind = wn
@@ -586,23 +642,25 @@ wind.geometry("802x500")
 wind.iconbitmap('archivo.ico')
     
 tree = ttk.Treeview(wn)
-tree['columns'] = ("ID", "PRECIO_COSTO", "PRECIO_VENTA", "CANTIDAD")
+tree['columns'] = ("ID_PRODUCTO", "PRECIO_COSTO", "PRECIO_VENTA", "CANTIDAD")
 tree.place(x = 0, y = 200)
 tree.column('#0', width = 0, stretch = NO)
 tree.column('#1', minwidth = 200, anchor = CENTER)
 tree.column('#2', minwidth = 200, anchor = CENTER)
 tree.column('#3', minwidth = 200, anchor = CENTER)
 tree.column('#4', minwidth = 200, anchor = CENTER)
-tree.heading('#1', text = 'ID', anchor = CENTER)
+tree.heading('#1', text = 'ID PRODUCTO', anchor = CENTER)
 tree.heading('#2', text = 'PRECIO COSTO', anchor = CENTER)
 tree.heading('#3', text = 'PRECIO VENTA', anchor = CENTER)
 tree.heading('#4', text = 'CANTIDAD', anchor = CENTER)
+tree.bind("<Double-Button-1>", seleccionar_click)
+obt_productos()
 
 l1 = Label(wind, text = "Agregue un producto")
 l1.place(x = 345, y = 15)
 
-lid = Label(wind, text = "ID: ")
-lid.place(x = 356, y = 40)
+lid = Label(wind, text = "ID Producto: ")
+lid.place(x = 305, y = 40)
 eid = Entry(wind, width = 30)
 eid.focus()
 eid.place(x = 400, y = 40)
@@ -653,6 +711,7 @@ bmas = Button(wind, width = 15, height = 15, command = lambda: suma_inventario()
 bmas.image_names = img2
 bmas.config(image = img2)
 bmas.place(x = 590, y = 130)
+bmas['state'] = 'disable'
 
 "Acabo de agregar el boton MENOS"
 img3 = PhotoImage(file = 'restar_inventario.png')
@@ -660,6 +719,7 @@ bmenos = Button(wind, width = 15, height = 15, command = lambda: resta_inventari
 bmenos.image_names = img3
 bmenos.config(image = img3)
 bmenos.place(x = 615, y = 130)
+bmenos['state'] = 'disable'
 
 "Acabo de agregar el boton actualizar"
 img4 = PhotoImage(file = 'actualizar_tree.png')
@@ -688,7 +748,6 @@ ayudamenu.add_command(label = "Manual de Usuario")
 menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
 
 wind.config(menu = menuvar)
-
 
 app = wind
 wn.mainloop()
