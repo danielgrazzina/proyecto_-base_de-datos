@@ -6,7 +6,12 @@ from idlelib.tooltip import Hovertip
 from datetime import datetime
 import sqlite3
 
-def base_datos(op_BD,tabla,tu_clave=(),seleccion="",op_producto=9,op_cliente=9,op_pedido=9):
+op_BD=9
+tabla=9
+tu_clave=[]
+resultado=[]
+
+def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
     miconexion=sqlite3.connect("inventario.db")
     micursor=miconexion.cursor()
@@ -15,74 +20,89 @@ def base_datos(op_BD,tabla,tu_clave=(),seleccion="",op_producto=9,op_cliente=9,o
         # consultar
         if tabla ==  0:
             # tabla producto
-
             if op_producto == 0:
                 #id_producto
-                #try:
-                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",[seleccion])
+                micursor.execute("SELECT * FROM producto WHERE ID_PRODUCTO = ?",seleccion)
                 resultado=micursor.fetchone()
-                #except Error:
-                    #print(Error)    
+                return resultado   
             elif op_producto == 1:
                 # precio_costo
-                micursor.execute("SELECT * FROM producto WHERE PRECIO_COSTO = ?",[seleccion])
+                micursor.execute("SELECT * FROM producto WHERE PRECIO_COSTO = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_producto == 2:
                 # precio_venta
-                micursor.execute("SELECT * FROM producto WHERE PRECIO_VENTA = ?",[seleccion])
+                micursor.execute("SELECT * FROM producto WHERE PRECIO_VENTA = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_producto == 3:
                 # cantidad_pro
-                micursor.execute("SELECT * FROM producto WHERE CANTIDAD_PRODUCTO = ?",[seleccion])
+                micursor.execute("SELECT * FROM producto WHERE CANTIDAD_PRODUCTO = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
+            elif op_producto == 4:
+                micursor.execute("SELECT * FROM producto ORDER BY ID_PRODUCTO DESC")
+                resultado=micursor.fetchall()
+                return resultado
         elif tabla == 1:
             # tabla cliente
             if op_cliente == 0:
                 # Cedula
-                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",[seleccion])
+                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_cliente == 1:
                 # nombre
-                micursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?",[seleccion])
+                micursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_cliente == 2:
                 #apellido
-                micursor.execute("SELECT * FROM cliente WHERE APELLIDO = ?",[seleccion])
+                micursor.execute("SELECT * FROM cliente WHERE APELLIDO = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_cliente == 3:
                 #telefono
-                micursor.execute("SELECT * FROM cliente WHERE TELEFONO = ?",[seleccion])
+                micursor.execute("SELECT * FROM cliente WHERE TELEFONO = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_cliente == 4:
                 #direccion
-                micursor.execute("SELECT * FROM cliente WHERE DIRECCION = ?",[seleccion])
+                micursor.execute("SELECT * FROM cliente WHERE DIRECCION = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_cliente == 5:
                 #deuda
-                micursor.execute("SELECT * FROM cliente WHERE DEUDA = ?",[seleccion])
+                micursor.execute("SELECT * FROM cliente WHERE DEUDA = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
         elif tabla == 3:
             # tabla pedido
             if op_pedido == 0:
                 # id_pedido
-                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",[seleccion])
+                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_pedido == 1:
                 # ci_cliente
-                micursor.execute("SELECT * FROM pedido WHERE CI_CLIENTE = ?",[seleccion])
+                micursor.execute("SELECT * FROM pedido WHERE CI_CLIENTE = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_pedido == 2:
                 # id_pedido
-                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",[seleccion])
+                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_pedido == 3:
                 # cantidad_ped
-                micursor.execute("SELECT * FROM pedido WHERE CANTIDAD_PEDIDA = ?",[seleccion])
+                micursor.execute("SELECT * FROM pedido WHERE CANTIDAD_PEDIDA = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
             elif op_pedido == 4:
                 # fecha
-                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",[seleccion])
+                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",seleccion)
                 resultado=micursor.fetchone()
+                return resultado
     elif op_BD ==  1:
         #crear nuevo
         if tabla == 0:
@@ -134,100 +154,84 @@ def base_datos(op_BD,tabla,tu_clave=(),seleccion="",op_producto=9,op_cliente=9,o
         #eliminar
         if tabla == 0:
             # productos
-            row0=tu_clave[0]
-            micursor.execute("DELETE FROM producto WHERE ID_PRODUCTO = ?",(row0,))
-            miconexion.commit()
+            if clean_total == 0:
+                row0=tu_clave[0]
+                micursor.execute("DELETE FROM producto WHERE ID_PRODUCTO = ?",(row0,))
+                miconexion.commit()
+            else:
+                micursor.execute("DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO")
+                miconexion.commit()
         elif tabla == 1:
             # cliente
-            row0=tu_clave[0]
-            micursor.execute("DELETE FROM cliente WHERE CI_CLIENTE = ?",(row0,))
-            miconexion.commit()
+            if clean_total == 0:
+                row0=tu_clave[0]
+                micursor.execute("DELETE FROM cliente WHERE CI_CLIENTE = ?",(row0,))
+                miconexion.commit()
+            else:
+                micursor.execute("DELETE FROM cliente WHERE CI_CLIENTE = CI_CLIENTE")
+                miconexion.commit()
         elif tabla == 2:
             # pedido
-            row0=tu_clave[0]
-            micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ?",(row0,))
-            miconexion.commit()
+            if clean_total == 0:
+                row0=tu_clave[0]
+                micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ?",(row0,))
+                miconexion.commit()
+            else:
+                micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
+                miconexion.commit()
     miconexion.close()
-
-def run_query(query, parametros = ()):
-    pass
-        # with sqlite3.connect('inventario.db') as conn:
-        #     cursor = conn.cursor()
-        #     result = cursor.execute(query, parametros)
-        #     conn.commit()
-        # return result
-
+    
 def borrarPRODUCTO():
-    pass
-    # try:
-    #     if messagebox.askyesno(message = "Se borraran todos los PRODUCTOS, ¿Desea continuar?", title = "ADVERTENCIA"):
-    #         query = 'DELETE FROM producto WHERE ID_PRODUCTO = ID_PRODUCTO'
-    #         run_query(query)
-    #         obt_productos()
-    #         clean()
-    #         messagebox.showinfo("BASE DE DATOS", "Se vacio exitosamente la tabla 'PRODUCTO'")
-    # except:
-    #     messagebox.showerror("ERROR", "No se pudo vaciar la tabla 'PRODUCTO'")
+    op_BD = 3
+    tabla = 0
+    clean_total = 1
+    base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
+    clean()
 
 def validacion():
-    # return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
-    pass
+    return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
+
 def obt_productos():
-    pass
-    # view = tree.get_children()
-    # for elementos in view:
-    #     tree.delete(elementos)
-        
-    # query = "SELECT * FROM producto ORDER BY ID_PRODUCTO DESC"
-    # db_rows = run_query(query)
-    # for row in db_rows:
-    #     tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+    
+    view = tree.get_children()
+    for elementos in view:
+         tree.delete(elementos)
+    op_BD=0
+    tabla=0
+    tu_clave=[]
+    seleccion=""
+    op_producto=4
+    resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
+    print(resultado)
+    for row in resultado:
+         tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
 def agregar_producto():
-    pass
-    # if validacion():
-    #     query = "INSERT INTO producto VALUES(?, ?, ?, ?)"
-    #     parametros = (eid.get(), price_c.get(), price_v.get(), amount.get())
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-    # else:
-    #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-    # obt_productos()
-    # clean()
+    tu_clave.append(eid.get())
+    tu_clave.append(eprice_c.get())
+    tu_clave.append(eprice_v.get())
+    tu_clave.append(eamount.get())
+    op_BD=1
+    tabla=0
+    base_datos(op_BD, tabla, tu_clave)
+    clean()
 
 def editar_producto():
-    pass
-    # if validacion():
-    #     parametros = (price_c.get(), price_v.get(), amount.get(), eid.get())
-    #     query = ("UPDATE producto SET PRECIO_COSTO = ? , PRECIO_VENTA = ?, CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?")
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Datos actualizados satisfactoriamente")
-    # else:
-    #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-    # obt_productos()
-    # eid.configure(state = 'normal')
-    # clean()
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
+    tu_clave.append(eid.get())
+    tu_clave.append(eprice_c.get())
+    tu_clave.append(eprice_v.get())
+    tu_clave.append(eamount.get())
+    op_BD=2
+    tabla=0
+    base_datos(op_BD, tabla, tu_clave)
+    clean()
 
 def eliminar_producto():
-    pass
-    # try:
-    #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
-    #         query = "DELETE FROM producto WHERE ID_PRODUCTO = ?"
-    #         parametros = eid.get()
-    #         run_query(query, (parametros, ))
-    #         messagebox.showinfo("BASE DE DATOS", "Datos eliminados satisfactoriamente")
-    # except:
-    #     messagebox.showerror("ERROR", "Algo ha salido mal al intentar borrar el registro")
-    #     return
-    # obt_productos()
-    # eid.configure(state = 'normal')
-    # clean()
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
+    tu_clave.append(eid.get())
+    op_BD=3
+    tabla=0
+    base_datos(op_BD, tabla, tu_clave)
+    clean()
 
 def clean():
     eid.delete(0, END)
@@ -236,59 +240,65 @@ def clean():
     eamount.delete(0, END)
 
 def seleccionar_click(event):
-    pass
-    # clean()
-    # b1["state"] = "disable"
-    # b2["state"] = "normal"
-    # b3["state"] = "normal"
-    # selected = tree.focus()
-    # values = tree.item(selected, 'values')
-    # eid.insert(0, values[0])
-    # price_c.insert(0, values[1])
-    # price_v.insert(0, values[2])
-    # amount.insert(0, values[3])
-    # cant_v = values[3]
-    # Id_operacion = values[0]
-    # eid.configure(state = 'disable')
-    # Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
+    clean()
+    b1["state"] = "disable"
+    b2["state"] = "normal"
+    b3["state"] = "normal"
+    selected = tree.focus()
+    values = tree.item(selected, 'values')
+    eid.insert(0, values[0])
+    price_c.insert(0, values[1])
+    price_v.insert(0, values[2])
+    amount.insert(0, values[3])
+    eid.configure(state = 'disable')
+    Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
 
 "Acabo de agregar la funcion para la operacion de mas"
 def suma_inventario():
-    pass
-    # if len(eamount.get()) != 0: 
-    #     cant_n = int(amount.get())
-    #     suma = int(cant_v) + cant_n
-    #     query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-    #     parametros = (suma, Id_operacion)
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Se han sumado las cantidades al inventario")
-    # else:
-    #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-    # eid.configure(state = 'normal')
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
-    # clean()
-    # obt_productos()
+    cant_n = int(eamount.get())
+    seleccion = eid.get()
+    op_BD=0
+    tabla=0
+    op_producto = 0
+    resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+    suma = cant_n + int(resultado[3])
+    tu_clave.append(eid.get())
+    tu_clave.append(eprice_c.get())
+    tu_clave.append(eprice_v.get())
+    tu_clave.append(suma)
+    op_BD = 2
+    tabla = 0
+    base_datos(op_BD, tabla, tu_clave)
+    clean()
 
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
-    pass
-    # if len(eamount.get()) != 0: 
-    #     cant_n = int(amount.get())
-    #     resta = int(cant_v) - cant_n
-    #     query = "UPDATE producto SET CANTIDAD_PRODUCTO = ? WHERE ID_PRODUCTO = ?"
-    #     parametros = (resta, Id_operacion)
-    #     run_query(query, parametros)
-    #     messagebox.showinfo("BASE DE DATOS", "Se han restado las cantidades al inventario")
-    # else:
-    #     messagebox.showerror("BASE DE DATOS", "El campo cantidad no puede estar en blanco")
-    # eid.configure(state = 'normal')
-    # b1["state"] = "normal"
-    # b2["state"] = "disable"
-    # b3["state"] = "disable"
-    # clean()
-    # obt_productos()
+    cant_n = int(eamount.get())
+    seleccion = eid.get()
+    op_BD=0
+    tabla=0
+    op_producto = 0
+    resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+    if cant_n <= int(resultado[3]):
+        resta = int(resultado[3]) - cant_n
+        tu_clave.append(eid.get())
+        tu_clave.append(eprice_c.get())
+        tu_clave.append(eprice_v.get())
+        tu_clave.append(resta)
+        op_BD = 2
+        tabla = 0
+        base_datos(op_BD, tabla, tu_clave)
+    else:
+        tu_clave.append(eid.get())
+        tu_clave.append(eprice_c.get())
+        tu_clave.append(eprice_v.get())
+        tu_clave.append(0)
+        op_BD = 2
+        tabla = 0
+        base_datos(op_BD, tabla, tu_clave)
+        messagebox.showwarning("ADVERTENCIA", "Habian "+ str(resultado[3]) +" repuestos de "+ str(seleccion) +" y usted ha restado " +
+        str(cant_n) + " asi que se ha colocado la cantidad en 0")
+    clean()
 
 def windbuscar():
     def buscar():
@@ -354,6 +364,7 @@ def windbuscar():
     rb_cliente.place(x = 20, y = 80)
     rb_pedido = Radiobutton(wind2, text = "PEDIDO", value = 3, variable = v)
     rb_pedido.place(x = 20, y = 110)
+    
 
 def windclientes():
     def validacion1():
@@ -362,9 +373,9 @@ def windclientes():
 
     def obt_clientes():
         pass
-        # view = tree1.get_children()
-        # for elementos in view:
-        #     tree1.delete(elementos)
+         #view = tree1.get_children()
+         #for elementos in view:
+             #tree1.delete(elementos)
             
         # query = "SELECT * FROM cliente ORDER BY NOMBRE DESC"
         # db_rows = run_query(query) 
@@ -372,25 +383,16 @@ def windclientes():
         #     tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
 
     def agregar_cliente():
-        tu_clave[0]=ci_cliente.get()
-        tu_clave[1]=nombre.get()
-        tu_clave[2]=apellido.get()
-        tu_clave[3]=telefono.get()
-        tu_clave[4]=direccion.get()
-        tu_clave[5]=deuda.get()
+        tu_clave.append(ci_cliente.get())
+        tu_clave.append(nombre.get())
+        tu_clave.append(apellido.get())
+        tu_clave.append(telefono.get())
+        tu_clave.append(direccion.get())
+        tu_clave.append(deuda.get())
         op_BD=1
         tabla=1
-        base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente,op_pedido)
-        clean1()
-        # if validacion1():
-        #     query = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)"
-        #     parametros = (ci_cliente.get(), nombre.get(), apellido.get(), telefono.get(), direccion.get(), deuda.get())
-        #     run_query(query, parametros)
-        #     messagebox.showinfo("BASE DE DATOS", "Datos guardados satisfactoriamente")
-        # else:
-        #     messagebox.showerror("ADVERTENCIA", "No pueden haber campos en blanco")
-        # obt_clientes()
-        # clean1()
+        base_datos(op_BD,tabla,tu_clave)
+        clean1()       
 
     def editar_cliente():
         pass
@@ -409,7 +411,16 @@ def windclientes():
         # b_actualizar["state"] = "disable"
 
     def eliminar_cliente():
-        pass
+        tu_clave.append(ci_cliente.get())
+        tu_clave.append(nombre.get())
+        tu_clave.append(apellido.get())
+        tu_clave.append(telefono.get())
+        tu_clave.append(direccion.get())
+        tu_clave.append(deuda.get())
+        op_BD=3
+        tabla=1
+        base_datos(op_BD,tabla,tu_clave)
+        clean1() 
         # try:
         #     if messagebox.askyesno(message = "El registro se borrara permanentemente, ¿desea continuar?", title = "ADVERTENCIA"):
         #         query = "DELETE FROM cliente WHERE CI_CLIENTE = ?"
@@ -635,6 +646,7 @@ tree.heading('#2', text = 'PRECIO COSTO', anchor = CENTER)
 tree.heading('#3', text = 'PRECIO VENTA', anchor = CENTER)
 tree.heading('#4', text = 'CANTIDAD', anchor = CENTER)
 
+
 l1 = Label(wind, text = "Agregue un producto")
 l1.place(x = 345, y = 15)
 
@@ -725,6 +737,7 @@ ayudamenu.add_command(label = "Manual de Usuario")
 menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
 
 wind.config(menu = menuvar)
+obt_productos()
 
 
 app = wind
