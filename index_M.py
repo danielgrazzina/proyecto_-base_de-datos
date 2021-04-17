@@ -9,9 +9,9 @@ import sqlite3
 
 tu_clave=[]
 seleccion=""
-op_producto=9
-op_cliente=9
-op_pedido=9
+op_producto= 9
+op_cliente= 9
+op_pedido= 9
 clean_total=0
 resultado=[]
 now = datetime.now()
@@ -403,21 +403,6 @@ def mostrar_busqueda1():
 
 def windbuscar():
     
-    def buscar_pedido1():
-        mostrar_busqueda1()
-        wind2.destroy()
-        wind.deiconify()
-    
-    def buscar_pedido2():
-        mostrar_busqueda2()
-        wind2.destroy()
-        windclientes.deiconify()
-
-    def buscar_pedido3():
-        mostrar_busqueda3()
-        wind2.destroy()
-        windclientes.deiconify()
-
     def buscar():
         global op_busqueda
         global lista_busqueda
@@ -430,7 +415,7 @@ def windbuscar():
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto)
                 op_busqueda = v.get()
                 lista_busqueda=[resultado]
-                buscar_pedido1()
+                buscar_pedido=1
             elif v.get() == 2:
                 op_BD=0
                 tabla=1
@@ -439,7 +424,7 @@ def windbuscar():
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente)
                 op_busqueda = v.get()
                 lista_busqueda=[resultado]
-                buscar_pedido2()
+                buscar_pedido = 2
             elif v.get() == 3:
                 op_BD=0
                 tabla=2
@@ -450,7 +435,7 @@ def windbuscar():
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente,op_pedido)
                 op_busqueda = v.get()
                 lista_busqueda=[resultado]
-                buscar_pedido3()
+                buscar_pedido=3
             elif v.get() == 4:
                 op_BD=0
                 tabla=1
@@ -459,7 +444,7 @@ def windbuscar():
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente)
                 op_busqueda = v.get()
                 lista_busqueda=[resultado]
-                buscar_pedido2()
+                buscar_pedido= 2
             elif v.get() == 5:
                 op_BD=0
                 tabla=2
@@ -468,9 +453,22 @@ def windbuscar():
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente,op_pedido)
                 op_busqueda = v.get()
                 lista_busqueda=[resultado]
-                buscar_pedido3()
+                buscar_pedido=3
         else:
             messagebox.showinfo("BUSCAR", "debe colocar la opcion y la palabra clave a buscar")
+        return buscar_pedido
+
+        if buscar_pedido  == 1:
+            wind2.destroy()
+            wind.deiconify()
+        elif buscar_pedido == 2:
+            mostrar_busqueda2()
+            wind2.destroy()
+            windclientes.deiconify()
+        elif buscar_pedido == 3:
+            mostrar_busqueda3()
+            wind2.destroy()
+            windclientes.deiconify()
        
 
     def label_buscar():
@@ -781,19 +779,18 @@ def windclientes():
 
 def windpedido1():
 
-    def mostrar_busqueda3():
-        global op_busqueda
-        global lista_busqueda
+    global op_busqueda
+    global lista_busqueda
 
-        if op_busqueda == 3 or op_busqueda == 5:
-            view = tree3.get_children()
-            for elementos in view:
-                tree3.delete(elementos)
+    if op_busqueda == 3 or op_busqueda == 5:
+        view = tree3.get_children()
+        for elementos in view:
+            tree3.delete(elementos)
 
-            for row in lista_busqueda:
-                tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3],row[4]))
-        else:
-            obt_pedidos()
+        for row in lista_busqueda:
+            tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3],row[4]))
+    else:
+        obt_pedidos()
 
     def borrarPEDIDO():
             op_BD = 3
