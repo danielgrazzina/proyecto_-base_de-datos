@@ -18,7 +18,7 @@ now = datetime.now()
 str_now = now.strftime("%d/%m/%Y")
 busqueda=0
 op_busqueda=0
-lista_pedido={}
+lista_busqueda=[]
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
@@ -196,15 +196,6 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
                 miconexion.commit()
     miconexion.close()
-
-def mostrar_busqueda():
-    if op_busqueda == 1:
-        global lista_pedido
-            res[0]=lista_pedido[0][0]
-        for row in res:
-            tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
-    else:
-        obt_productos()
     
 def borrarPRODUCTO():
     op_BD = 3
@@ -395,43 +386,89 @@ def seleccionar_click(event):
     eid.configure(state = 'disable')
     Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
 
-# #class listas():
-#     def __init__(self):
-#         self.lista1[] 
+def mostrar_busqueda1():
+    global op_busqueda
+    global lista_busqueda
+
+    if op_busqueda == 1:
+        view = tree.get_children()
+        for elementos in view:
+            tree.delete(elementos)
+
+        for row in lista_busqueda:
+            tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+    else:
+        obt_productos()
+
 
 def windbuscar():
     
-    def buscar_pedido():
-        mostrar_busqueda()
+    def buscar_pedido1():
+        mostrar_busqueda1()
         wind2.destroy()
         wind.deiconify()
-        return op_busqueda,resultado
+    
+    def buscar_pedido2():
+        mostrar_busqueda2()
+        wind2.destroy()
+        windclientes.deiconify()
+
+    def buscar_pedido3():
+        mostrar_busqueda3()
+        wind2.destroy()
+        windclientes.deiconify()
 
     def buscar():
+        global op_busqueda
+        global lista_busqueda
         if len(ebuscar.get()) != 0 and v.get() != 0:
             if v.get() == 1:
-                # busqueda = ebuscar.get()
-                # op_busqueda = v.get()
                 op_BD=0
                 tabla=0
                 seleccion=ebuscar.get()
                 op_producto=0
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto)
                 op_busqueda = v.get()
-                buscar_pedido()
-                global lista_pedido
-                lista_pedido = {
-                    'resultado': resultado,
-                    'busqueda' : op_busqueda
-                }
+                lista_busqueda=[resultado]
+                buscar_pedido1()
             elif v.get() == 2:
-                pass
+                op_BD=0
+                tabla=1
+                seleccion=ebuscar.get()
+                op_cliente=0
+                resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente)
+                op_busqueda = v.get()
+                lista_busqueda=[resultado]
+                buscar_pedido2()
             elif v.get() == 3:
-                pass
+                op_BD=0
+                tabla=2
+                seleccion=ebuscar.get()
+                op_pedido =0
+                op_producto=9
+                op_cliente =9
+                resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente,op_pedido)
+                op_busqueda = v.get()
+                lista_busqueda=[resultado]
+                buscar_pedido3()
             elif v.get() == 4:
-                pass
+                op_BD=0
+                tabla=1
+                seleccion=ebuscar.get()
+                op_cliente=1
+                resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente)
+                op_busqueda = v.get()
+                lista_busqueda=[resultado]
+                buscar_pedido2()
             elif v.get() == 5:
-                pass
+                op_BD=0
+                tabla=2
+                seleccion=ebuscar.get()
+                op_pedido =4
+                resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente,op_pedido)
+                op_busqueda = v.get()
+                lista_busqueda=[resultado]
+                buscar_pedido3()
         else:
             messagebox.showinfo("BUSCAR", "debe colocar la opcion y la palabra clave a buscar")
        
@@ -480,6 +517,20 @@ def windbuscar():
     wind.iconify()
 
 def windclientes():
+
+    def mostrar_busqueda2():
+        global op_busqueda
+        global lista_busqueda
+
+        if op_busqueda == 2 or op_busqueda == 4:
+            view = tree1.get_children()
+            for elementos in view:
+                tree1.delete(elementos)
+
+            for row in lista_busqueda:
+                tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3],row[4],row[5]))
+        else:
+            obt_clientes()
 
     def borrarCLIENTES():
         op_BD = 3
@@ -729,6 +780,20 @@ def windclientes():
     windclientes1.config(menu = menuvar)
 
 def windpedido1():
+
+    def mostrar_busqueda3():
+        global op_busqueda
+        global lista_busqueda
+
+        if op_busqueda == 3 or op_busqueda == 5:
+            view = tree3.get_children()
+            for elementos in view:
+                tree3.delete(elementos)
+
+            for row in lista_busqueda:
+                tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3],row[4]))
+        else:
+            obt_pedidos()
 
     def borrarPEDIDO():
             op_BD = 3
@@ -1038,6 +1103,7 @@ tree.heading('#2', text = 'PRECIO COSTO', anchor = CENTER)
 tree.heading('#3', text = 'PRECIO VENTA', anchor = CENTER)
 tree.heading('#4', text = 'CANTIDAD', anchor = CENTER)
 tree.bind("<Double-Button-1>", seleccionar_click)
+obt_productos()
 
 l1 = Label(wind, text = "Agregue un producto")
 l1.place(x = 345, y = 15)
