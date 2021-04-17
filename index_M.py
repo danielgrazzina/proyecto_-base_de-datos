@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import PhotoImage
 from idlelib.tooltip import Hovertip
 from datetime import datetime
+import time
 import sqlite3
 
 tu_clave=[]
@@ -53,7 +54,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             # tabla cliente
             if op_cliente == 0:
                 # Cedula
-                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",seleccion)
+                micursor.execute("SELECT * FROM cliente WHERE CI_CLIENTE = ?",(seleccion,))
                 resultado=micursor.fetchone()
                 return resultado
             elif op_cliente == 1:
@@ -89,7 +90,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             # tabla pedido
             if op_pedido == 0:
                 # id_pedido
-                micursor.execute("SELECT * FROM pedido WHERE ID_PRODUCTO = ?",seleccion)
+                micursor.execute("SELECT * FROM pedido WHERE ID_PEDIDO = ?",seleccion)
                 resultado=micursor.fetchone()
                 return resultado
             elif op_pedido == 1:
@@ -104,7 +105,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 return resultado
             elif op_pedido == 3:
                 # cantidad_ped
-                micursor.execute("SELECT * FROM pedido WHERE CANTIDAD_PEDIDA = ?",seleccion)
+                micursor.execute("SELECT * FROM pedido WHERE CANTIDAD_PEDIDO = ?",seleccion)
                 resultado=micursor.fetchone()
                 return resultado
             elif op_pedido == 4:
@@ -128,7 +129,7 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
             miconexion.commit()
         elif tabla == 2:
             # pedido 
-            micursor.execute("INSERT INTO pedido VALUES(null, ?, ?, ?, ?)",tu_clave)
+            micursor.execute("INSERT INTO pedido VALUES(NULL, ?, ?, ?, ?)",tu_clave)
             miconexion.commit()
     elif op_BD == 2:
         #actualizar
@@ -366,18 +367,19 @@ def seleccionar_click(event):
 def windbuscar():
     def buscar():
         if len(ebuscar.get()) != 0 and v.get() != 0:
+            print(ebuscar.get())
+            print(v.get())
             if v.get() == 1:
-                messagebox.showinfo("FUNCIONA", "1")
-                wind.deiconify()
-                wind2.destroy()
-
-            elif v.get() == 2:
-                messagebox.showinfo("FUNCIONA", "2")
-                wind.deiconify()
-                wind2.destroy()
-
-            elif v.get() == 3:
-                messagebox.showinfo("FUNCIONA", "3")
+                view = tree.get_children()
+                for elementos in view:
+                    tree.delete(elementos)
+                op_BD = 0
+                tabla = 0
+                op_producto = 0
+                seleccion = ebuscar.get()
+                resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+                for row in resultado:
+                    tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
                 wind.deiconify()
                 wind2.destroy()
 
@@ -427,7 +429,7 @@ def windclientes():
           
         for row in resultado:
             tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
-
+        
     def agregar_cliente():
         tu_clave=[]
         if validacion1():
@@ -666,10 +668,9 @@ def windpedido1():
         op_pedido=5
         resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
         for row in resultado:
-            tree3.insert("", 0, text = "", values = (row[1], row[2], row[3], row[4]))
+            tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
 
     def agregar_pedido():
-
         if validacion_pedido():
             tu_clave = []
             seleccion = eid_pro.get()
@@ -712,7 +713,7 @@ def windpedido1():
                 tu_clave.append(eci.get())
                 tu_clave.append(eid_pro.get())
                 tu_clave.append(ecant.get())
-                tu_clave.append(now)
+                tu_clave.append(str_now)
                 op_BD = 1
                 tabla = 2
                 base_datos(op_BD, tabla, tu_clave)
@@ -814,6 +815,7 @@ def windpedido1():
     windpedido.resizable(width = 0, height = 0)
     windpedido.geometry("1000x500")
     windpedido.iconbitmap('archivo.ico')
+    windpedido.title("Aplicacion de Inventario (PEDIDOS)")
 
     tree3 = ttk.Treeview(windpedido)
     tree3['columns'] = ("N_FACTURA", "CI_CLIENTE", "ID_PRODUCTO", "CANTIDAD_PRODUCTO", "FECHA")
@@ -867,21 +869,21 @@ def windpedido1():
     bpsearch = Button(windpedido, width = 35, height = 35, command = lambda: buscar_pedido())
     bpsearch.config(image = img)
     bpsearch.place(x = 15, y = 15)
-    Hovertip(bsearch, text = "Buscar")
+    Hovertip(bpsearch, text = "buscar", hover_delay = 100)
 
     img6 = PhotoImage(file = 'principal.png')
     bprin_pedido = Button(windpedido, width = 35, height = 35, command = lambda: principal_pedido())
     bprin_pedido.image_names = img6
     bprin_pedido.config(image = img6)
     bprin_pedido.place(x = 15, y = 65)
-    Hovertip(bprin_pedido, text = "Pantalla Principal")
+    Hovertip(bprin_pedido, text = "Pantalla Principal", hover_delay = 100)
 
-    img7 = PhotoImage(file = 'pedidos.png')
+    img7 = PhotoImage(file = 'cliente.png')
     bpedido = Button(windpedido, width = 35, height = 35, command = lambda: cliente_pedido())
     bpedido.image_names = img7
     bpedido.configure(image = img7)
     bpedido.place(x = 15, y = 115)
-    Hovertip(bpedido, text = "Pedidos", hover_delay = 100)
+    Hovertip(bpedido, text = "Clientes", hover_delay = 100)
 
     "Acabo de agregar el boton actualizar"
     img4 = PhotoImage(file = 'actualizar_tree.png')
@@ -900,7 +902,7 @@ def windpedido1():
     ayudamenu.add_command(label = "Resetear Campos", command = lambda: clean_pedido())
     ayudamenu.add_command(label = "Manual de Usuario")
     menuvar.add_cascade(label = "Ayuda", menu = ayudamenu)
-
+    
     windpedido.config(menu = menuvar)
 
 wn = Tk()
