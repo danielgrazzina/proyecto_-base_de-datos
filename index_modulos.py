@@ -256,14 +256,17 @@ def agregar_producto():
     tu_clave = []
     if validacion():
         if eprice_c.get().isdigit() and eprice_v.get().isdigit() and eamount.get().isdigit():
-            tu_clave.append(eid.get())
-            tu_clave.append(eprice_c.get())
-            tu_clave.append(eprice_v.get())
-            tu_clave.append(eamount.get())
-            op_BD=1
-            tabla=0
-            base_datos(op_BD, tabla, tu_clave)
-            messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+            if len(eid.get()) <= 15 and int(eprice_c.get()) > 0 and int(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
+                tu_clave.append(eid.get())
+                tu_clave.append(eprice_c.get())
+                tu_clave.append(eprice_v.get())
+                tu_clave.append(eamount.get())
+                op_BD=1
+                tabla=0
+                base_datos(op_BD, tabla, tu_clave)
+                messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+            else:
+                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0")
         else:
             messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
     else:
@@ -274,15 +277,18 @@ def agregar_producto():
 def editar_producto():
     tu_clave = []
     if validacion():
-        if eprice_c.get().isdigit() and eprice_v.get().isdigit() and eamount.get().isdigit():
-            tu_clave.append(eid.get())
-            tu_clave.append(eprice_c.get())
-            tu_clave.append(eprice_v.get())
-            tu_clave.append(eamount.get())
-            op_BD=2
-            tabla=0
-            base_datos(op_BD, tabla, tu_clave)
-            messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+        if isinstance(float(eprice_c.get()), float) and isinstance(float(eprice_v.get()), float) and isinstance(int(eamount.get()), int):
+            if float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
+                tu_clave.append(eid.get())
+                tu_clave.append(eprice_c.get())
+                tu_clave.append(eprice_v.get())
+                tu_clave.append(eamount.get())
+                op_BD=2
+                tabla=0
+                base_datos(op_BD, tabla, tu_clave)
+                messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+            else:
+                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0")
         else:
             messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
     else:
@@ -318,25 +324,31 @@ def eliminar_producto():
     "Acabo de agregar la funcion para la operacion de mas"
 def suma_inventario():
     if validacion():
-        if eprice_c.get().isdigit() and eprice_v.get().isdigit() and eamount.get().isdigit():
-            tu_clave = []
-            cant_n = int(eamount.get())
-            seleccion = eid.get()
-            op_BD=0
-            tabla=0
-            op_producto = 0
-            resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
-            tu_clave = []
-            suma = cant_n + int(resultado[3])
-            tu_clave.append(eid.get())
-            tu_clave.append(eprice_c.get())
-            tu_clave.append(eprice_v.get())
-            tu_clave.append(suma)
-            op_BD = 2
-            tabla = 0
-            base_datos(op_BD, tabla, tu_clave)
-            messagebox.showinfo("BASE DE DATOS", "Se aumento correctamente el inventario")
-        else:
+        try:
+            float(eprice_c.get())
+            float(eprice_v.get())
+            int(eamount.get())
+            if float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0:
+                tu_clave = []
+                cant_n = int(eamount.get())
+                seleccion = eid.get()
+                op_BD=0
+                tabla=0
+                op_producto = 0
+                resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+                tu_clave = []
+                suma = cant_n + int(resultado[3])
+                tu_clave.append(eid.get())
+                tu_clave.append(eprice_c.get())
+                tu_clave.append(eprice_v.get())
+                tu_clave.append(suma)
+                op_BD = 2
+                tabla = 0
+                base_datos(op_BD, tabla, tu_clave)
+                messagebox.showinfo("BASE DE DATOS", "Se aumento correctamente el inventario")
+            else:
+                messagebox.showerror("ERROR", "Los campos desbloqueados deben ser mayores a 0")
+        except:
             messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
     else:
         messagebox.showerror("ERROR", "No puede haber campos en blanco")
@@ -352,38 +364,44 @@ def suma_inventario():
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
     if validacion():
-        if eprice_c.get().isdigit() and eprice_v.get().isdigit() and eamount.get().isdigit():
-            tu_clave = []
-            cant_n = int(eamount.get())
-            seleccion = eid.get()
-            op_BD=0
-            tabla=0
-            op_producto = 0
-            resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
-            if cant_n <= int(resultado[3]):
-                resta = int(resultado[3]) - cant_n
-                tu_clave.append(eid.get())
-                tu_clave.append(eprice_c.get())
-                tu_clave.append(eprice_v.get())
-                tu_clave.append(resta)
-                op_BD = 2
-                tabla = 0
-                base_datos(op_BD, tabla, tu_clave)
-            else:
+        try:
+            float(eprice_c.get())
+            float(eprice_v.get())
+            int(eamount.get())
+            if float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0:
                 tu_clave = []
-                tu_clave.append(eid.get())
-                tu_clave.append(eprice_c.get())
-                tu_clave.append(eprice_v.get())
-                tu_clave.append(0)
-                print(tu_clave)
-                op_BD = 2
-                tabla = 0
-                base_datos(op_BD, tabla, tu_clave)
-                messagebox.showwarning("ADVERTENCIA", "Habian "+ str(resultado[3]) +" repuestos de "+ str(seleccion) +" y usted ha restado " +
-                str(cant_n) + " asi que se ha colocado la cantidad en 0")
-                messagebox.showinfo("BASE DE DATOS", "Se disminuyo correctamente el inventario")
-        else:
-            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
+                cant_n = int(eamount.get())
+                seleccion = eid.get()
+                op_BD=0
+                tabla=0
+                op_producto = 0
+                resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+                if cant_n <= int(resultado[3]):
+                    resta = int(resultado[3]) - cant_n
+                    tu_clave.append(eid.get())
+                    tu_clave.append(eprice_c.get())
+                    tu_clave.append(eprice_v.get())
+                    tu_clave.append(resta)
+                    op_BD = 2
+                    tabla = 0
+                    base_datos(op_BD, tabla, tu_clave)
+                else:
+                    tu_clave = []
+                    tu_clave.append(eid.get())
+                    tu_clave.append(eprice_c.get())
+                    tu_clave.append(eprice_v.get())
+                    tu_clave.append(0)
+                    print(tu_clave)
+                    op_BD = 2
+                    tabla = 0
+                    base_datos(op_BD, tabla, tu_clave)
+                    messagebox.showwarning("ADVERTENCIA", "Habian "+ str(resultado[3]) +" repuestos de "+ str(seleccion) +" y usted ha restado " +
+                    str(cant_n) + " asi que se ha colocado la cantidad en 0")
+                    messagebox.showinfo("BASE DE DATOS", "Se disminuyo correctamente el inventario")
+            else:
+                messagebox.showerror("ERROR", "Los campos desbloqueados deben ser mayores a 0")
+        except:
+           messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos") 
     else:
         messagebox.showerror("ERROR", "No puede haber campos en blanco")
     eid.configure(state = 'normal')
@@ -546,7 +564,7 @@ def windclientes():
         if validacion1():
             if ci_cliente.get()[0] == 'V' or ci_cliente.get()[0] == 'E' or ci_cliente.get()[0] == 'J':
                 if ci_cliente.get()[1:10].isdigit() and nombre.get().isalpha() and apellido.get().isalpha() and direccion.get().isalpha() and deuda.get().isdigit():
-                    if len(ci_cliente.get()) <= 11 and len(ci_cliente.get()) >= 3 and len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
+                    if len(ci_cliente.get()) <= 11 and len(ci_cliente.get()) > 3 and len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
                         if telefono.get()[0] == '+' and telefono.get()[1:14].isdigit() or telefono.get()[0:14].isdigit(): 
                             tu_clave.append(ci_cliente.get())
                             tu_clave.append(nombre.get())
@@ -574,16 +592,29 @@ def windclientes():
     def editar_cliente():
         tu_clave=[]
         if validacion1():
-            tu_clave.append(ci_cliente.get())
-            tu_clave.append(nombre.get())
-            tu_clave.append(apellido.get())
-            tu_clave.append(telefono.get())
-            tu_clave.append(direccion.get())
-            tu_clave.append(deuda.get())
-            op_BD=2
-            tabla=1
-            base_datos(op_BD,tabla,tu_clave)
-            messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+            try:
+                float(deuda.get())
+                if nombre.get().isalpha() and apellido.get().isalpha() and direccion.get().isalpha():
+                    if len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
+                        if telefono.get()[0] == '+' and telefono.get()[1:14].isdigit() or telefono.get()[0:14].isdigit():
+                            tu_clave.append(ci_cliente.get())
+                            tu_clave.append(nombre.get())
+                            tu_clave.append(apellido.get())
+                            tu_clave.append(telefono.get())
+                            tu_clave.append(direccion.get())
+                            tu_clave.append(deuda.get())
+                            op_BD=2
+                            tabla=1
+                            base_datos(op_BD,tabla,tu_clave)
+                            messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+                        else:
+                            messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +")
+                    else:
+                        messagebox.showerror("ERROR", "El NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50")
+                else:
+                    messagebox.showerror("ERROR", "La DEUDA debe ser numerica, y los demas campos textos")
+            except:
+                messagebox.showerror("ERROR", "La DEUDA debe ser numerica, y los demas campos textos")
         else:
             messagebox.showerror("ERROR", "No pueden haber campos en blanco")
         ci_cliente.configure(state = 'normal')
