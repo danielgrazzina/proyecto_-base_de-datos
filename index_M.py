@@ -216,6 +216,25 @@ def obt_productos():
     for row in resultado:
          tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
 
+def actualizar_tabla():
+    view = tree.get_children()
+    for elementos in view:
+         tree.delete(elementos)
+    op_BD=0
+    tabla=0
+    op_producto=4
+    resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
+    for row in resultado:
+         tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+
+    b1["state"] = "normal"
+    b2["state"] = "disable"
+    b3["state"] = "disable"
+    bmas["state"] = "disable"
+    bmenos["state"] = "disable"
+    eid["state"] = "normal"
+    clean()
+
 def agregar_producto():
     tu_clave = []
     if validacion():
@@ -429,6 +448,25 @@ def windclientes():
           
         for row in resultado:
             tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+    
+    def actualizar_tabla2():
+        view = tree1.get_children()
+        for elementos in view:
+            tree1.delete(elementos)
+        op_BD=0
+        tabla=1
+        tu_clave=[]
+        seleccion=""
+        op_cliente=6
+        resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto,op_cliente))
+          
+        for row in resultado:
+            tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+        b_guardar["state"] = "normal"
+        b_actualizar["state"] = "disable"
+        b_eliminar["state"] = "disable"
+        ci_cliente["state"] = "normal"
+        clean1()
         
     def agregar_cliente():
         tu_clave=[]
@@ -616,7 +654,7 @@ def windclientes():
 
     "Acabo de agregar el boton actualizar"
     img4 = PhotoImage(file = 'actualizar_tree.png')
-    bactualizar_cliente = Button(windclientes1, image = img4, width = 18, height = 18, command = lambda: obt_clientes())
+    bactualizar_cliente = Button(windclientes1, image = img4, width = 18, height = 18, command = lambda: actualizar_tabla2())
     bactualizar_cliente.place(x = 640, y = 225)
     bactualizar_cliente.image_names = img4
     bactualizar_cliente.config(image = img4)
@@ -669,6 +707,23 @@ def windpedido1():
         resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
         for row in resultado:
             tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
+
+    def actualizar_tabla1():
+        view = tree3.get_children()
+        for elementos in view:
+            tree3.delete(elementos)
+        op_BD=0
+        tabla=3
+        op_pedido=5
+        resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido))
+        for row in resultado:
+            tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
+        eci.configure(state = 'normal')
+        eid_pro.configure(state = 'normal')
+        ecant.configure(state = 'normal')
+        bgpedido["state"] = "normal"
+        bepedido["state"] = "disable"
+        clean_pedido()
 
     def agregar_pedido():
         if validacion_pedido():
@@ -887,7 +942,7 @@ def windpedido1():
 
     "Acabo de agregar el boton actualizar"
     img4 = PhotoImage(file = 'actualizar_tree.png')
-    bactualizar_cliente = Button(windpedido, image = img4, width = 18, height = 18, command = lambda: obt_pedidos())
+    bactualizar_cliente = Button(windpedido, image = img4, width = 18, height = 18, command = lambda: actualizar_tabla1())
     bactualizar_cliente.place(x = 690, y = 160)
     bactualizar_cliente.image_names = img4
     bactualizar_cliente.config(image = img4)
@@ -996,7 +1051,7 @@ bmenos['state'] = 'disable'
 
 "Acabo de agregar el boton actualizar"
 img4 = PhotoImage(file = 'actualizar_tree.png')
-bactualizar = Button(wind, image = img4, width = 18, height = 18, command = lambda: obt_productos())
+bactualizar = Button(wind, image = img4, width = 18, height = 18, command = lambda: actualizar_tabla())
 bactualizar.place(x = 590, y = 160)
 bactualizar.image_names = img4
 bactualizar.config(image = img4)
