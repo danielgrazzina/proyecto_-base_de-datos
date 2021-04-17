@@ -18,6 +18,7 @@ now = datetime.now()
 str_now = now.strftime("%d/%m/%Y")
 busqueda=0
 op_busqueda=0
+lista_pedido={}
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
@@ -197,9 +198,10 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
     miconexion.close()
 
 def mostrar_busqueda():
-    print(op_busqueda,resultado)
     if op_busqueda == 1:
-        for row in resultado:
+        global lista_pedido
+            res[0]=lista_pedido[0][0]
+        for row in res:
             tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
     else:
         obt_productos()
@@ -393,12 +395,12 @@ def seleccionar_click(event):
     eid.configure(state = 'disable')
     Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
 
-class listas():
-    def __init__(self):
-        self.lista1[] 
+# #class listas():
+#     def __init__(self):
+#         self.lista1[] 
 
 def windbuscar():
-
+    
     def buscar_pedido():
         mostrar_busqueda()
         wind2.destroy()
@@ -417,6 +419,11 @@ def windbuscar():
                 resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto)
                 op_busqueda = v.get()
                 buscar_pedido()
+                global lista_pedido
+                lista_pedido = {
+                    'resultado': resultado,
+                    'busqueda' : op_busqueda
+                }
             elif v.get() == 2:
                 pass
             elif v.get() == 3:
@@ -427,7 +434,7 @@ def windbuscar():
                 pass
         else:
             messagebox.showinfo("BUSCAR", "debe colocar la opcion y la palabra clave a buscar")
-    print (resultado)    
+       
 
     def label_buscar():
         if v.get() == 1:
