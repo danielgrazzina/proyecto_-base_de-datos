@@ -16,6 +16,8 @@ clean_total=0
 resultado=[]
 now = datetime.now()
 str_now = now.strftime("%d/%m/%Y")
+busqueda=0
+op_busqueda=0
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
@@ -193,6 +195,14 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
                 miconexion.commit()
     miconexion.close()
+
+def mostrar_busqueda():
+    print(op_busqueda,resultado)
+    if op_busqueda == 1:
+        for row in resultado:
+            tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
+    else:
+        obt_productos()
     
 def borrarPRODUCTO():
     op_BD = 3
@@ -383,45 +393,84 @@ def seleccionar_click(event):
     eid.configure(state = 'disable')
     Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
 
+class listas():
+    def __init__(self):
+        self.lista1[] 
+
 def windbuscar():
+
+    def buscar_pedido():
+        mostrar_busqueda()
+        wind2.destroy()
+        wind.deiconify()
+        return op_busqueda,resultado
+
     def buscar():
         if len(ebuscar.get()) != 0 and v.get() != 0:
-            print(ebuscar.get())
-            print(v.get())
             if v.get() == 1:
-                view = tree.get_children()
-                for elementos in view:
-                    tree.delete(elementos)
-                op_BD = 0
-                tabla = 0
-                op_producto = 0
-                seleccion = ebuscar.get()
-                resultado = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
-                for row in resultado:
-                    tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
-                wind.deiconify()
-                wind2.destroy()
+                # busqueda = ebuscar.get()
+                # op_busqueda = v.get()
+                op_BD=0
+                tabla=0
+                seleccion=ebuscar.get()
+                op_producto=0
+                resultado=base_datos(op_BD,tabla,tu_clave,seleccion,op_producto)
+                op_busqueda = v.get()
+                buscar_pedido()
+            elif v.get() == 2:
+                pass
+            elif v.get() == 3:
+                pass
+            elif v.get() == 4:
+                pass
+            elif v.get() == 5:
+                pass
+        else:
+            messagebox.showinfo("BUSCAR", "debe colocar la opcion y la palabra clave a buscar")
+    print (resultado)    
 
-    wind.iconify()
+    def label_buscar():
+        if v.get() == 1:
+            lbuscar['text'] = "Ha seleccionado la opcion ID PRODUCTO"
+            linstruccion['text'] = "Ingrese el ID del PRODUCTO que desea buscar"
+        elif v.get() == 2:
+            lbuscar['text'] = "Ha seleccionado la opcion CEDULA CLIENTE"
+            linstruccion['text'] = "Ingrese la CI del CLIENTE que desea buscar"
+        elif v.get() == 3:
+            lbuscar['text'] = "Ha seleccionado la opcion NUMERO FACTURA"
+            linstruccion['text'] = "Ingrese el NUMERO de la FACTURA que desea buscar"
+        elif v.get() == 4:
+            lbuscar['text'] = "Ha seleccionado la opcion NOMBRE CLIENTE"
+            linstruccion['text'] = "Ingrese el NOMBRE del CLIENTE que desea buscar"
+        elif v.get() == 5:
+            lbuscar['text'] = "Ha seleccionado la opcion FECHA"
+            linstruccion['text'] = "Ingrese la FECHA del PEDIDO que desea buscar"
+
     wind2 = Toplevel()
     wind2.resizable(width = 0, height = 0)
-    wind2.geometry("400x200")
+    wind2.geometry("450x250")
     wind2.iconbitmap('archivo.ico')
+    wind2.title("Aplicacion de Inventario (BUSCAR)")
     lbuscar = Label(wind2, text = "Selecciones lo que desea buscar")
     lbuscar.place(x = 10, y = 10)
     ebuscar = Entry(wind2, width = 30)
-    ebuscar.place(x = 150, y = 65)
+    ebuscar.place(x = 200, y = 65)
     bbuscar = ttk.Button(wind2, text = "Buscar", width = 29, command = lambda: buscar())
-    bbuscar.place(x = 150, y = 100)
+    bbuscar.place(x = 200, y = 100)
     linstruccion = Label(wind2, text = "")
     linstruccion.place(x = 120, y = 135)
     v = IntVar()
-    rb_producto = Radiobutton(wind2, text = "PRODUCTO", value = 1, variable = v)
+    rb_producto = Radiobutton(wind2, text = "ID PRODUCTO", value = 1, variable = v, command = lambda: label_buscar())
     rb_producto.place(x = 20, y = 50)
-    rb_cliente = Radiobutton(wind2, text = "CLIENTE", value = 2, variable = v)
+    rb_cliente = Radiobutton(wind2, text = "CEDULA CLIENTE", value = 2, variable = v, command = lambda: label_buscar())
     rb_cliente.place(x = 20, y = 80)
-    rb_pedido = Radiobutton(wind2, text = "PEDIDO", value = 3, variable = v)
+    rb_pedido = Radiobutton(wind2, text = "NUMERO FACTURA", value = 3, variable = v, command = lambda: label_buscar())
     rb_pedido.place(x = 20, y = 110)
+    rb_nombre = Radiobutton(wind2, text = "NOMBRE CLIENTE", value = 4, variable = v, command = lambda: label_buscar())
+    rb_nombre.place(x = 20, y = 140)
+    rb_fecha = Radiobutton(wind2, text = "FECHA", value = 5, variable = v, command = lambda: label_buscar())
+    rb_fecha.place(x = 20, y = 170)
+    wind.iconify()
 
 def windclientes():
 
@@ -982,7 +1031,6 @@ tree.heading('#2', text = 'PRECIO COSTO', anchor = CENTER)
 tree.heading('#3', text = 'PRECIO VENTA', anchor = CENTER)
 tree.heading('#4', text = 'CANTIDAD', anchor = CENTER)
 tree.bind("<Double-Button-1>", seleccionar_click)
-obt_productos()
 
 l1 = Label(wind, text = "Agregue un producto")
 l1.place(x = 345, y = 15)
