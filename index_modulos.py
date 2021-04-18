@@ -5,6 +5,8 @@ from tkinter import PhotoImage
 from idlelib.tooltip import Hovertip
 from datetime import datetime
 import time
+import os
+import sys
 import sqlite3
 
 tu_clave=[]
@@ -17,9 +19,16 @@ resultado=[]
 now = datetime.now()
 str_now = now.strftime("%d/%m/%Y")
 
+def resolver_ruta(ruta_relativa):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, ruta_relativa)
+    return os.path.join(os.path.abspath('.'), ruta_relativa)
+
+
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
-    miconexion=sqlite3.connect("inventario.db")
+    nombre_base = resolver_ruta('inventario.db')
+    miconexion=sqlite3.connect(nombre_base)
     micursor=miconexion.cursor()
     
     if op_BD == 0:
@@ -193,14 +202,19 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 micursor.execute("DELETE FROM pedido WHERE ID_PEDIDO = ID_PEDIDO")
                 miconexion.commit()
     miconexion.close()
-    
+
+def salirApp():
+    if messagebox.askyesno("ADVERTENCIA","¿Seguro desea salir de la aplicacion?"):
+        wind.destroy()
+
 def borrarPRODUCTO():
-    op_BD = 3
-    tabla = 0
-    clean_total = 1
-    base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
-    clean()
-    obt_productos()
+    if messagebox.askyesno("ADVERTENCIA","Se vaciara toda la tabla PRODUCTO, ¿Desea continuar?"):
+        op_BD = 3
+        tabla = 0
+        clean_total = 1
+        base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
+        clean()
+        obt_productos()
 
 def validacion():
     return len(eid.get()) != 0 and len(eprice_c.get()) != 0 and len(eprice_v.get()) != 0 and len(eamount.get()) != 0
@@ -240,21 +254,36 @@ def agregar_producto():
     tu_clave = []
     if validacion():
         try:
-            float(eprice_c.get())
-            float(eprice_v.get())
-            int(eamount.get())
-            if len(eid.get()) <= 15 and float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
-                tu_clave.append(eid.get())
-                tu_clave.append(eprice_c.get())
-                tu_clave.append(eprice_v.get())
-                tu_clave.append(eamount.get())
-                op_BD=1
-                tabla=0
-                base_datos(op_BD, tabla, tu_clave)
-                messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
-                clean()
+            tu_clave = []
+            seleccion = eid.get()
+            op_BD=0
+            tabla=0
+            op_producto = 4
+            resultado1 = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto))
+            len_resultado = len(resultado1)
+            j = 0
+            aux = 0
+            for i in range(len_resultado):
+                if eid.get() != resultado1[j][0]:
+                    aux += 1            
+            if aux == len_resultado:
+                float(eprice_c.get())
+                float(eprice_v.get())
+                int(eamount.get())
+                if len(eid.get()) <= 15 and float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
+                    tu_clave.append(eid.get())
+                    tu_clave.append(eprice_c.get())
+                    tu_clave.append(eprice_v.get())
+                    tu_clave.append(eamount.get())
+                    op_BD=1
+                    tabla=0
+                    base_datos(op_BD, tabla, tu_clave)
+                    messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+                    clean()
+                else:
+                    messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0. Error: 001")
             else:
-                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0. Error: 001")
+                messagebox.showerror("ERROR", "El ID del PRODUCTO ya existe no puede volver agregarlo. Error: 002")
         except:
             messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos. Error: 002")
     else:
@@ -496,8 +525,9 @@ def buscar_pantallas():
                 messagebox.showerror("ERROR", "El PEDIDO con el ID que busca no ha sido encontrado. Error: 017")
 
         elif v.get() == 4:
-            conn = sqlite3.connect('inventario.db')
-            cursor = conn.cursor()
+            nombre_base = resolver_ruta('inventario.db')
+            conexion = sqlite3.connect(nombre_base)
+            cursor = conexion.cursor()
             seleccion = ebuscar.get()
             cursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?", (seleccion, ))
             resultado = cursor.fetchall()
@@ -514,8 +544,9 @@ def buscar_pantallas():
                 messagebox.showerror("ERROR", "El CLIENTE con el NOMBRE que busca no ha sido encontrado. Error: 018")
 
         elif v.get() == 5:
-            conn = sqlite3.connect('inventario.db')
-            cursor = conn.cursor()
+            nombre_base = resolver_ruta('inventario.db')
+            conexion = sqlite3.connect(nombre_base)
+            cursor = conexion.cursor()
             seleccion = ebuscar.get()
             cursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?", (seleccion, ))
             name = cursor.fetchall()
@@ -539,8 +570,9 @@ def buscar_pantallas():
                 messagebox.showerror("ERROR", "El CLIENTE con el NOMBRE que busca no ha sido encontrado. Error: 019")
 
         elif v.get() == 6:
-            conn = sqlite3.connect('inventario.db')
-            cursor = conn.cursor()
+            nombre_base = resolver_ruta('inventario.db')
+            conexion = sqlite3.connect(nombre_base)
+            cursor = conexion.cursor()
             seleccion = ebuscar.get()
             cursor.execute("SELECT * FROM pedido WHERE FECHA = ?", (seleccion, ))
             resultado = cursor.fetchall()
@@ -620,24 +652,27 @@ def buscar():
     bbuscar = ttk.Button(windbuscar, text = "Buscar", width = 29, command = lambda: buscar_pantallas())
     bbuscar.place(x = 230, y = 100)
 
-    img = PhotoImage(file = 'principal.png')
+    nombre_image = resolver_ruta('principal.png')
+    img1 = PhotoImage(file = nombre_image)
     babrir_principal = Button(windbuscar, width = 35, height = 35, command = lambda: abrir_principal())
-    babrir_principal.image_names = img
-    babrir_principal.config(image = img)
+    babrir_principal.image_names = img1
+    babrir_principal.config(image = img1)
     babrir_principal.place(x = 315, y = 185)
     Hovertip(babrir_principal, text = "Pantalla Principal", hover_delay = 100)
 
-    img1 = PhotoImage(file = 'cliente.png')
+    nombre_image = resolver_ruta('cliente.png')
+    img2 = PhotoImage(file = nombre_image)
     babrir_pedido = Button(windbuscar, width = 35, height = 35, command = lambda: abrir_pedido())
-    babrir_pedido.image_names = img1
-    babrir_pedido.configure(image = img1)
+    babrir_pedido.image_names = img2
+    babrir_pedido.configure(image = img2)
     babrir_pedido.place(x = 370, y = 185)
     Hovertip(babrir_pedido, text = "Clientes", hover_delay = 100)
 
-    img2 = PhotoImage(file = 'pedidos.png')
+    nombre_image = resolver_ruta('pedidos.png')
+    img3 = PhotoImage(file = nombre_image)
     babrir_cliente = Button(windbuscar, width = 35, height = 35, command = lambda: abrir_cliente())
-    babrir_cliente.image_names = img2
-    babrir_cliente.configure(image = img2)
+    babrir_cliente.image_names = img3
+    babrir_cliente.configure(image = img3)
     babrir_cliente.place(x = 425, y = 185)
     Hovertip(babrir_cliente, text = "Pedidos", hover_delay = 100)
 
@@ -665,12 +700,13 @@ def buscar():
     wind.iconify()
 
 def borrarCLIENTES():
-    op_BD = 3
-    tabla = 1
-    clean_total = 1
-    base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
-    clean1()
-    obt_clientes()
+    if messagebox.askyesno("ADVERTENCIA","Se vaciara toda la tabla CLIENTE, ¿Desea continuar?"):
+        op_BD = 3
+        tabla = 1
+        clean_total = 1
+        base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido, clean_total)
+        clean1()
+        obt_clientes()
 
 def validacion1():
     global ci_cliente, nombre, apellido, telefono, direccion, deuda
@@ -701,31 +737,48 @@ def actualizar_tabla2():
     
 def agregar_cliente():
     global ci_cliente, nombre, apellido, telefono, direccion, deuda
-    tu_clave=[]
     if validacion1():
-        if ci_cliente.get()[0] == 'V' or ci_cliente.get()[0] == 'E' or ci_cliente.get()[0] == 'J':
-            if ci_cliente.get()[1:10].isdigit() and nombre.get().isalpha() and apellido.get().isalpha() and deuda.get().isdigit():
-                if len(ci_cliente.get()) <= 11 and len(ci_cliente.get()) > 3 and len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
-                    if telefono.get()[0] == '+' and telefono.get()[1:14].isdigit() or telefono.get()[0:14].isdigit(): 
-                        tu_clave.append(ci_cliente.get())
-                        tu_clave.append(nombre.get())
-                        tu_clave.append(apellido.get())
-                        tu_clave.append(telefono.get())
-                        tu_clave.append(direccion.get())
-                        tu_clave.append(deuda.get())
-                        op_BD=1
-                        tabla=1
-                        base_datos(op_BD,tabla,tu_clave)
-                        messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
-                        clean1()
+        tu_clave = []
+        op_BD=0
+        tabla=1
+        op_cliente = 6
+        resultado1 = (base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente))
+        print(resultado1)
+        len_resultado = len(resultado1)
+        j = 0
+        aux = 0
+        for i in range(len_resultado):
+            if ci_cliente.get() != resultado1[j][0]:
+                aux += 1            
+        if aux == len_resultado:
+            if ci_cliente.get()[0] == 'V' or ci_cliente.get()[0] == 'E' or ci_cliente.get()[0] == 'J':
+                if ci_cliente.get()[1] == '-':
+                    if ci_cliente.get()[2:11].isdigit() and nombre.get().isalpha() and apellido.get().isalpha() and deuda.get().isdigit():
+                        if len(ci_cliente.get()) <= 11 and len(ci_cliente.get()) > 3 and len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
+                            if telefono.get()[0] == '+' and telefono.get()[1:14].isdigit() or telefono.get()[0:14].isdigit(): 
+                                tu_clave.append(ci_cliente.get())
+                                tu_clave.append(nombre.get())
+                                tu_clave.append(apellido.get())
+                                tu_clave.append(telefono.get())
+                                tu_clave.append(direccion.get())
+                                tu_clave.append(deuda.get())
+                                op_BD=1
+                                tabla=1
+                                base_datos(op_BD,tabla,tu_clave)
+                                messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+                                clean1()
+                            else:
+                                messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +. Error: 022")
+                        else:
+                            messagebox.showerror("ERROR", "La CEDULA debe tener entre 3 y 10 numeros, el NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50. Error: 023")     
                     else:
-                        messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +. Error: 022")
+                        messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J y continuar con numeros, la DEUDA debe ser numerica, y los demas campos textos. Error: 024")
                 else:
-                    messagebox.showerror("ERROR", "La CEDULA debe tener entre 3 y 10 numeros, el NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50. Error: 023")     
+                    messagebox.showerror("ERROR", "Debe colocar un guion (-) despues de V, E o J. Error: 025")
             else:
-                messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J y continuar con numeros, la DEUDA debe ser numerica, y los demas campos textos. Error: 024")  
+                messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J mayuscula. Error: 025")
         else:
-            messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J mayuscula. Error: 025")
+            messagebox.showerror("ERROR", "La CEDULA del CLIENTE ya existe no puede volver agregarla. Error: 025")
     else:
         messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 026")
     obt_clientes()
@@ -865,7 +918,7 @@ def clientes():
 
     l_ci_cedula = Label(windclientes, text = "Cedula Cliente:")
     l_ci_cedula.place(x = 290, y = 40)
-    l_formato = Label(windclientes, text = "Formato: V00000000")
+    l_formato = Label(windclientes, text = "Formato: V-00000000")
     l_formato.place(x = 650, y = 40)
     ci_cliente = Entry(windclientes, width = 40)
     ci_cliente.focus()
@@ -907,29 +960,35 @@ def clientes():
     b_actualizar.place(x = 30, y = 510)
     b_actualizar['state'] = 'disable'
 
+    nombre_image = resolver_ruta('buscar.png')
+    img1 = PhotoImage(file = nombre_image)
     bpsearch = Button(windclientes, width = 35, height = 35, command = lambda: buscar_cliente())
-    bpsearch.config(image = img)
+    bpsearch.image_names = img1
+    bpsearch.config(image = img1)
     bpsearch.place(x = 15, y = 15)
     Hovertip(bsearch, text = "Buscar")
     Hovertip(bpsearch, text = "buscar", hover_delay = 100)
 
-    img6 = PhotoImage(file = 'principal.png')
+    nombre_image = resolver_ruta('principal.png')
+    img2 = PhotoImage(file = nombre_image)
     bprin_cliente = Button(windclientes, width = 35, height = 35, command = lambda: principal_cliente())
-    bprin_cliente.image_names = img6
-    bprin_cliente.config(image = img6)
+    bprin_cliente.image_names = img2
+    bprin_cliente.config(image = img2)
     bprin_cliente.place(x = 15, y = 65)
     Hovertip(bprin_cliente, text = "Pantalla Principal", hover_delay = 100)
 
     "Agrege el boton de pedido"
-    img7 = PhotoImage(file = 'pedidos.png')
+    nombre_image = resolver_ruta('pedidos.png')
+    img3 = PhotoImage(file = nombre_image)
     bpedido1 = Button(windclientes, width = 35, height = 35, command = lambda: pedido_cliente())
-    bpedido1.image_names = img7
-    bpedido1.configure(image = img7)
+    bpedido1.image_names = img3
+    bpedido1.configure(image = img3)
     bpedido1.place(x = 15, y = 115)
     Hovertip(bpedido1, text = "Pedidos", hover_delay = 100)
 
     "Acabo de agregar el boton actualizar"
-    img4 = PhotoImage(file = 'actualizar_tree.png')
+    nombre_image = resolver_ruta('actualizar_tree.png')
+    img4 = PhotoImage(file = nombre_image)
     bactualizar_cliente = Button(windclientes, image = img4, width = 18, height = 18, command = lambda: actualizar_tabla2())
     bactualizar_cliente.place(x = 640, y = 225)
     bactualizar_cliente.image_names = img4
@@ -939,6 +998,7 @@ def clientes():
     menuvar = Menu(windclientes)
     menuDB = Menu(menuvar, tearoff = 0)
     menuDB.add_command(label = "Limpiar Base De Datos 'CLIENTES'", command = lambda: borrarCLIENTES())
+    menuDB.add_command(label = "Salir", command = lambda : salirApp())
     menuvar.add_cascade(label = "Inicio", menu = menuDB)
 
     ayudamenu = Menu(menuvar, tearoff = 0)
@@ -949,6 +1009,7 @@ def clientes():
     windclientes.config(menu = menuvar)
 
 def borrarPEDIDO():
+    if messagebox.askyesno("ADVERTENCIA","Se vaciara toda la tabla PEDIDO, ¿Desea continuar?"):
         op_BD = 3
         tabla = 2
         clean_total = 1
@@ -1206,7 +1267,7 @@ def pedido():
 
     lci = Label(windpedido, text = "CI Cliente: ")
     lci.place(x = 416, y = 65)
-    l_formato_pedido = Label(windpedido, text = "Formato: V00000000")
+    l_formato_pedido = Label(windpedido, text = "Formato: V-00000000")
     l_formato_pedido.place(x = 700, y = 65)
     eci = Entry(windpedido, width = 30)
     eci.focus()
@@ -1229,36 +1290,43 @@ def pedido():
     bepedido.place(x = 315, y = 450)
     bepedido['state'] = 'disable'
 
+    nombre_image = resolver_ruta('buscar.png')
+    img1 = PhotoImage(file = nombre_image)
     bpsearch = Button(windpedido, width = 35, height = 35, command = lambda: buscar_pedido())
-    bpsearch.config(image = img)
+    bpsearch.image_names = img1
+    bpsearch.config(image = img1)
     bpsearch.place(x = 15, y = 15)
     Hovertip(bpsearch, text = "buscar", hover_delay = 100)
 
-    img6 = PhotoImage(file = 'principal.png')
+    nombre_image = resolver_ruta('principal.png')
+    img2 = PhotoImage(file = nombre_image)
     bprin_pedido = Button(windpedido, width = 35, height = 35, command = lambda: principal_pedido())
-    bprin_pedido.image_names = img6
-    bprin_pedido.config(image = img6)
+    bprin_pedido.image_names = img2
+    bprin_pedido.config(image = img2)
     bprin_pedido.place(x = 15, y = 65)
     Hovertip(bprin_pedido, text = "Pantalla Principal", hover_delay = 100)
 
-    img7 = PhotoImage(file = 'cliente.png')
+    nombre_image = resolver_ruta('cliente.png')
+    img2 = PhotoImage(file = nombre_image)
     bpedido = Button(windpedido, width = 35, height = 35, command = lambda: cliente_pedido())
-    bpedido.image_names = img7
-    bpedido.configure(image = img7)
+    bpedido.image_names = img2
+    bpedido.configure(image = img2)
     bpedido.place(x = 15, y = 115)
     Hovertip(bpedido, text = "Clientes", hover_delay = 100)
 
     "Acabo de agregar el boton actualizar"
-    img4 = PhotoImage(file = 'actualizar_tree.png')
+    nombre_image = resolver_ruta('actualizar_tree.png')
+    img3 = PhotoImage(file = nombre_image)
     bactualizar_pedido = Button(windpedido, image = img4, width = 18, height = 18, command = lambda: actualizar_tabla1())
     bactualizar_pedido.place(x = 690, y = 160)
-    bactualizar_pedido.image_names = img4
-    bactualizar_pedido.config(image = img4)
+    bactualizar_pedido.image_names = img3
+    bactualizar_pedido.config(image = img3)
     Hovertip(bactualizar_pedido, text = "Actualizar Lista", hover_delay = 100)
 
     menuvar = Menu(windpedido)
     menuDB = Menu(menuvar, tearoff = 0)
     menuDB.add_command(label = "Limpiar Base De Datos 'PEDIDOS'", command = lambda: borrarPEDIDO())
+    menuDB.add_command(label = "Salir", command = lambda : salirApp())
     menuvar.add_cascade(label = "Inicio", menu = menuDB)
 
     ayudamenu = Menu(menuvar, tearoff = 0)
@@ -1327,14 +1395,16 @@ b3 = ttk.Button(wind, text = "Actualizar Producto", width = 60, command = lambda
 b3.place(x = 30, y = 440)
 b3['state'] = 'disable'
 
-img = PhotoImage(file = 'buscar.png')
+nombre_image = resolver_ruta('buscar.png')
+img = PhotoImage(file = nombre_image)
 bsearch = Button(wind, width = 35, height = 35, command = lambda: buscar())
 bsearch.image_names = img
 bsearch.config(image = img)
 bsearch.place(x = 15, y = 15)
 Hovertip(bsearch, text = "Buscar", hover_delay = 100)
 
-img1=PhotoImage(file='cliente.png')
+nombre_image = resolver_ruta('cliente.png')
+img1 = PhotoImage(file = nombre_image)
 bclientes= Button(wind,width=35,height=35, command = lambda: clientes())
 bclientes.image_names = img1
 bclientes.config(image=img1)
@@ -1342,7 +1412,8 @@ bclientes.place(x=15,y=65)
 Hovertip(bclientes, text = "Clientes", hover_delay = 100)
 
 "Acabo de agregar el boton MAS"
-img2 = PhotoImage(file = 'sumar_inventario.png')
+nombre_image = resolver_ruta('sumar_inventario.png')
+img2 = PhotoImage(file = nombre_image)
 bmas = Button(wind, width = 15, height = 15, command = lambda: suma_inventario())
 bmas.image_names = img2
 bmas.config(image = img2)
@@ -1350,7 +1421,8 @@ bmas.place(x = 590, y = 130)
 bmas['state'] = 'disable'
 
 "Acabo de agregar el boton MENOS"
-img3 = PhotoImage(file = 'restar_inventario.png')
+nombre_image = resolver_ruta('restar_inventario.png')
+img3 = PhotoImage(file = nombre_image)
 bmenos = Button(wind, width = 15, height = 15, command = lambda: resta_inventario())
 bmenos.image_names = img3
 bmenos.config(image = img3)
@@ -1358,7 +1430,8 @@ bmenos.place(x = 615, y = 130)
 bmenos['state'] = 'disable'
 
 "Acabo de agregar el boton actualizar"
-img4 = PhotoImage(file = 'actualizar_tree.png')
+nombre_image = resolver_ruta('actualizar_tree.png')
+img4 = PhotoImage(file = nombre_image)
 bactualizar = Button(wind, image = img4, width = 18, height = 18, command = lambda: actualizar_tabla())
 bactualizar.place(x = 590, y = 160)
 bactualizar.image_names = img4
@@ -1366,7 +1439,8 @@ bactualizar.config(image = img4)
 Hovertip(bactualizar, text = "Actualizar Lista", hover_delay = 100)
 
 "Agrege el boton de pedido"
-img5 = PhotoImage(file = 'pedidos.png')
+nombre_image = resolver_ruta('pedidos.png')
+img5 = PhotoImage(file = nombre_image)
 bpedido = Button(wind, width = 35, height = 35, command = lambda: pedido())
 bpedido.image_names = img5
 bpedido.configure(image = img5)
@@ -1376,6 +1450,7 @@ Hovertip(bpedido, text = "Pedidos", hover_delay = 100)
 menuvar = Menu(wind)
 menuDB = Menu(menuvar, tearoff = 0)
 menuDB.add_command(label = "Limpiar Base De Datos 'PRODUCTO'", command = lambda: borrarPRODUCTO())
+menuDB.add_command(label = "Salir", command = lambda : salirApp())
 menuvar.add_cascade(label = "Inicio", menu = menuDB)
 
 ayudamenu = Menu(menuvar, tearoff = 0)
