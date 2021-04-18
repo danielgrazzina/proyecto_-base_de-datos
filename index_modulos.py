@@ -234,6 +234,7 @@ def actualizar_tabla():
     bmenos["state"] = "disable"
     eid["state"] = "normal"
     clean()
+    Hovertip(eid, text = "", hover_delay = 360000)
 
 def agregar_producto():
     tu_clave = []
@@ -290,6 +291,7 @@ def editar_producto():
     else:
         messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 006")
     obt_productos()
+    Hovertip(eid, text = "", hover_delay = 360000)
 
 def eliminar_producto():
     tu_clave = []
@@ -309,6 +311,7 @@ def eliminar_producto():
     else:
         messagebox.showerror("ERROR", "El ID Producto no puede estar vacio. Error: 007")
     obt_productos()
+    Hovertip(eid, text = "", hover_delay = 360000)
 
 "Acabo de agregar la funcion para la operacion de mas"
 def suma_inventario():
@@ -349,6 +352,7 @@ def suma_inventario():
     else:
         messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 010")
     obt_productos()
+    Hovertip(eid, text = "", hover_delay = 360000)
 
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
@@ -399,7 +403,8 @@ def resta_inventario():
            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos. Error: 012") 
     else:
         messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 013")
-    obt_productos()   
+    obt_productos()
+    Hovertip(eid, text = "", hover_delay = 360000)
 
 def clean():
     eid.delete(0, END)
@@ -434,7 +439,6 @@ def buscar_pantallas():
     op_producto = 9
     op_cliente = 9
     op_pedido = 9
-    print(v.get())
     if len(ebuscar.get()) != 0 and v.get() != 0:
         if v.get() == 1:
             op_BD = 0
@@ -521,8 +525,6 @@ def buscar_pantallas():
                 for i in range(len_name):
                     cursor.execute("SELECT * FROM pedido WHERE CI_CLIENTE = ?", (name[j][0], ))
                     resultado = cursor.fetchall()
-                    print(resultado)
-                    print(j)
                     j = j + 1
                     if j == 1:
                         view = tree3.get_children()
@@ -695,6 +697,7 @@ def actualizar_tabla2():
     b_eliminar["state"] = "disable"
     ci_cliente["state"] = "normal"
     clean1()
+    Hovertip(ci_cliente, text = "", hover_delay = 360000)
     
 def agregar_cliente():
     global ci_cliente, nombre, apellido, telefono, direccion, deuda
@@ -762,6 +765,7 @@ def editar_cliente():
     else:
         messagebox.showerror("ERROR", "No pueden haber campos en blanco. Error: 031")
     obt_clientes()
+    Hovertip(ci_cliente, text = "", hover_delay = 360000)
 
 def eliminar_cliente():
     global ci_cliente, b_guardar, b_actualizar, b_eliminar
@@ -780,6 +784,7 @@ def eliminar_cliente():
     b_guardar["state"] = "normal"
     b_actualizar["state"] = "disable"
     b_eliminar["state"] = "disable"
+    Hovertip(ci_cliente, text = "", hover_delay = 360000)
 
 def clean1():
     global ci_cliente, nombre, apellido, telefono, direccion, deuda
@@ -821,7 +826,7 @@ def seleccionar1_click(event):
         direccion.insert(0, values[4])
         deuda.insert(0, values[5])
         ci_cliente.configure(state = 'disable')
-        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente, elimine y cree uno nuevo", hover_delay = 100)
+        Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente", hover_delay = 100)
     except:
         messagebox.showerror("ERROR", "Debe hacer doble click sobre un cliente. Error: 033")
 
@@ -993,6 +998,9 @@ def actualizar_tabla1():
     enumero_factura.configure(state = 'normal')
     clean_pedido()
     enumero_factura.configure(state = 'disable')
+    Hovertip(eci, text = "", hover_delay = 360000)
+    Hovertip(eid_pro, text = "", hover_delay = 360000)
+    Hovertip(ecant, text = "", hover_delay = 360000)
 
 def agregar_pedido():
     global tree3, enumero_factura, ecant, eci, eid_pro
@@ -1131,6 +1139,9 @@ def eliminar_pedido():
     obt_productos()
     clean_pedido()
     enumero_factura.configure(state = 'disable')
+    Hovertip(eci, text = "", hover_delay = 360000)
+    Hovertip(eid_pro, text = "", hover_delay = 360000)
+    Hovertip(ecant, text = "", hover_delay = 360000)
 
 def seleccionar_click2(event):
     global tree3, enumero_factura, ecant, eci, eid_pro
