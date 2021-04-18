@@ -16,9 +16,6 @@ clean_total=0
 resultado=[]
 now = datetime.now()
 str_now = now.strftime("%d/%m/%Y")
-busqueda=0
-op_busqueda=0
-lista_pedido={}
 
 def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_cliente=9, op_pedido=9, clean_total=0):
     # conexion base de datos
@@ -62,8 +59,8 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 return resultado
             elif op_cliente == 1:
                 # nombre
-                micursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?",seleccion)
-                resultado=micursor.fetchone()
+                micursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?",(seleccion, ))
+                resultado=micursor.fetchall()
                 return resultado
             elif op_cliente == 2:
                 #apellido
@@ -113,8 +110,8 @@ def base_datos(op_BD, tabla, tu_clave = [], seleccion="", op_producto=9, op_clie
                 return resultado
             elif op_pedido == 4:
                 # fecha
-                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",seleccion)
-                resultado=micursor.fetchone()
+                micursor.execute("SELECT * FROM pedido WHERE FECHA = ?",(seleccion, ))
+                resultado=micursor.fetchall()
                 return resultado
             elif op_pedido == 5:
                 micursor.execute("SELECT * FROM pedido ORDER BY FECHA DESC")
@@ -230,7 +227,6 @@ def actualizar_tabla():
     resultado=(base_datos(op_BD,tabla,tu_clave,seleccion,op_producto))
     for row in resultado:
          tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
-
     b1["state"] = "normal"
     b2["state"] = "disable"
     b3["state"] = "disable"
@@ -242,8 +238,11 @@ def actualizar_tabla():
 def agregar_producto():
     tu_clave = []
     if validacion():
-        if eprice_c.get().isdigit() and eprice_v.get().isdigit() and eamount.get().isdigit():
-            if len(eid.get()) <= 15 and int(eprice_c.get()) > 0 and int(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
+        try:
+            float(eprice_c.get())
+            float(eprice_v.get())
+            int(eamount.get())
+            if len(eid.get()) <= 15 and float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
                 tu_clave.append(eid.get())
                 tu_clave.append(eprice_c.get())
                 tu_clave.append(eprice_v.get())
@@ -252,19 +251,22 @@ def agregar_producto():
                 tabla=0
                 base_datos(op_BD, tabla, tu_clave)
                 messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+                clean()
             else:
-                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0")
-        else:
-            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
+                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0. Error: 001")
+        except:
+            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos. Error: 002")
     else:
-        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
-    clean()
+        messagebox.showerror("ERROR", "No pueden haber campos en blanco. Error: 003")
     obt_productos()
 
 def editar_producto():
     tu_clave = []
     if validacion():
-        if isinstance(float(eprice_c.get()), float) and isinstance(float(eprice_v.get()), float) and isinstance(int(eamount.get()), int):
+        try:
+            float(eprice_c.get())
+            float(eprice_v.get())
+            int(eamount.get())
             if float(eprice_c.get()) > 0 and float(eprice_v.get()) > 0 and int(eamount.get()) > 0: 
                 tu_clave.append(eid.get())
                 tu_clave.append(eprice_c.get())
@@ -274,20 +276,20 @@ def editar_producto():
                 tabla=0
                 base_datos(op_BD, tabla, tu_clave)
                 messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+                eid.configure(state = 'normal')
+                clean()
+                b1["state"] = "normal"
+                b2["state"] = "disable"
+                b3["state"] = "disable"
+                bmas["state"] = "disable"
+                bmenos["state"] = "disable"
             else:
-                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0")
-        else:
-            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
+                messagebox.showerror("ERROR", "El ID PRODUCTO debe ser maximo de 15 caracteres, y los demas campos deben ser mayores a 0. Error: 004")
+        except:
+            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos. Error: 005")
     else:
-        messagebox.showerror("ERROR", "No puede haber campos en blanco")
-    eid.configure(state = 'normal')
-    clean()
+        messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 006")
     obt_productos()
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
-    bmas["state"] = "disable"
-    bmenos["state"] = "disable"
 
 def eliminar_producto():
     tu_clave = []
@@ -296,19 +298,19 @@ def eliminar_producto():
         op_BD=3
         tabla=0
         base_datos(op_BD, tabla, tu_clave)
+        eid.configure(state = 'normal')
+        clean()
+        b1["state"] = "normal"
+        b2["state"] = "disable"
+        b3["state"] = "disable"
+        bmas["state"] = "disable"
+        bmenos["state"] = "disable"
         messagebox.showinfo("BASE DE DATOS", "Se eliminaron correctamente los campos")
     else:
-        messagebox.showerror("ERROR", "El ID Producto no puede estar vacio")
-    eid.configure(state = 'normal')
-    clean()
+        messagebox.showerror("ERROR", "El ID Producto no puede estar vacio. Error: 007")
     obt_productos()
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
-    bmas["state"] = "disable"
-    bmenos["state"] = "disable"
 
-    "Acabo de agregar la funcion para la operacion de mas"
+"Acabo de agregar la funcion para la operacion de mas"
 def suma_inventario():
     if validacion():
         try:
@@ -333,20 +335,20 @@ def suma_inventario():
                 tabla = 0
                 base_datos(op_BD, tabla, tu_clave)
                 messagebox.showinfo("BASE DE DATOS", "Se aumento correctamente el inventario")
+                eid.configure(state = 'normal')
+                clean()
+                b1["state"] = "normal"
+                b2["state"] = "disable"
+                b3["state"] = "disable"
+                bmas["state"] = "disable"
+                bmenos["state"] = "disable"
             else:
-                messagebox.showerror("ERROR", "Los campos desbloqueados deben ser mayores a 0")
+                messagebox.showerror("ERROR", "Los campos desbloqueados deben ser mayores a 0. Error: 008")
         except:
-            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos")
+            messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos. Error: 009")
     else:
-        messagebox.showerror("ERROR", "No puede haber campos en blanco")
-    eid.configure(state = 'normal')
-    clean()
+        messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 010")
     obt_productos()
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
-    bmas["state"] = "disable"
-    bmenos["state"] = "disable"
 
 "Acabo de agregar la funcion para la operacion de menos"
 def resta_inventario():
@@ -378,28 +380,26 @@ def resta_inventario():
                     tu_clave.append(eprice_c.get())
                     tu_clave.append(eprice_v.get())
                     tu_clave.append(0)
-                    print(tu_clave)
                     op_BD = 2
                     tabla = 0
                     base_datos(op_BD, tabla, tu_clave)
                     messagebox.showwarning("ADVERTENCIA", "Habian "+ str(resultado[3]) +" repuestos de "+ str(seleccion) +" y usted ha restado " +
                     str(cant_n) + " asi que se ha colocado la cantidad en 0")
                 messagebox.showinfo("BASE DE DATOS", "Se disminuyo correctamente el inventario")
+                eid.configure(state = 'normal')
+                clean()
+                b1["state"] = "normal"
+                b2["state"] = "disable"
+                b3["state"] = "disable"
+                bmas["state"] = "disable"
+                bmenos["state"] = "disable"
             else:
-                messagebox.showerror("ERROR", "Los campos desbloqueados deben ser mayores a 0")
+                messagebox.showerror("ERROR", "Los campos desbloqueados deben ser mayores a 0. Error: 011")
         except:
-           messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos") 
+           messagebox.showerror("ERROR", "PRECIO COSTO, PRECIO VENTA y CANTIDAD deben ser numericos. Error: 012") 
     else:
-        messagebox.showerror("ERROR", "No puede haber campos en blanco")
-    eid.configure(state = 'normal')
-    clean()
-    obt_productos()
-    b1["state"] = "normal"
-    b2["state"] = "disable"
-    b3["state"] = "disable"
-    bmas["state"] = "disable"
-    bmenos["state"] = "disable"
-            
+        messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 013")
+    obt_productos()   
 
 def clean():
     eid.delete(0, END)
@@ -424,18 +424,24 @@ def seleccionar_click(event):
         eid.configure(state = 'disable')
         Hovertip(eid, text = "No puede actualizar el ID de los productos ya ingresados", hover_delay = 100)
     except:
-        messagebox.showerror("ERROR", "Debe hacer doble click sobre un producto")
+        messagebox.showerror("ERROR", "Debe hacer doble click sobre un producto. Error: 014")
 
 def buscar_pantallas():
     global windbuscar
+    global tree1
+    global tree3
     global lbuscar, linstruccion, v, ebuscar
+    op_producto = 9
+    op_cliente = 9
+    op_pedido = 9
+    print(v.get())
     if len(ebuscar.get()) != 0 and v.get() != 0:
         if v.get() == 1:
             op_BD = 0
             tabla = 0
             op_producto = 0
             seleccion = ebuscar.get()
-            resultado = base_datos(op_BD, tabla, tu_clave, seleccion, op_producto)
+            resultado = [base_datos(op_BD, tabla, tu_clave, seleccion, op_producto)]
             if resultado != None:
                 view = tree.get_children() 
                 for elementos in view:
@@ -443,55 +449,155 @@ def buscar_pantallas():
                 for row in resultado:
                     tree.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
                 wind.deiconify()
-                windbuscar.destroy()s
+                windclientes.destroy()
+                windpedido.destroy()
+                windbuscar.destroy()
             else:
-                messagebox.showerror("ERROR", "El PRODUCTO que busca no ha sido encontrado")
+                messagebox.showerror("ERROR", "El PRODUCTO que busca no ha sido encontrado. Error: 015")
 
         elif v.get() == 2:
-            query = "SELECT * FROM cliente WHERE CI_CLIENTE = ? ORDER BY NOMBRE DESC"
-            parametros = (ebuscar.get())
-            windclientes()
-            view = tree1.get_children()
-            for elementos in view:
-                tree1.delete(elementos)
-            db_rows = run_query(query, (parametros, ))
-            for row in db_rows:
-                tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
-            wind.deiconify()
-            wind2.destroy()
+            op_BD = 0
+            tabla = 1
+            op_cliente = 0
+            seleccion = ebuscar.get()
+            resultado = [base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente)]
+            if resultado != None:
+                view = tree1.get_children() 
+                for elementos in view:
+                    tree1.delete(elementos)
+                for row in resultado:
+                    tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+                windclientes.deiconify()
+                windpedido.destroy()
+                windbuscar.destroy()
+            else:
+                messagebox.showerror("ERROR", "El CLIENTE con la CEDULA que busca no ha sido encontrado. Error: 016")
 
         elif v.get() == 3:
-            query = "SELECT * FROM pedido WHERE ID = ? ORDER BY ID DESC"
-            parametros = (ebuscar.get())
-            windpedido1()
-            view = tree3.get_children()
-            for elementos in view:
-                tree3.delete(elementos)
-            db_rows = run_query(query, (parametros, ))
-            for row in db_rows:
-                tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3]))
-            wind.deiconify()
-            wind2.destroy()
+            op_BD = 0
+            tabla = 3
+            op_pedido = 0
+            seleccion = ebuscar.get()
+            resultado = [base_datos(op_BD, tabla, tu_clave, seleccion, op_producto, op_cliente, op_pedido)]
+            if resultado != None:
+                view = tree3.get_children() 
+                for elementos in view:
+                    tree3.delete(elementos)
+                for row in resultado:
+                    tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
+                windpedido.deiconify()
+                windclientes.destroy()
+                windbuscar.destroy()
+            else:
+                messagebox.showerror("ERROR", "El PEDIDO con el ID que busca no ha sido encontrado. Error: 017")
+
+        elif v.get() == 4:
+            conn = sqlite3.connect('inventario.db')
+            cursor = conn.cursor()
+            seleccion = ebuscar.get()
+            cursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?", (seleccion, ))
+            resultado = cursor.fetchall()
+            if resultado != None:
+                view = tree1.get_children() 
+                for elementos in view:
+                    tree1.delete(elementos)
+                for row in resultado:
+                    tree1.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4], row[5]))
+                windclientes.deiconify()
+                windpedido.destroy()
+                windbuscar.destroy()
+            else:
+                messagebox.showerror("ERROR", "El CLIENTE con el NOMBRE que busca no ha sido encontrado. Error: 018")
+
+        elif v.get() == 5:
+            conn = sqlite3.connect('inventario.db')
+            cursor = conn.cursor()
+            seleccion = ebuscar.get()
+            cursor.execute("SELECT * FROM cliente WHERE NOMBRE = ?", (seleccion, ))
+            name = cursor.fetchall()
+            len_name = len(name)
+            try:
+                j = 0
+                for i in range(len_name):
+                    cursor.execute("SELECT * FROM pedido WHERE CI_CLIENTE = ?", (name[j][0], ))
+                    resultado = cursor.fetchall()
+                    print(resultado)
+                    print(j)
+                    j = j + 1
+                    if j == 1:
+                        view = tree3.get_children()
+                        for elementos in view:
+                            tree3.delete(elementos)
+                    for row in resultado:
+                        tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
+                windpedido.deiconify()
+                windclientes.destroy()
+                windbuscar.destroy()
+            except:
+                messagebox.showerror("ERROR", "El CLIENTE con el NOMBRE que busca no ha sido encontrado. Error: 019")
+
+        elif v.get() == 6:
+            conn = sqlite3.connect('inventario.db')
+            cursor = conn.cursor()
+            seleccion = ebuscar.get()
+            cursor.execute("SELECT * FROM pedido WHERE FECHA = ?", (seleccion, ))
+            resultado = cursor.fetchall()
+            if resultado != None:
+                view = tree3.get_children() 
+                for elementos in view:
+                    tree3.delete(elementos)
+                for row in resultado:
+                    tree3.insert("", 0, text = "", values = (row[0], row[1], row[2], row[3], row[4]))
+                windpedido.deiconify()
+                windclientes.destroy()
+                windbuscar.destroy()
+            else:
+                messagebox.showerror("ERROR", "El CLIENTE con el NOMBRE que busca no ha sido encontrado. Error: 020")
     else:
-        messagebox.showinfo("BUSCAR", "debe colocar la opcion y la palabra clave a buscar")
+        messagebox.showerror("ERROR", "debe colocar la opcion y la palabra clave a buscar. Error: 021")
+
+def abrir_principal():
+    wind.deiconify()
+    windclientes.destroy()
+    windpedido.destroy()
+    windbuscar.destroy()
+
+def abrir_pedido():
+    windpedido.deiconify()
+    windclientes.destroy()
+    windbuscar.destroy()
+
+def abrir_cliente():
+    windclientes.deiconify()
+    windpedido.destroy()
+    windbuscar.destroy()
 
 def label_buscar():
     global lbuscar, linstruccion, v
     if v.get() == 1:
         lbuscar['text'] = "Ha seleccionado la opcion ID PRODUCTO"
         linstruccion['text'] = "Ingrese el ID del PRODUCTO que desea buscar"
+        linstruccion.place(x = 198, y = 135)
     elif v.get() == 2:
         lbuscar['text'] = "Ha seleccionado la opcion CEDULA CLIENTE"
         linstruccion['text'] = "Ingrese la CI del CLIENTE que desea buscar"
+        linstruccion.place(x = 210, y = 135)
     elif v.get() == 3:
         lbuscar['text'] = "Ha seleccionado la opcion NUMERO FACTURA"
         linstruccion['text'] = "Ingrese el NUMERO de la FACTURA que desea buscar"
+        linstruccion.place(x = 175, y = 135)
     elif v.get() == 4:
         lbuscar['text'] = "Ha seleccionado la opcion NOMBRE CLIENTE"
         linstruccion['text'] = "Ingrese el NOMBRE del CLIENTE que desea buscar"
+        linstruccion.place(x = 188, y = 135)
     elif v.get() == 5:
+        lbuscar['text'] = "Ha seleccionado la opcion NOMBRE CLIENTE FACTURA"
+        linstruccion['text'] = "Ingrese el NOMBRE del CLIENTE que desea buscar en PEDIDOS"
+        linstruccion.place(x = 160, y = 135)
+    elif v.get() == 6:
         lbuscar['text'] = "Ha seleccionado la opcion FECHA"
-        linstruccion['text'] = "Ingrese la FECHA del PEDIDO que desea buscar"
+        linstruccion['text'] = "Ingrese la FECHA del PEDIDO que desea buscar\n   Formato: DD/MM/YYYY"
+        linstruccion.place(x = 190, y = 135)
 
 def buscar():
     global windbuscar
@@ -499,17 +605,43 @@ def buscar():
     global rb_producto, rb_cliente, rb_pedido, rb_nombre, rb_fecha
     windbuscar = Toplevel()
     windbuscar.resizable(width = 0, height = 0)
-    windbuscar.geometry("450x250")
+    windbuscar.geometry("500x250")
     windbuscar.iconbitmap('archivo.ico')
+
     windbuscar.title("Aplicacion de Inventario (BUSCAR)")
     lbuscar = Label(windbuscar, text = "Selecciones lo que desea buscar")
     lbuscar.place(x = 10, y = 10)
+
     ebuscar = Entry(windbuscar, width = 30)
-    ebuscar.place(x = 200, y = 65)
+    ebuscar.place(x = 230, y = 65)
+
     bbuscar = ttk.Button(windbuscar, text = "Buscar", width = 29, command = lambda: buscar_pantallas())
-    bbuscar.place(x = 200, y = 100)
+    bbuscar.place(x = 230, y = 100)
+
+    img = PhotoImage(file = 'principal.png')
+    babrir_principal = Button(windbuscar, width = 35, height = 35, command = lambda: abrir_principal())
+    babrir_principal.image_names = img
+    babrir_principal.config(image = img)
+    babrir_principal.place(x = 315, y = 185)
+    Hovertip(babrir_principal, text = "Pantalla Principal", hover_delay = 100)
+
+    img1 = PhotoImage(file = 'cliente.png')
+    babrir_pedido = Button(windbuscar, width = 35, height = 35, command = lambda: abrir_pedido())
+    babrir_pedido.image_names = img1
+    babrir_pedido.configure(image = img1)
+    babrir_pedido.place(x = 370, y = 185)
+    Hovertip(babrir_pedido, text = "Clientes", hover_delay = 100)
+
+    img2 = PhotoImage(file = 'pedidos.png')
+    babrir_cliente = Button(windbuscar, width = 35, height = 35, command = lambda: abrir_cliente())
+    babrir_cliente.image_names = img2
+    babrir_cliente.configure(image = img2)
+    babrir_cliente.place(x = 425, y = 185)
+    Hovertip(babrir_cliente, text = "Pedidos", hover_delay = 100)
+
     linstruccion = Label(windbuscar, text = "")
-    linstruccion.place(x = 120, y = 135)
+    linstruccion.place(x = 160, y = 135)
+
     v = IntVar()
     rb_producto = Radiobutton(windbuscar, text = "ID PRODUCTO", value = 1, variable = v, command = lambda: label_buscar())
     rb_producto.place(x = 20, y = 50)
@@ -519,8 +651,15 @@ def buscar():
     rb_pedido.place(x = 20, y = 110)
     rb_nombre = Radiobutton(windbuscar, text = "NOMBRE CLIENTE", value = 4, variable = v, command = lambda: label_buscar())
     rb_nombre.place(x = 20, y = 140)
-    rb_fecha = Radiobutton(windbuscar, text = "FECHA", value = 5, variable = v, command = lambda: label_buscar())
-    rb_fecha.place(x = 20, y = 170)
+    rb_nombre = Radiobutton(windbuscar, text = "NOMBRE CLIENTE FACTURA", value = 5, variable = v, command = lambda: label_buscar())
+    rb_nombre.place(x = 20, y = 170)
+    rb_fecha = Radiobutton(windbuscar, text = "FECHA", value = 6, variable = v, command = lambda: label_buscar())
+    rb_fecha.place(x = 20, y = 200)
+
+    clientes()
+    windclientes.iconify()
+    pedido()
+    windpedido.iconify()
     wind.iconify()
 
 def borrarCLIENTES():
@@ -562,7 +701,7 @@ def agregar_cliente():
     tu_clave=[]
     if validacion1():
         if ci_cliente.get()[0] == 'V' or ci_cliente.get()[0] == 'E' or ci_cliente.get()[0] == 'J':
-            if ci_cliente.get()[1:10].isdigit() and nombre.get().isalpha() and apellido.get().isalpha() and direccion.get().isalpha() and deuda.get().isdigit():
+            if ci_cliente.get()[1:10].isdigit() and nombre.get().isalpha() and apellido.get().isalpha() and deuda.get().isdigit():
                 if len(ci_cliente.get()) <= 11 and len(ci_cliente.get()) > 3 and len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
                     if telefono.get()[0] == '+' and telefono.get()[1:14].isdigit() or telefono.get()[0:14].isdigit(): 
                         tu_clave.append(ci_cliente.get())
@@ -575,18 +714,18 @@ def agregar_cliente():
                         tabla=1
                         base_datos(op_BD,tabla,tu_clave)
                         messagebox.showinfo("BASE DE DATOS", "Se guardaron correctamente los campos")
+                        clean1()
                     else:
-                        messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +")
+                        messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +. Error: 022")
                 else:
-                    messagebox.showerror("ERROR", "La CEDULA debe tener entre 3 y 10 numeros, el NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50")     
+                    messagebox.showerror("ERROR", "La CEDULA debe tener entre 3 y 10 numeros, el NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50. Error: 023")     
             else:
-                messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J y continuar con numeros, la DEUDA debe ser numerica, y los demas campos textos")  
+                messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J y continuar con numeros, la DEUDA debe ser numerica, y los demas campos textos. Error: 024")  
         else:
-            messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J")
+            messagebox.showerror("ERROR", "La CEDULA debe comenzar con V, E o J mayuscula. Error: 025")
     else:
-        messagebox.showerror("ERROR", "No puede haber campos en blanco")
-    clean1()
-    obt_clientes()      
+        messagebox.showerror("ERROR", "No puede haber campos en blanco. Error: 026")
+    obt_clientes()
 
 def editar_cliente():
     global ci_cliente, nombre, apellido, telefono, direccion, deuda
@@ -594,7 +733,7 @@ def editar_cliente():
     if validacion1():
         try:
             float(deuda.get())
-            if nombre.get().isalpha() and apellido.get().isalpha() and direccion.get().isalpha():
+            if nombre.get().isalpha() and apellido.get().isalpha():
                 if len(nombre.get()) < 20 and len(apellido.get()) < 20 and len(telefono.get()) <= 15 and len(direccion.get()) < 50:
                     if telefono.get()[0] == '+' and telefono.get()[1:14].isdigit() or telefono.get()[0:14].isdigit():
                         tu_clave.append(ci_cliente.get())
@@ -607,22 +746,22 @@ def editar_cliente():
                         tabla=1
                         base_datos(op_BD,tabla,tu_clave)
                         messagebox.showinfo("BASE DE DATOS", "Se actualizaron correctamente los campos")
+                        ci_cliente.configure(state = 'normal')
+                        clean1()
+                        b_guardar["state"] = "normal"
+                        b_actualizar["state"] = "disable"
+                        b_eliminar["state"] = "disable"
                     else:
-                        messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +")
+                        messagebox.showerror("ERROR", "La TELEFONO puede comenzar con un numero o un +. Error: 027")
                 else:
-                    messagebox.showerror("ERROR", "El NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50")
+                    messagebox.showerror("ERROR", "El NOMBRE y el APELLIDO 20 caracteres, el TELEFONO maximo 15 y la DIRECCION maximo 50. Error: 028")
             else:
-                messagebox.showerror("ERROR", "La DEUDA debe ser numerica, y los demas campos textos")
+                messagebox.showerror("ERROR", "La DEUDA debe ser numerica, y los demas campos textos. Error: 029")
         except:
-            messagebox.showerror("ERROR", "La DEUDA debe ser numerica, y los demas campos textos")
+            messagebox.showerror("ERROR", "La DEUDA debe ser numerica, y los demas campos textos. Error: 030")
     else:
-        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
-    ci_cliente.configure(state = 'normal')
-    clean1()
+        messagebox.showerror("ERROR", "No pueden haber campos en blanco. Error: 031")
     obt_clientes()
-    b_guardar["state"] = "normal"
-    b_actualizar["state"] = "disable"
-    b_eliminar["state"] = "disable"
 
 def eliminar_cliente():
     global ci_cliente, b_guardar, b_actualizar, b_eliminar
@@ -634,12 +773,13 @@ def eliminar_cliente():
         base_datos(op_BD,tabla,tu_clave)
         messagebox.showinfo("BASE DE DATOS", "Se eliminaron correctamente los campos")
     else:
-        ci_cliente.configure(state = 'normal')
-        clean1()
-        obt_clientes()
-        b_guardar["state"] = "normal"
-        b_actualizar["state"] = "disable"
-        b_eliminar["state"] = "disable"
+        messagebox.showerror("ERROR", "El campo CI CLIENTE no puede estar vacio. Error: 032")
+    ci_cliente.configure(state = 'normal')
+    clean1()
+    obt_clientes()
+    b_guardar["state"] = "normal"
+    b_actualizar["state"] = "disable"
+    b_eliminar["state"] = "disable"
 
 def clean1():
     global ci_cliente, nombre, apellido, telefono, direccion, deuda
@@ -683,7 +823,7 @@ def seleccionar1_click(event):
         ci_cliente.configure(state = 'disable')
         Hovertip(ci_cliente, text = "No puede actualizar la cedula de un usuario existente, elimine y cree uno nuevo", hover_delay = 100)
     except:
-        messagebox.showerror("ERROR", "Debe hacer doble click sobre un cliente")
+        messagebox.showerror("ERROR", "Debe hacer doble click sobre un cliente. Error: 033")
 
 def clientes():
     global windclientes
@@ -720,6 +860,8 @@ def clientes():
 
     l_ci_cedula = Label(windclientes, text = "Cedula Cliente:")
     l_ci_cedula.place(x = 290, y = 40)
+    l_formato = Label(windclientes, text = "Formato: V00000000")
+    l_formato.place(x = 650, y = 40)
     ci_cliente = Entry(windclientes, width = 40)
     ci_cliente.focus()
     ci_cliente.place(x = 390, y = 40)
@@ -912,11 +1054,11 @@ def agregar_pedido():
                 base_datos(op_BD, tabla, tu_clave)
                 messagebox.showinfo("BASE DE DATOS", "Se guardo correctamente el pedido y se actualizaron los campos inventario y deuda")
             else:
-                messagebox.showerror("ERROR", "No pueden haber pedidos que la Cantidad Pedido exceda la Cantidad disponible en el inventario")
+                messagebox.showerror("ERROR", "No pueden haber pedidos que la Cantidad Pedido exceda la Cantidad disponible en el inventario. Error: 034")
         except:
-            messagebox.showerror("ERROR", "El CANTIDAD PEDIDO debe ser un numero entero")
+            messagebox.showerror("ERROR", "El CANTIDAD PEDIDO debe ser un numero entero. Error: 035")
     else:
-        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+        messagebox.showerror("ERROR", "No pueden haber campos en blanco. Error: 036")
     obt_pedidos()
     obt_productos()
     clean_pedido()
@@ -955,7 +1097,7 @@ def eliminar_pedido():
         tabla = 0
         seleccion = eid_pro.get()
         base_datos(op_BD, tabla, tu_clave, seleccion)
-        if (int(ecant.get()) * int(resultado1[2])) < resultado[5]:
+        if (int(ecant.get()) * float(resultado1[2])) <= resultado[5]:
             sumar_deuda = resultado[5] - (int(ecant.get()) * int(resultado1[2])) 
             tu_clave = []
             tu_clave.append(resultado[0])
@@ -966,11 +1108,12 @@ def eliminar_pedido():
             tu_clave.append(resultado[5])
             tu_clave.remove(resultado[5])
             tu_clave.append(sumar_deuda)
+            op_BD=2
+            tabla=1
+            base_datos(op_BD, tabla, tu_clave)
         else:
-            messagebox.showerror("ERROR", "Hubo un error al eliminar datos datos")
-        op_BD=2
-        tabla=1
-        base_datos(op_BD, tabla, tu_clave)
+            messagebox.showerror("ERROR", "Hubo un error al eliminar datos datos. Error: 037")
+            return
         tu_clave = []
         tu_clave.append(enumero_factura.get())
         op_BD = 3
@@ -978,7 +1121,7 @@ def eliminar_pedido():
         base_datos(op_BD, tabla, tu_clave)
         messagebox.showinfo("BASE DE DATOS", "Se elimino correctamente el pedido y se actualizaron los campos inventario y deuda")
     else:
-        messagebox.showerror("ERROR", "No pueden haber campos en blanco")
+        messagebox.showerror("ERROR", "No pueden haber campos en blanco. Error: 038")
     eci.configure(state = 'normal')
     eid_pro.configure(state = 'normal')
     ecant.configure(state = 'normal')
@@ -1011,7 +1154,7 @@ def seleccionar_click2(event):
         Hovertip(ecant, text = "No puede actualizar los pedidos ya ingresados", hover_delay = 100)
         enumero_factura.configure(state = 'disable')
     except:
-        messagebox.showerror("ERROR", "Debe hacer doble click sobre un pedido")
+        messagebox.showerror("ERROR", "Debe hacer doble click sobre un pedido. Error: 039")
        
 def pedido():
     global windpedido
@@ -1052,6 +1195,8 @@ def pedido():
 
     lci = Label(windpedido, text = "CI Cliente: ")
     lci.place(x = 416, y = 65)
+    l_formato_pedido = Label(windpedido, text = "Formato: V00000000")
+    l_formato_pedido.place(x = 700, y = 65)
     eci = Entry(windpedido, width = 30)
     eci.focus()
     eci.place(x = 500, y = 65)
